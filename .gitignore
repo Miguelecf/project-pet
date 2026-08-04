@@ -1,8 +1,8 @@
 # Local AI runtime state
 .atl/
 
-# Personal/hidden docs (instructions privadas, Supabase keys, etc.)
-.docs/
+# Private local documentation (agent notes, planning, and setup references)
+/.private-docs/
 
 # Agent instructions (no se commitea — es personal del usuario)
 AGENTS.md
