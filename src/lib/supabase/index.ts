@@ -6,4 +6,5 @@
  */
 
 export { supabase, SUPABASE_PROJECT_HOST } from './client'
+export { validateSupabaseKey, validateSupabaseUrl } from './guards'
 export type { SupabaseClient, Session, User } from '@supabase/supabase-js'
