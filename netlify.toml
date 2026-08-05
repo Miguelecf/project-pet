@@ -1,0 +1,37 @@
+# Netlify configuration for project-pet
+#
+# Build:  npm run build  (runs `tsc -b && vite build`)
+# Output: dist/  (Vite default)
+# Runtime: static SPA. All non-asset routes fall back to /index.html so
+#          client-side routing works on hard refresh.
+
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+[build.environment]
+  # Node 22 is the current LTS and what we develop against.
+  NODE_VERSION = "22"
+
+# SPA fallback: any path that doesn't match a static asset is served
+# /index.html so React Router can take over.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Cache hashed assets aggressively (Vite outputs /assets/<hash>-...).
+# Source files in / (favicon, etc.) are NOT cached so deploys propagate fast.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers — keep in sync with what we'd set on the Supabase side.
+    X-Content-Type-Options    = "nosniff"
+    X-Frame-Options           = "DENY"
+    Referrer-Policy           = "strict-origin-when-cross-origin"
+    Permissions-Policy        = "geolocation=(), microphone=(), camera=()"

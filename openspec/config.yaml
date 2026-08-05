@@ -4,20 +4,20 @@ context: |
   Project: project-pet
   Stack: React 18 + TypeScript + Vite + Supabase + Netlify (free tier)
   Architecture: Modular monolith, clean architecture pragmatic, feature-based modules
-  Status: Docs-only repo — Vite scaffold not yet executed
-  Testing: Vitest (planned), Strict TDD disabled until scaffolding
+  Status: Vite scaffold complete, Supabase client isolated (A0.3), Vitest installed (A0.4)
+  Testing: Vitest active, Strict TDD enabled after A0.4
 
-strict_tdd: false
+strict_tdd: true
 
 testing:
   test_runner: vitest
-  test_command: ""
-  unit: false
+  test_command: "npm run test:run"
+  unit: true
   integration: false
   e2e: false
-  coverage: false
+  coverage: true
   linter: false
-  type_checker: false
+  type_checker: true
   formatter: false
 
 rules:
@@ -34,11 +34,11 @@ rules:
     - Keep tasks completable in one session
   apply:
     - Follow existing code patterns
-    tdd: false
-    test_command: ""
+    tdd: true
+    test_command: "npm run test:run"
   verify:
-    test_command: ""
-    build_command: ""
+    test_command: "npm run test:run"
+    build_command: "npm run build"
     coverage_threshold: 0
   archive:
     - Warn before merging destructive deltas
