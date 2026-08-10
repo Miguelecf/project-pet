@@ -1,19 +1,85 @@
-import { MODULES } from './modules'
-
 function App() {
   return (
-    <main style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-      <h1>project-pet</h1>
-      <p>Feature-based structure ready. Modules:</p>
-      <ul>
-        {MODULES.map((m) => (
-          <li key={m}>{m}</li>
-        ))}
-      </ul>
-      <p>
-        Supabase access will live only in <code>src/lib/supabase/</code>.
-      </p>
-    </main>
+    <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
+      <header className="app-header">
+        <div className="brand-lockup">
+          <span className="brand-mark" aria-hidden="true">
+            PP
+          </span>
+          <div>
+            <p className="eyebrow">Pet-shop financial operations</p>
+            <p className="brand-name">Project Pet</p>
+          </div>
+        </div>
+        <p className="demo-badge" role="status">
+          <span aria-hidden="true" />
+          Local MVP · Demo mode
+        </p>
+      </header>
+
+      <main className="workspace" id="main-content">
+        <section className="intro" aria-labelledby="dashboard-title">
+          <p className="eyebrow">Dashboard foundation</p>
+          <h1 id="dashboard-title">A clear view of daily operations, starting here.</h1>
+          <p className="intro-copy">
+            Project Pet is being prepared to replace scattered financial spreadsheets with a
+            focused view of supplier expenses, daily income, and cash flow.
+          </p>
+        </section>
+
+        <section className="foundation-card" aria-labelledby="foundation-title">
+          <div className="foundation-card__heading">
+            <p className="section-label">Current foundation</p>
+            <h2 id="foundation-title">Your operations dashboard is taking shape.</h2>
+          </div>
+          <p>
+            This local demo is an honest starting point. Financial records, calculations, and
+            navigation are not available yet; they will appear as each MVP module is completed
+            and verified.
+          </p>
+        </section>
+
+        <section className="next-steps" aria-labelledby="next-steps-title">
+          <div>
+            <p className="section-label">Next in the local MVP</p>
+            <h2 id="next-steps-title">Built for the work that matters each day.</h2>
+          </div>
+          <ul className="capability-list" role="list">
+            <li>
+              <span className="capability-icon" aria-hidden="true">01</span>
+              <div>
+                <h3>Supplier expenses</h3>
+                <p>Track purchase invoices and their payment status in one place.</p>
+              </div>
+              <span className="status">Planned</span>
+            </li>
+            <li>
+              <span className="capability-icon" aria-hidden="true">02</span>
+              <div>
+                <h3>Daily income</h3>
+                <p>Record daily sales separately from supplier payments.</p>
+              </div>
+              <span className="status">Planned</span>
+            </li>
+            <li>
+              <span className="capability-icon" aria-hidden="true">03</span>
+              <div>
+                <h3>Cash visibility</h3>
+                <p>Review paid expenses, pending debt, and an estimated cash result.</p>
+              </div>
+              <span className="status">Planned</span>
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <footer className="app-footer">
+        <p>Local-only MVP. No account, cloud sync, or client data is connected.</p>
+      </footer>
+    </div>
   )
 }
 
