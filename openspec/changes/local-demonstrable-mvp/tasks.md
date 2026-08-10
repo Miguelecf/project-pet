@@ -38,19 +38,19 @@ Revert in this exact order: GMVP → Q5 → Q4 → Q3 → Q2 → M4.3 → M4.2 �
 **Specs**: `repository-contracts` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 0.2.1 RED: Write contract test `src/test/contracts/supplierRepositoryContract.ts` — exports `describeSupplierRepositoryContract(adapter)` with CRUD, uniqueness, soft-delete, list-excludes-deleted assertions.
-- [ ] 0.2.2 RED: Write contract test `src/test/contracts/categoryRepositoryContract.ts` — CRUD, uniqueness, block-delete-if-referenced assertions.
-- [ ] 0.2.3 RED: Write contract test `src/test/contracts/settingsRepositoryContract.ts` — get/save, currency-lock, defaults assertions.
-- [ ] 0.2.4 RED: Write contract test `src/test/contracts/invoiceRepositoryContract.ts` — CRUD with lines, status filter, soft-delete/restore, deleted-filter assertions.
-- [ ] 0.2.5 RED: Write contract test `src/test/contracts/paymentRepositoryContract.ts` — register, void, overpayment reject, balance recalc assertions.
-- [ ] 0.2.6 RED: Write contract test `src/test/contracts/dailyIncomeRepositoryContract.ts` — CRUD, unique sale-date, dashboard-refresh assertions.
-- [ ] 0.2.7 GREEN: Create `src/modules/suppliers/SupplierRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `softDelete`.
-- [ ] 0.2.8 GREEN: Create `src/modules/categories/CategoryRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`, `isReferenced`.
-- [ ] 0.2.9 GREEN: Create `src/modules/settings/SettingsRepository.ts` — async interface with `get`, `save` only (no CRUD symmetry).
-- [ ] 0.2.10 GREEN: Create `src/modules/invoices/InvoiceRepository.ts` — async interface with `findAll`, `findById`, `findByStatus`, `findDeleted`, `create`, `update`, `softDelete`, `restore`.
-- [ ] 0.2.11 GREEN: Create `src/modules/invoices/PaymentRepository.ts` — async interface with `findByInvoice`, `register`, `void`.
-- [ ] 0.2.12 GREEN: Create `src/modules/daily-income/DailyIncomeRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`.
-- [ ] 0.2.13 REFACTOR: Verify no `CrudRepository<T>` or `BaseRepository` exists. Confirm interface segregation per spec.
+- [x] 0.2.1 RED: Write contract test `src/test/contracts/supplierRepositoryContract.ts` — exports `describeSupplierRepositoryContract(adapter)` with CRUD, uniqueness, soft-delete, list-excludes-deleted assertions.
+- [x] 0.2.2 RED: Write contract test `src/test/contracts/categoryRepositoryContract.ts` — CRUD, uniqueness, block-delete-if-referenced assertions.
+- [x] 0.2.3 RED: Write contract test `src/test/contracts/settingsRepositoryContract.ts` — get/save, currency-lock, defaults assertions.
+- [x] 0.2.4 RED: Write contract test `src/test/contracts/invoiceRepositoryContract.ts` — CRUD with lines, status filter, soft-delete/restore, deleted-filter assertions.
+- [x] 0.2.5 RED: Write contract test `src/test/contracts/paymentRepositoryContract.ts` — register, void, overpayment reject, balance recalc assertions.
+- [x] 0.2.6 RED: Write contract test `src/test/contracts/dailyIncomeRepositoryContract.ts` — CRUD, unique sale-date, dashboard-refresh assertions.
+- [x] 0.2.7 GREEN: Create `src/modules/suppliers/SupplierRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `softDelete`.
+- [x] 0.2.8 GREEN: Create `src/modules/categories/CategoryRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`, `isReferenced`.
+- [x] 0.2.9 GREEN: Create `src/modules/settings/SettingsRepository.ts` — async interface with `get`, `save` only (no CRUD symmetry).
+- [x] 0.2.10 GREEN: Create `src/modules/invoices/InvoiceRepository.ts` — async interface with `findAll`, `findById`, `findByStatus`, `findDeleted`, `create`, `update`, `softDelete`, `restore`.
+- [x] 0.2.11 GREEN: Create `src/modules/invoices/PaymentRepository.ts` — async interface with `findByInvoice`, `register`, `void`.
+- [x] 0.2.12 GREEN: Create `src/modules/daily-income/DailyIncomeRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`.
+- [x] 0.2.13 REFACTOR: Verify no `CrudRepository<T>` or `BaseRepository` exists. Confirm interface segregation per spec.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
