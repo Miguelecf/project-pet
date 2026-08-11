@@ -10,7 +10,7 @@
 ## Foundation
 
 - [x] **M0.2** — Async per-module repository interfaces + executable contract/conformance suites (coverage gate complete; `size:exception` approved)
-- [ ] **M0.3a** — Versioned localStorage gateway + seed + catalog local repos (~500 lines)
+- [ ] **M0.3a** — Versioned LocalStateSchema + defensive/atomic gateway + settings/supplier/category local repos (~500 lines)
 - [ ] **M0.3b** — Invoice/payment/daily-income local repos + seed data + restore (~620 lines)
 
 ## App Shell

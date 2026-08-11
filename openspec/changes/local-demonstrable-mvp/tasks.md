@@ -63,7 +63,7 @@ M0.3 remains pending.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
-**Commit**: `feat(persistence): versioned localStorage gateway, seed, and catalog local repos — M0.3a`
+**Commit**: `feat(persistence): versioned LocalStateSchema, defensive gateway, and catalog local repos — M0.3a`
 **Specs**: `local-persistence` (versioned key, defensive parse, write atomicity), `repository-contracts` (contract tests pass against local adapter for suppliers/categories/settings)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 

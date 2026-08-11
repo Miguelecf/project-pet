@@ -139,7 +139,7 @@ feat(<scope>): <action> — <milestone-id>
 - <bullet 2>
 ```
 
-Example: `feat(persistence): local adapter with versioned schema and seed data — M0.3a`
+Example: `feat(persistence): versioned LocalStateSchema, defensive gateway, and catalog local repos — M0.3a`
 
 ### Total estimates
 
