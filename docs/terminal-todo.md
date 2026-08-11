@@ -15,7 +15,7 @@
 
 ## App Shell
 
-- [ ] **M1.1** — BrowserRouter, Layout, Sidebar navigation (~260 lines)
+- [x] **M1.1** — BrowserRouter, Layout, Sidebar navigation (~260 lines)
 - [ ] **M1.2** — StateOverlay, ConfirmDialog, skip-link, focus management (~250 lines)
 
 ## Catalog Modules
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 3 | 24 | 13% |
+| 4 | 24 | 17% |
 
 ## Preserved Boundaries (read-only)
 

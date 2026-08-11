@@ -26,7 +26,7 @@
 body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--canvas); }
 #root { min-height: 100vh; }
 
-.app-shell { width: min(100% - 40px, 1120px); min-height: 100vh; margin: 0 auto; }
+.app-shell { width: min(100% - 40px, 1200px); min-height: 100vh; margin: 0 auto; }
 .skip-link { position: fixed; z-index: 1; top: 12px; left: 12px; padding: 10px 14px; border-radius: 8px; background: var(--violet-deep); color: var(--text-primary); font-weight: 700; text-decoration: none; transform: translateY(-160%); }
 .skip-link:focus-visible { outline: 3px solid var(--violet-light); outline-offset: 3px; transform: translateY(0); }
 .app-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 88px; border-bottom: 1px solid var(--border-subtle); }
@@ -37,7 +37,16 @@ body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--canvas)
 .brand-name { margin: 2px 0 0; color: var(--text-primary); font-size: 1rem; font-weight: 700; }
 .demo-badge { gap: 8px; margin: 0; padding: 8px 12px; border: 1px solid color-mix(in srgb, var(--mint) 32%, transparent); border-radius: 999px; background: var(--mint-surface); color: #d1fae5; font-size: 0.875rem; font-weight: 650; }
 .demo-badge span { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); }
+.app-body { display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: 40px; }
+.sidebar { padding-top: clamp(56px, 10vw, 116px); }
+.sidebar nav ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.sidebar a { display: block; padding: 9px 12px; border-radius: 8px; color: var(--text-secondary); font-weight: 700; text-decoration: none; }
+.sidebar a:hover, .sidebar a:focus-visible, .sidebar a.active { background: var(--surface-elevated); color: var(--text-primary); outline: none; }
+.navigation-toggle { align-self: start; margin-top: 16px; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--surface-elevated); color: var(--text-primary); font: inherit; font-weight: 700; }
 .workspace { padding: clamp(56px, 10vw, 116px) 0 64px; }
+.placeholder-page { max-width: 720px; }
+.placeholder-page h1 { margin-bottom: 20px; }
+.placeholder-page p:last-child { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.6; }
 .intro { max-width: 760px; }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { color: var(--text-primary); }
@@ -56,10 +65,13 @@ h1 { max-width: 720px; margin: 12px 0 20px; font-size: clamp(2.45rem, 6vw, 4.5re
 .status { padding: 5px 9px; border: 1px solid color-mix(in srgb, var(--amber) 27%, transparent); border-radius: 999px; background: var(--amber-surface); color: var(--amber); font-size: 0.75rem; font-weight: 700; }
 .app-footer { padding: 24px 0 32px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.875rem; }
 
-@media (max-width: 680px) {
+@media (max-width: 767px) {
   .app-shell { width: min(100% - 28px, 1120px); }
   .app-header { align-items: flex-start; flex-direction: column; justify-content: center; gap: 14px; padding: 16px 0; }
-  .workspace { padding: 56px 0 40px; }
+  .app-body { display: block; }
+  .sidebar { padding-top: 16px; }
+  .sidebar--mobile { padding-bottom: 8px; }
+  .workspace { padding: 40px 0; }
   .foundation-card, .next-steps { padding: 24px; }
   .foundation-card { grid-template-columns: 1fr; gap: 18px; margin-top: 40px; }
   .capability-list li { grid-template-columns: auto minmax(0, 1fr); }

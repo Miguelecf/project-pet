@@ -1,26 +1,9 @@
+import { Layout } from './app/Layout'
+
 function App() {
   return (
-    <div className="app-shell">
-      <a className="skip-link" href="#main-content">
-        Skip to main content
-      </a>
-      <header className="app-header">
-        <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">
-            PP
-          </span>
-          <div>
-            <p className="eyebrow">Pet-shop financial operations</p>
-            <p className="brand-name">Project Pet</p>
-          </div>
-        </div>
-        <p className="demo-badge" role="status">
-          <span aria-hidden="true" />
-          Local MVP · Demo mode
-        </p>
-      </header>
-
-      <main className="workspace" id="main-content">
+    <Layout>
+      <div className="dashboard-placeholder">
         <section className="intro" aria-labelledby="dashboard-title">
           <p className="eyebrow">Dashboard foundation</p>
           <h1 id="dashboard-title">A clear view of daily operations, starting here.</h1>
@@ -47,7 +30,7 @@ function App() {
             <p className="section-label">Next in the local MVP</p>
             <h2 id="next-steps-title">Built for the work that matters each day.</h2>
           </div>
-          <ul className="capability-list" role="list">
+          <ul aria-label="Planned capabilities" className="capability-list" role="list">
             <li>
               <span className="capability-icon" aria-hidden="true">01</span>
               <div>
@@ -74,12 +57,8 @@ function App() {
             </li>
           </ul>
         </section>
-      </main>
-
-      <footer className="app-footer">
-        <p>Local-only MVP. No account, cloud sync, or client data is connected.</p>
-      </footer>
-    </div>
+      </div>
+    </Layout>
   )
 }
 

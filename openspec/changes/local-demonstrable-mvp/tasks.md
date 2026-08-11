@@ -102,14 +102,14 @@ M0.3a and M0.3b are complete; M1.1 is next.
 **Specs**: `app-shell` (BrowserRouter route map, Layout with Sidebar)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 1.1.1 RED: Write `src/app/AppRouter.test.tsx` — verify `/` renders Dashboard placeholder, `/suppliers` renders supplier page, unknown route redirects to `/`.
-- [ ] 1.1.2 GREEN: Create `src/app/AppRouter.tsx` — `BrowserRouter` with route map: `/`, `/suppliers/*`, `/categories/*`, `/invoices/*`, `/daily-income/*`, `/settings`, catch-all redirect.
-- [ ] 1.1.3 RED: Write `src/app/Layout.test.tsx` — verify sidebar renders nav links, skip-link targets `#main-content`.
-- [ ] 1.1.4 GREEN: Create `src/app/Layout.tsx` — sidebar + main content region with `#main-content` id.
-- [ ] 1.1.5 RED: Write `src/app/Sidebar.test.tsx` — verify all module links present, responsive collapse at <768px, hamburger toggle.
-- [ ] 1.1.6 GREEN: Create `src/app/Sidebar.tsx` — nav links, responsive collapse, hamburger toggle.
-- [ ] 1.1.7 GREEN: Update `src/main.tsx` — mount `AppRouter`. Update `src/App.tsx` — render `Layout`. _(Pure wiring — no new behavior; covered by 1.1.1–1.1.6 tests.)_
-- [ ] 1.1.8 REFACTOR: Verify route navigation tests pass.
+- [x] 1.1.1 RED: Write `src/app/AppRouter.test.tsx` — verify `/` renders Dashboard placeholder, `/suppliers` renders supplier page, unknown route redirects to `/`.
+- [x] 1.1.2 GREEN: Create `src/app/AppRouter.tsx` — `BrowserRouter` with route map: `/`, `/suppliers/*`, `/categories/*`, `/invoices/*`, `/daily-income/*`, `/settings`, catch-all redirect.
+- [x] 1.1.3 RED: Write `src/app/Layout.test.tsx` — verify sidebar renders nav links, skip-link targets `#main-content`.
+- [x] 1.1.4 GREEN: Create `src/app/Layout.tsx` — sidebar + main content region with `#main-content` id.
+- [x] 1.1.5 RED: Write `src/app/Sidebar.test.tsx` — verify all module links present, responsive collapse at <768px, hamburger toggle.
+- [x] 1.1.6 GREEN: Create `src/app/Sidebar.tsx` — nav links, responsive collapse, hamburger toggle.
+- [x] 1.1.7 GREEN: Update `src/main.tsx` — mount `AppRouter`. Update `src/App.tsx` — render `Layout`. _(Pure wiring — no new behavior; covered by 1.1.1–1.1.6 tests.)_
+- [x] 1.1.8 REFACTOR: Verify route navigation tests pass.
 
 ## M1.2 — App Shell: Overlays + ConfirmDialog + A11y (~250 lines)
 

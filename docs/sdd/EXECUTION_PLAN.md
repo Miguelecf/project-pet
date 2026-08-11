@@ -1,11 +1,11 @@
 # Executable Delivery Plan
 
-**M0.3b local persistence completion is complete.** The next executable unit is
-**M1.1: BrowserRouter, layout, and sidebar navigation**.
+**M1.1 app shell navigation is complete.** The next executable unit is
+**M1.2: StateOverlay, ConfirmDialog, and navigation focus management**.
 
 ## Quick path
 
-1. Add the local shell and route map behind the completed repositories.
+1. Add M1.2 asynchronous state and confirmation primitives to the completed shell.
 2. Keep deterministic seed and restore behavior inside the local gateway.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
@@ -58,11 +58,11 @@ restore write validated deep copies through the atomic gateway.
 
 ### Then — M1 local shell and navigation
 
-- [ ] Add dashboard, invoices, income, suppliers, and categories routes without an auth guard.
-- [ ] Clearly label the product as local demo mode.
-- [ ] Cover loading, empty, error, success, focus, keyboard, and destructive-action confirmation states.
+- [x] Add dashboard, invoices, income, suppliers, categories, and settings routes without an auth guard.
+- [x] Clearly label the product as local demo mode.
+- [ ] Cover loading, empty, error, success, focus, keyboard, and destructive-action confirmation states in M1.2.
 
-**Exit criteria:** every local route is usable without a full reload or ambiguous placeholder state.
+**M1.1 exit criteria met:** every local route is usable without a full reload and uses an honest placeholder until its module milestone.
 
 ### Deferred — productization
 
