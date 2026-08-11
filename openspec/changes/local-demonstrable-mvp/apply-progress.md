@@ -86,8 +86,8 @@ new cases.
 
 Verification: focused local gateway/adapters 23/23; `npm run test:run` and
 `npm run test:coverage` 63 passed / 1 skipped; build, lint, and `git diff
---check` passed. Cumulative M0.3a diff from `cefedc1` is 688 changed lines,
-leaving 112 of 800.
+--check` passed. Cumulative M0.3a diff from `cefedc1` is 689 changed lines,
+leaving 111 of 800.
 
 ## Delivery boundary
 
