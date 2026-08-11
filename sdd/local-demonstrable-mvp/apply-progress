@@ -6,6 +6,7 @@
 - [x] M0.3a — LocalStateSchema, defensive atomic gateway, catalog local repositories, and persisted-envelope validation.
 - [x] M0.3b — Invoice/payment/daily-income adapters, seed data, and restore.
 - [x] M1.1 — BrowserRouter route map, accessible layout, and responsive sidebar navigation.
+- [x] M1.2 — StateOverlay, ConfirmDialog, skip-link, and route-heading focus management.
 
 ## Completed tasks
 
@@ -13,6 +14,7 @@
 - [x] 0.3a.1–0.3a.10: Gateway coverage, complete state schema, supplier/category/settings adapters, shared local test fixtures, and persisted-envelope validation.
 - [x] 0.3b.1–0.3b.11: Invoice/payment/daily-income adapters, deterministic seed data, atomic seed load/restore, and local contract verification.
 - [x] 1.1.1–1.1.8: BrowserRouter route map, module placeholders, Layout, Sidebar, application wiring, and navigation refactor verification.
+- [x] 1.2.1–1.2.7: Async state overlays, keyboard-safe confirmation dialog, route-heading focus, and skip-link focus jump.
 
 ## TDD Cycle Evidence
 
@@ -47,6 +49,13 @@ Historical execution order is not claimed where no commit-pinned run exists. The
 | 1.1.7 | `App.test.tsx` | Component | 3/3 existing App tests passed. | N/A — pure wiring. | 14/14 focused shell and App semantics passed. | Existing dashboard + new router paths. | App delegates common shell to Layout. |
 | 1.1.8 | Focused shell suite | Component | 14/14 focused tests passed. | N/A — verification-only. | 14/14 focused; 94 passed, 1 skipped full. | All M1.1 route/layout/sidebar behaviors. | CSS breakpoint matches 768px contract. |
 
+### M1.2 corrective gate TDD evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Skip-link traversal and activation evidence | `src/app/Layout.test.tsx` | Component | 10/10 focused M1.2 tests passed before this correction. | The causal Enter `keydown` assertion failed: focus remained on the skip link (9/10 focused). | 10/10 focused tests passed after the explicit Enter/Space handler. | `userEvent.setup()` + `await user.tab()` starts at `body` and reaches the first source-order focusable skip link; independent Enter and Space keydown paths both focus main; route navigation still focuses `h1`. | Extracted a named key handler; its click handler does not cancel the anchor default, preserving the native `href` behavior. |
+| ConfirmDialog disconnected-trigger evidence | `src/components/ConfirmDialog.test.tsx` | Component | Same 10/10 focused baseline. | Strengthened test passed on first run because the existing restoration guard already rejected detached triggers; no production correction was needed. | 10/10 focused tests passed with trigger focused before opening, removed before closure, and focus verified not to land on the disconnected element. | Confirm, cancel, Escape, controlled unmount, detached trigger, and forward/reverse Tab boundaries cover all closure paths. | Retained one effect for capture, dialog focus, and guarded cleanup restoration. |
+
 ## Validation contract
 
 `LocalStateGateway` validates settings, supplier/category, invoice/line, payment, and daily-income envelopes, their references, and invoice payment balance/status consistency. ISO calendar dates and UTC timestamps are checked strictly, so impossible values such as `2026-02-30` recover to empty state with `needs_seed`; valid ISO values remain `ready`. `loadSeed()` and `restore()` clone deterministic fake data and write it atomically. M1.1 adds BrowserRouter, accessible local-demo Layout, semantic NavLinks, responsive mobile navigation, and only honest module placeholders. No CRUD, provider, overlays, confirmation dialog, route-heading focus management, domain type, Supabase, or auth behavior was added.
@@ -61,11 +70,14 @@ Historical execution order is not claimed where no commit-pinned run exists. The
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 - M1.1 focused shell suite: 14/14 passed; full `npm run test:run`: 94 passed, 1 skipped.
 - M1.1 `npm run test:coverage`: 94 passed, 1 skipped; statements 91.35%, branches 82.05%, functions 93.54%, lines 98.16%; build and lint passed.
+- M1.2 focused suite: 10/10 passed; full `npm run test:run`: 107 passed, 1 skipped.
+- M1.2 `npm run test:coverage`: 107 passed, 1 skipped; statements 91.71%, branches 83.05%, functions 94.20%, lines 98.00%; build, lint, and `git diff --check` passed.
 
 ## Scope and delivery
 
-- M0.2, M0.3a, M0.3b, and M1.1 are complete; M1.2 remains next.
+- M0.2, M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next after gates.
 - Delivery is direct mainline per-milestone `size:exception`, hard ceiling 800 changed lines.
 - Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat cefedc1..HEAD` = 16 files, 679 insertions, 34 deletions, 713 changed lines, 87 remaining under 800.
 - Calendar conformance reproducer: at commit `38cbefa`, `npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts` → 1 file / 1 test passed (exit 0). It launches the committed gateway suite against an isolated test-only permissive-calendar mutation; the child suite exits non-zero and names `impossible invoice issue date`.
 - M0.3a remains pinned at `e278f21` and was not expanded except cohesive gateway seed/restore and its isolated mutant fixture. M0.3b has its own 800-line ceiling. No prior commit is amended or rewritten.
+- M1.2 corrective scope adds a pinned `@testing-library/user-event` development dependency, semantic Tab traversal, causal Enter/Space activation tests, and detached-trigger focus-restoration evidence only; no M2.1, provider, CRUD, Supabase, or auth behavior was added.

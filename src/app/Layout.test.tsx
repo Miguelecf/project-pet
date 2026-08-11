@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Layout } from './Layout'
@@ -24,7 +25,7 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Skip to main content' }).getAttribute('href')).toBe('#main-content')
   })
 
-  it('leaves initial focus at the document so the skip link remains first in keyboard traversal', () => {
+  it('reaches the skip link first when Tab starts from the document', async () => {
     render(
       <MemoryRouter>
         <Layout><h1>Example page</h1></Layout>
@@ -32,9 +33,11 @@ describe('Layout', () => {
     )
 
     const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    const user = userEvent.setup()
 
     expect(document.activeElement).toBe(document.body)
-    skipLink.focus()
+    await user.tab()
+
     expect(document.activeElement).toBe(skipLink)
     expect(skipLink.matches(':focus')).toBe(true)
     expect(skipLink.matches(':focus-visible')).toBe(true)
@@ -65,8 +68,6 @@ describe('Layout', () => {
     const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
     skipLink.focus()
     fireEvent.keyDown(skipLink, { key: 'Enter' })
-    // jsdom does not perform an anchor's native Enter-to-click default action.
-    fireEvent.click(skipLink)
 
     expect(document.activeElement).toBe(screen.getByRole('main'))
   })

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type KeyboardEvent, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 
@@ -30,21 +30,25 @@ export function Layout({ children }: LayoutProps) {
     mainContentRef.current?.focus()
   }
 
+  function handleSkipLinkKeyDown(event: KeyboardEvent<HTMLAnchorElement>) {
+    if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+      return
+    }
+
+    if (event.key !== 'Enter') {
+      event.preventDefault()
+    }
+
+    focusMainContent()
+  }
+
   return (
     <div className="app-shell">
       <a
         className="skip-link"
         href="#main-content"
-        onClick={(event) => {
-          event.preventDefault()
-          focusMainContent()
-        }}
-        onKeyDown={(event) => {
-          if (event.key === ' ' || event.key === 'Spacebar') {
-            event.preventDefault()
-            focusMainContent()
-          }
-        }}
+        onClick={focusMainContent}
+        onKeyDown={handleSkipLinkKeyDown}
       >
         Skip to main content
       </a>

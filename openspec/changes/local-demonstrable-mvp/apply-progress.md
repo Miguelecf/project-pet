@@ -71,14 +71,14 @@
 
 | Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
 |---|---|---|---|---|---|---|---|
-| Skip-link keyboard correction | `src/app/Layout.test.tsx` | Component | 5/5 focused Layout/Dialog tests passed. | 2/5 Layout tests failed: initial mount focused `h1`, and Space kept focus on the link. | 5/5 Layout tests passed. | Initial keyboard starting point, native Enter activation (explicit click because jsdom does not run anchor defaults), Space keydown, and post-navigation `h1` focus cover distinct paths. | Route focus runs only after a pathname change; Enter keeps native anchor semantics while Space uses the smallest explicit activation handler. |
-| ConfirmDialog restoration correction | `src/components/ConfirmDialog.test.tsx` | Component | Same 5/5 focused baseline. | 3/5 dialog tests failed: cancel and Escape did not restore focus, and an open dialog unmount was not covered. | 5/5 dialog tests passed. | Confirm, cancel, Escape, unmount with a connected trigger, disconnected-trigger safety, and forward/reverse Tab boundaries cover controlled closure paths. | One effect owns capture, focus, and cleanup restoration; restoration checks connected and focusable targets before focusing. |
+| Skip-link traversal and activation evidence | `src/app/Layout.test.tsx` | Component | 10/10 focused M1.2 tests passed before this correction. | The causal Enter `keydown` assertion failed: focus remained on the skip link (9/10 focused). | 10/10 focused tests passed after the explicit Enter/Space handler. | `userEvent.setup()` + `await user.tab()` starts at `body` and reaches the first source-order focusable skip link; independent Enter and Space keydown paths both focus main; route navigation still focuses `h1`. | Extracted a named key handler; its click handler does not cancel the anchor default, preserving the native `href` behavior. |
+| ConfirmDialog disconnected-trigger evidence | `src/components/ConfirmDialog.test.tsx` | Component | Same 10/10 focused baseline. | Strengthened test passed on first run because the existing restoration guard already rejected detached triggers; no production correction was needed. | 10/10 focused tests passed with trigger focused before opening, removed before closure, and focus verified not to land on the disconnected element. | Confirm, cancel, Escape, controlled unmount, detached trigger, and forward/reverse Tab boundaries cover all closure paths. | Retained one effect for capture, dialog focus, and guarded cleanup restoration. |
 
 ## Current verification
 
 - Focused M1.2 suite: 10/10 passed.
 - `npm run test:run`: 107 passed, 1 skipped.
-- `npm run test:coverage`: 107 passed, 1 skipped; statements 91.84%, branches 83.36%, functions 94.23%, lines 98.17%.
+- `npm run test:coverage`: 107 passed, 1 skipped; statements 91.71%, branches 83.05%, functions 94.20%, lines 98.00%.
 - `npm run build` and `npm run lint`: passed.
 - `git diff --check`: passed.
 
@@ -87,4 +87,5 @@
 - M0.2, M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next.
 - M1.2 adds only shell accessibility primitives; no CRUD, provider, repository, Supabase, or auth behavior.
 - No domain type, Supabase, or auth behavior was added.
+- `@testing-library/user-event` is pinned as a development dependency for real Tab traversal evidence.
 - Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.

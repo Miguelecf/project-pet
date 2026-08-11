@@ -137,11 +137,15 @@ describe('ConfirmDialog', () => {
   it('does not try to restore focus to a disconnected trigger', async () => {
     render(<RemovingTriggerHarness />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
+    const trigger = screen.getByRole('button', { name: 'Delete supplier' })
+    trigger.focus()
+    fireEvent.click(trigger)
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete supplier' }))
 
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(trigger.isConnected).toBe(false)
     expect(screen.queryByRole('button', { name: 'Delete supplier' })).toBeNull()
+    expect(document.activeElement).not.toBe(trigger)
     expect(document.activeElement).toBe(document.body)
   })
 })
