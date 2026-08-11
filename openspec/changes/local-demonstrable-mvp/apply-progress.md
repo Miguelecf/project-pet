@@ -91,7 +91,16 @@ coverage 92.83% statements, 84.66% branches, 96.96% functions, 97.73% lines;
 build, lint, and `git diff --check` passed. Current correction: gateway 21/21;
 focused local gateway/adapters 28/28; full/coverage 68 passed / 1 skipped;
 coverage 92.96% statements, 85.09% branches, 96.98% functions, 97.77% lines.
-Cumulative M0.3a churn is recalculated before commit.
+
+Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat
+cefedc1..HEAD` = 16 files, 679 insertions, 34 deletions, 713 changed lines, 87
+remaining under 800. Calendar conformance reproducer: at commit `38cbefa`,
+`npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts`
+→ 1 file / 1 test passed (exit 0). It launches the committed gateway suite
+against an isolated test-only permissive-calendar mutation; the child suite exits
+non-zero and names `impossible invoice issue date`. Current cumulative M0.3a
+(`cefedc1..38cbefa`): 17 files, 723 insertions, 34 deletions, 757 changed lines;
+43 remain under 800. No prior commit is amended or rewritten.
 
 ## Delivery boundary
 

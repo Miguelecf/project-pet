@@ -37,4 +37,6 @@ Historical execution order is not claimed where no commit-pinned run exists. The
 
 - M0.2 and M0.3a are complete; M0.3b remains pending.
 - Delivery is direct mainline per-milestone `size:exception`, hard ceiling 800 changed lines.
-- Cumulative M0.3a churn is recalculated before commit; no prior commit is amended or rewritten.
+- Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat cefedc1..HEAD` = 16 files, 679 insertions, 34 deletions, 713 changed lines, 87 remaining under 800.
+- Calendar conformance reproducer: at commit `38cbefa`, `npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts` → 1 file / 1 test passed (exit 0). It launches the committed gateway suite against an isolated test-only permissive-calendar mutation; the child suite exits non-zero and names `impossible invoice issue date`.
+- Current cumulative M0.3a (`cefedc1..38cbefa`): 17 files, 723 insertions, 34 deletions, 757 changed lines; 43 remain under 800. No prior commit is amended or rewritten.
