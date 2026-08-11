@@ -13,7 +13,12 @@ export function describeSettingsRepositoryContract(createFixture: () => Settings
       const { repository } = createFixture()
       const defaults = await repository.get()
 
-      expect(defaults).toMatchObject({ currency: 'USD', dueAlertDays: expect.any(Number) })
+      expect(defaults).toEqual({
+        currency: 'USD',
+        dueAlertDays: 7,
+        createdAt: '2026-08-10T00:00:00.000Z',
+        updatedAt: '2026-08-10T00:00:00.000Z',
+      })
       const saved = await repository.save({ currency: 'ARS', dueAlertDays: 10 as never })
       expect(saved).toMatchObject({ currency: 'ARS', dueAlertDays: 10 })
       expect(await repository.get()).toEqual(saved)

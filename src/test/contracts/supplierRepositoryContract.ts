@@ -8,10 +8,12 @@ export function describeSupplierRepositoryContract(createRepository: () => Suppl
       const created = await repository.create({ name: '  Demo Supplier A  ', defaultDueDays: null })
 
       expect(created).toMatchObject({ name: 'Demo Supplier A', normalizedName: 'demo supplier a', deletedAt: null })
+      expect(await repository.findAll()).toContainEqual(expect.objectContaining({ id: created.id }))
       expect(await repository.findById(created.id)).toEqual(created)
 
       const updated = await repository.update(created.id, { name: 'Demo Supplier B' })
       expect(updated).toMatchObject({ id: created.id, name: 'Demo Supplier B', normalizedName: 'demo supplier b' })
+      expect(await repository.findAll()).toContainEqual(expect.objectContaining({ id: created.id, name: 'Demo Supplier B' }))
 
       await repository.softDelete(created.id)
       expect(await repository.findAll()).not.toContainEqual(expect.objectContaining({ id: created.id }))

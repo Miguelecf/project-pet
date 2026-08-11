@@ -1,6 +1,7 @@
 # Executable Delivery Plan
 
-**M0.2 repository contracts is complete.** The next executable unit is **M0.3a: local persistence core and catalog adapters**.
+**M0.2 repository contracts is complete after its corrective contract gate.** The
+next executable unit remains **M0.3a: local persistence core and catalog adapters**.
 
 ## Quick path
 
@@ -29,8 +30,12 @@
 - [x] Create reusable, executable contract tests for local and future Supabase adapters.
 - [x] Verify domain contracts remain independent of React and infrastructure.
 - [x] Run focused contract tests plus tests, coverage, lint, and build; record the evidence in apply progress.
+- [x] Correct the M0.2 contract gate: real category invoice-line references,
+  complete settings defaults, persisted payment balance/status, and observable CRUD lists.
 
-**Exit criteria:** UI-facing code depends only on module repositories/services, and the adapter contract suite can be executed against each implementation.
+**Exit criteria:** UI-facing code depends only on module repositories/services, and
+the adapter contract suite can be executed against each implementation. M0.3 has
+not started.
 
 ### Next — M0.3a local persistence core and catalog adapters
 

@@ -4,7 +4,7 @@ import type { InvoiceRepository } from '../../modules/invoices/InvoiceRepository
 import type { PaymentRepository } from '../../modules/invoices/PaymentRepository'
 import type { SettingsRepository } from '../../modules/settings/SettingsRepository'
 import type { SupplierRepository } from '../../modules/suppliers/SupplierRepository'
-import type { ActivePayment, Category, DailyIncome, Invoice, InvoiceId, InvoiceLine, Settings, Supplier, VoidedPayment } from '../../types/domain'
+import type { ActivePayment, Category, DailyIncome, Invoice, InvoiceId, InvoiceLine, InvoiceStatus, MoneyMinor, Settings, Supplier, VoidedPayment } from '../../types/domain'
 import type { CategoryContractFixture } from './categoryRepositoryContract'
 import type { InvoiceContractFixture } from './invoiceRepositoryContract'
 import type { PaymentContractFixture } from './paymentRepositoryContract'
@@ -27,7 +27,6 @@ export function createInMemoryContractFixtures(): {
   const next = (kind: string) => `${kind}-${++sequence}` as never
   const suppliers = new Map<string, Supplier>()
   const categories = new Map<string, Category>()
-  const referencedCategories = new Set<string>()
   const invoices = new Map<string, Invoice>()
   const lines = new Map<string, readonly InvoiceLine[]>()
   const payments = new Map<string, ActivePayment | VoidedPayment>()
@@ -62,8 +61,8 @@ export function createInMemoryContractFixtures(): {
       categories.set(category.id, category); return category
     },
     async update(id, { name }) { const item = categories.get(id); if (!item) throw new Error('category not found'); const trimmed = name.trim(); const normalizedName = trimmed.toLowerCase(); if ([...categories.values()].some((other) => other.id !== id && other.normalizedName === normalizedName)) throw new Error('duplicate category'); const updated = { ...item, name: trimmed, normalizedName, updatedAt: now }; categories.set(id, updated); return updated },
-    async delete(id) { if (referencedCategories.has(id)) throw new Error('category is referenced'); if (!categories.delete(id)) throw new Error('category not found') },
-    async isReferenced(id) { return referencedCategories.has(id) ? 1 : 0 },
+    async delete(id) { if (await categoryRepository.isReferenced(id)) throw new Error('category is referenced'); if (!categories.delete(id)) throw new Error('category not found') },
+    async isReferenced(id) { return [...lines.values()].flat().some((line) => line.categoryId === id) ? 1 : 0 },
   }
 
   const settingsRepository: SettingsRepository = {
@@ -92,14 +91,28 @@ export function createInMemoryContractFixtures(): {
 
   const paymentRepository: PaymentRepository = {
     async findByInvoice(invoiceId) { return [...payments.values()].filter((payment) => payment.invoiceId === invoiceId) },
+    async getBalance(invoiceId) { return getPaymentBalance(invoiceId) },
     async register(input) {
       const invoice = invoices.get(input.invoiceId); if (!invoice) throw new Error('invoice not found')
-      const paid = [...payments.values()].filter((payment) => payment.invoiceId === input.invoiceId && !payment.isVoid).reduce((sum, payment) => sum + (payment.amountMinor as number), 0)
-      if (paid + (input.amountMinor as number) > (invoice.totalMinor as number)) throw new Error('overpayment')
+      const balance = getPaymentBalance(input.invoiceId)
+      if ((input.amountMinor as number) > (balance.remainingMinor as number)) throw new Error('overpayment')
       const payment = { id: next('payment'), ...input, isVoid: false, voidedAt: null, voidReason: null, createdAt: now } as ActivePayment
-      payments.set(payment.id, payment); return payment
+      payments.set(payment.id, payment); updateInvoicePaymentStatus(invoice.id); return payment
     },
-    async void(id, reason) { const payment = payments.get(id); if (!payment || payment.isVoid) throw new Error('payment not found'); const voided = { ...payment, isVoid: true, voidedAt: now, voidReason: reason as never } as VoidedPayment; payments.set(id, voided); return voided },
+    async void(id, reason) { const payment = payments.get(id); if (!payment || payment.isVoid) throw new Error('payment not found'); const voided = { ...payment, isVoid: true, voidedAt: now, voidReason: reason as never } as VoidedPayment; payments.set(id, voided); updateInvoicePaymentStatus(payment.invoiceId); return voided },
+  }
+
+  function getPaymentBalance(invoiceId: InvoiceId): { readonly remainingMinor: MoneyMinor; readonly status: InvoiceStatus } {
+    const invoice = invoices.get(invoiceId); if (!invoice) throw new Error('invoice not found')
+    const paid = [...payments.values()].filter((payment) => payment.invoiceId === invoiceId && !payment.isVoid).reduce((sum, payment) => sum + (payment.amountMinor as number), 0)
+    const remainingMinor = ((invoice.totalMinor as number) - paid) as never
+    return { remainingMinor, status: paid === 0 ? 'pending' : remainingMinor === 0 ? 'paid' : 'partially_paid' }
+  }
+
+  function updateInvoicePaymentStatus(invoiceId: InvoiceId) {
+    const invoice = invoices.get(invoiceId); if (!invoice) throw new Error('invoice not found')
+    const { status } = getPaymentBalance(invoiceId)
+    invoices.set(invoiceId, { ...invoice, status, updatedAt: now })
   }
 
   const dailyIncomeRepository: DailyIncomeRepository = {
@@ -112,17 +125,26 @@ export function createInMemoryContractFixtures(): {
 
   return {
     suppliers: supplierRepository,
-    categories: { repository: categoryRepository, async createReference(id) { referencedCategories.add(id) } },
+    categories: {
+      repository: categoryRepository,
+      async createInvoiceLineReference(categoryId) {
+        await invoiceRepository.create({ supplierId: 'supplier-1' as never, docRef: null, issueDate: '2026-08-10' as never, dueDate: null, currency: 'USD', notes: null, lines: [{ categoryId, productRef: 'category fixture', externalSku: null, description: 'Category reference fixture', quantity: 1 as never, unitCostMinor: 1000 as never }] })
+      },
+    },
     settings: {
       repository: settingsRepository,
-      async recordInvoice() { invoices.set(next('settings-invoice'), { id: next('invoice'), supplierId: 'supplier-1' as never, docRef: null, issueDate: '2026-08-10' as never, dueDate: null, currency: currentSettings.currency, totalMinor: 1 as never, status: 'pending', notes: null, deletedAt: null, createdAt: now, updatedAt: now } as Invoice) },
-      async recordDailyIncome() { incomes.set(next('settings-income'), { id: next('income'), saleDate: '2026-08-10' as never, amountMinor: 1 as never, currency: currentSettings.currency, note: null, createdAt: now, updatedAt: now } as DailyIncome) },
+      async recordInvoice() {
+        await invoiceRepository.create({ supplierId: 'supplier-1' as never, docRef: null, issueDate: '2026-08-10' as never, dueDate: null, currency: currentSettings.currency, notes: null, lines: [{ categoryId: 'category-1' as never, productRef: 'settings fixture', externalSku: null, description: 'Settings invoice fixture', quantity: 1 as never, unitCostMinor: 1 as never }] })
+      },
+      async recordDailyIncome() {
+        await dailyIncomeRepository.create({ saleDate: '2026-08-10' as never, amountMinor: 1 as never, note: 'Settings income fixture' })
+      },
     },
     invoices: { repository: invoiceRepository, failNextUpdate() { failNextInvoiceUpdate = true } },
     payments: {
       repository: paymentRepository,
+      invoiceRepository,
       async createInvoice(totalMinor) { return (await invoiceRepository.create({ supplierId: 'supplier-1' as never, docRef: null, issueDate: '2026-08-10' as never, dueDate: null, currency: 'USD', notes: null, lines: [{ categoryId: 'category-1' as never, productRef: 'payment fixture', externalSku: null, description: 'Payment fixture', quantity: 1 as never, unitCostMinor: totalMinor }] })).invoice.id },
-      async getBalance(invoiceId) { const invoice = invoices.get(invoiceId); if (!invoice) throw new Error('invoice not found'); const paid = [...payments.values()].filter((payment) => payment.invoiceId === invoiceId && !payment.isVoid).reduce((sum, payment) => sum + (payment.amountMinor as number), 0); const remainingMinor = ((invoice.totalMinor as number) - paid) as never; return { remainingMinor, status: paid === 0 ? 'pending' : paid === (invoice.totalMinor as number) ? 'paid' : 'partially_paid' } },
     },
     dailyIncome: dailyIncomeRepository,
   }

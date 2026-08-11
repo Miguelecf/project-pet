@@ -52,6 +52,11 @@ Revert in this exact order: GMVP → Q5 → Q4 → Q3 → Q2 → M4.3 → M4.2 �
 - [x] 0.2.12 GREEN: Create `src/modules/daily-income/DailyIncomeRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`.
 - [x] 0.2.13 REFACTOR: Verify no `CrudRepository<T>` or `BaseRepository` exists. Confirm interface segregation per spec.
 
+**Corrective gate record:** all M0.2 contract tasks remain complete. The
+discoverable suites additionally prove real category invoice-line references,
+complete deterministic Settings defaults, persisted payment balance/status, and
+observable CRUD/list/delete/restore behavior. M0.3 remains pending.
+
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
 **Commit**: `feat(persistence): versioned localStorage gateway, seed, and catalog local repos — M0.3a`

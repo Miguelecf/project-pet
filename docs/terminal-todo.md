@@ -9,7 +9,7 @@
 
 ## Foundation
 
-- [x] **M0.2** — Async per-module repository interfaces + executable contract test suites (~400 lines)
+- [x] **M0.2** — Async per-module repository interfaces + executable contract test suites (corrective gate complete; `size:exception` approved)
 - [ ] **M0.3a** — Versioned localStorage gateway + seed + catalog local repos (~500 lines)
 - [ ] **M0.3b** — Invoice/payment/daily-income local repos + seed data + restore (~620 lines)
 

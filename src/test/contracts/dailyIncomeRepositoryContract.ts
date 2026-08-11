@@ -8,8 +8,11 @@ export function describeDailyIncomeRepositoryContract(createRepository: () => Da
       const created = await repository.create({ saleDate: '2026-08-10' as never, amountMinor: 1000 as never, note: 'Demo income' })
 
       expect(created).toMatchObject({ amountMinor: 1000, note: 'Demo income' })
+      expect(await repository.findAll()).toContainEqual(expect.objectContaining({ id: created.id }))
       expect(await repository.findById(created.id)).toEqual(created)
-      expect(await repository.update(created.id, { saleDate: '2026-08-09' as never, amountMinor: 2000 as never, note: null })).toMatchObject({ amountMinor: 2000, note: null })
+      const updated = await repository.update(created.id, { saleDate: '2026-08-09' as never, amountMinor: 2000 as never, note: null })
+      expect(updated).toMatchObject({ amountMinor: 2000, note: null })
+      expect(await repository.findAll()).toContainEqual(expect.objectContaining({ id: created.id, amountMinor: 2000, note: null }))
 
       await repository.delete(created.id)
       expect(await repository.findAll()).not.toContainEqual(expect.objectContaining({ id: created.id }))
