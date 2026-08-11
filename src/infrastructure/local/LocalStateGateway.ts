@@ -133,10 +133,24 @@ function isOneOf(value: unknown, allowed: readonly string[]): boolean { return t
 function isPositiveInteger(value: unknown): boolean { return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }
 function isNonNegativeInteger(value: unknown): boolean { return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 }
 function isQuantity(value: unknown): boolean { return typeof value === 'number' && Number.isFinite(value) && value > 0 && Math.round(value * 1000) === value * 1000 }
-function isTimestamp(value: unknown): boolean { return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value) && !Number.isNaN(Date.parse(value)) }
+function isTimestamp(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{3})?Z$/.exec(value)
+  return match !== null && isCalendarDate(match[1], match[2], match[3]) && Number(match[4]) < 24 && Number(match[5]) < 60 && Number(match[6]) < 60
+}
 function isNullableDate(value: unknown): boolean { return value === null || isDate(value) }
 function isPastOrTodayDate(value: unknown): boolean { return isDate(value) && value <= new Date().toISOString().slice(0, 10) }
-function isDate(value: unknown): value is string { return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) }
+function isDate(value: unknown): value is string {
+  if (typeof value !== 'string') return false
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  return match !== null && isCalendarDate(match[1], match[2], match[3])
+}
+function isCalendarDate(yearText: string, monthText: string, dayText: string): boolean {
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  return month >= 1 && month <= 12 && day >= 1 && day <= new Date(Date.UTC(year, month, 0)).getUTCDate()
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)

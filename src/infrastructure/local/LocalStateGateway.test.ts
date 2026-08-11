@@ -70,6 +70,11 @@ describe('LocalStateGateway', () => {
     ['invoice line relationship', (state: ReturnType<typeof createValidPersistedState>) => { state.invoiceLines[0].categoryId = 'missing-category' }],
     ['payment union', (state: ReturnType<typeof createValidPersistedState>) => { state.payments[0].isVoid = true }],
     ['daily income non-future date', (state: ReturnType<typeof createValidPersistedState>) => { state.dailyIncomes[0].saleDate = '2999-01-01' }],
+    ['impossible invoice issue date', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].issueDate = '2026-02-30' }],
+    ['impossible invoice due date', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].dueDate = '2026-02-30' }],
+    ['impossible payment date', (state: ReturnType<typeof createValidPersistedState>) => { state.payments[0].paymentDate = '2026-02-30' }],
+    ['impossible daily income sale date', (state: ReturnType<typeof createValidPersistedState>) => { state.dailyIncomes[0].saleDate = '2026-02-30' }],
+    ['impossible entity timestamp', (state: ReturnType<typeof createValidPersistedState>) => { state.categories[0].updatedAt = '2026-02-30T00:00:00.000Z' }],
   ])('degrades malformed parseable %s records to seed-needed state', (_, mutate) => {
     const storage = new MemoryStorage()
     const persisted = createValidPersistedState()

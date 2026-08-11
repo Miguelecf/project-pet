@@ -83,11 +83,15 @@ new cases.
 | Payment union | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Union predicate extracted. |
 | Daily-income future date | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Date predicate extracted. |
 | Existing M0.3a gateway guarantees | Safety net above → 9/9 passed. | Gateway command → 16/16 passed; missing/malformed/version mismatch, clone, one `setItem`, failed write, and invalid candidate remain covered. | Existing atomic write path retained. |
+| Strict calendar validation | Gateway 16/16 safety net. | Gateway command → 5 failed / 16 passed: impossible invoice issue/due, payment, sale, and entity-timestamp dates were `ready`. | Gateway command → 21/21 passed; impossible dates recover empty/`needs_seed`. | Shared strict calendar predicate replaces regex + `Date.parse`. |
 
-Verification: focused local gateway/adapters 23/23; `npm run test:run` and
-`npm run test:coverage` 63 passed / 1 skipped; build, lint, and `git diff
---check` passed. Cumulative M0.3a diff from `cefedc1` is 689 changed lines,
-leaving 111 of 800.
+Historical corrected evidence: gateway 16/16; focused local gateway/adapters
+23/23; `npm run test:run` and `npm run test:coverage` 63 passed / 1 skipped;
+coverage 92.83% statements, 84.66% branches, 96.96% functions, 97.73% lines;
+build, lint, and `git diff --check` passed. Current correction: gateway 21/21;
+focused local gateway/adapters 28/28; full/coverage 68 passed / 1 skipped;
+coverage 92.96% statements, 85.09% branches, 96.98% functions, 97.77% lines.
+Cumulative M0.3a churn is recalculated before commit.
 
 ## Delivery boundary
 

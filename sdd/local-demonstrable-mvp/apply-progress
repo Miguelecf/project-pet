@@ -3,37 +3,38 @@
 ## Completed milestones
 
 - [x] M0.2 — Async repository contracts and executable conformance suites.
-- [x] M0.3a — LocalStateSchema, defensive atomic gateway, and catalog local repositories.
+- [x] M0.3a — LocalStateSchema, defensive atomic gateway, catalog local repositories, and persisted-envelope validation.
+- [ ] M0.3b — Invoice/payment/daily-income adapters, seed data, and restore.
 
 ## Completed tasks
 
 - [x] 0.2.1–0.2.13: Async module contracts, reusable suites, and corrective conformance harness.
-- [x] 0.3a.1–0.3a.10: Gateway coverage, complete state schema, supplier/category/settings adapters, and shared local test fixtures.
+- [x] 0.3a.1–0.3a.10: Gateway coverage, complete state schema, supplier/category/settings adapters, shared local test fixtures, and persisted-envelope validation.
 
 ## TDD Cycle Evidence
 
-| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
-|---|---|---|---|---|---|---|---|
-| 0.3a.1 | `LocalStateGateway.test.ts` | Unit | N/A (new) | Missing module failed | 9 gateway cases passed | Missing, malformed, mismatch, write failure, invalid envelope | Clean |
-| 0.3a.2 | `LocalStateGateway.test.ts` | Unit | N/A (new) | Missing module failed | Schema key/envelope tests passed | Valid and invalid envelopes | Clean |
-| 0.3a.3 | `LocalStateGateway.test.ts` | Unit | N/A (new) | Missing module failed | 9 gateway cases passed | Read and write recovery paths | Removed redundant write catch |
-| 0.3a.4 | `LocalSupplierRepository.test.ts` | Unit | N/A (new) | Missing module failed | 2 contract cases passed | CRUD and duplicate-name paths | Shared fixture extraction |
-| 0.3a.5 | `LocalSupplierRepository.test.ts` | Unit | N/A (new) | Missing module failed | 2 contract cases passed | Active/list and soft-delete paths | Shared fixture extraction |
-| 0.3a.6 | `LocalCategoryRepository.test.ts` | Unit | N/A (new) | Missing module failed | 3 contract cases passed | Delete/list and referenced category paths | Shared fixture extraction |
-| 0.3a.7 | `LocalCategoryRepository.test.ts` | Unit | N/A (new) | Missing module failed | 3 contract cases passed | Duplicate, delete, and reference count paths | Shared fixture extraction |
-| 0.3a.8 | `LocalSettingsRepository.test.ts` | Unit | N/A (new) | Missing module failed | 2 contract cases passed | Invoice and daily-income currency locks | Shared fixture extraction |
-| 0.3a.9 | `LocalSettingsRepository.test.ts` | Unit | N/A (new) | Missing module failed | 2 contract cases passed | Default/save and two financial-record paths | Shared fixture extraction |
-| 0.3a.10 | `LocalRepositoryTestFixtures.ts` | Unit | 15 focused tests passing | N/A (test-only refactor) | 16 focused tests passed | Shared storage and clock reused by three suites | Extracted fixture helpers |
+Historical execution order is not claimed where no commit-pinned run exists. The corrective cycles below retain reproducible RED/GREEN evidence.
+
+| Behavior | Safety net | RED | GREEN | REFACTOR |
+|---|---|---|---|---|
+| M0.3a envelope validation | Gateway 9/9 | 7 failed / 9 passed; malformed parseable records were `ready`. | 16/16 passed; invalid envelopes recover empty/`needs_seed`. | Focused predicates extracted. |
+| Strict calendar validation | Gateway 16/16 | 5 failed / 16 passed for impossible invoice issue/due, payment, sale, and entity-timestamp dates. | 21/21 passed; valid ISO values and future-date rules retained. | Shared calendar predicate replaces regex + `Date.parse`. |
+| M0.3a gateway/adapters | 23/23 prior focused suite | Historical order not claimed. | Current focused suite 28/28 passed. | Existing atomic write and fixture patterns retained. |
+
+## Validation contract
+
+`LocalStateGateway` validates settings, supplier/category, invoice/line, payment, and daily-income envelopes and their references. ISO calendar dates and UTC timestamps are checked strictly, so impossible values such as `2026-02-30` recover to empty state with `needs_seed`; valid ISO values remain `ready`. No seed/loadSeed/restore, M0.3b adapter, UI, domain type, Supabase, or auth behavior was added.
 
 ## Verification
 
-- Focused local adapter contracts and gateway: 16 passed.
-- `npm run test:run`: 56 passed, 1 skipped.
-- `npm run test:coverage`: 56 passed, 1 skipped; statements 92.41%, branches 76.56%, functions 96.42%, lines 97.49%.
+- Historical corrected evidence: gateway 16/16; focused gateway/adapters 23/23; full/coverage 63 passed, 1 skipped; statements 92.83%, branches 84.66%, functions 96.96%, lines 97.73%; build/lint/diff-check passed.
+- Current correction: gateway 21/21; focused gateway/adapters 28/28.
+- `npm run test:run`: 68 passed, 1 skipped.
+- `npm run test:coverage`: 68 passed, 1 skipped; statements 92.96%, branches 85.09%, functions 96.98%, lines 97.77%.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 
 ## Scope and delivery
 
-- M0.3a contains no seed data, `loadSeed`, `restore`, invoice/payment/daily-income adapters, UI/provider/router, domain changes, Supabase changes, or auth changes.
-- Previous M0.2 apply progress is retained above; M0.3b remains pending.
-- Delivery: accepted per-milestone `size:exception`, with the hard 800 changed-line ceiling.
+- M0.2 and M0.3a are complete; M0.3b remains pending.
+- Delivery is direct mainline per-milestone `size:exception`, hard ceiling 800 changed lines.
+- Cumulative M0.3a churn is recalculated before commit; no prior commit is amended or rewritten.
