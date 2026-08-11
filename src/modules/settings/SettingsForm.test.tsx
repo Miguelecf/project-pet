@@ -37,6 +37,18 @@ describe('SettingsForm', () => {
     expect(onSave).toHaveBeenCalledWith({ currency: 'ARS', dueAlertDays: 7 })
   })
 
+  it('preserves an in-progress edit when a stale settings refresh re-renders the form', async () => {
+    const onSave = vi.fn(async () => undefined)
+    const { rerender } = render(<SettingsForm onSave={onSave} settings={settings} />)
+
+    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
+    fireEvent.change(screen.getByLabelText('Due alert days'), { target: { value: '10' } })
+    rerender(<SettingsForm onSave={onSave} settings={{ ...settings }} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith({ currency: 'ARS', dueAlertDays: 10 }))
+  })
+
   it('uses a fallback error when save rejects with a non-Error value', async () => {
     const onSave = vi.fn(async () => { throw 'offline' })
     render(<SettingsForm onSave={onSave} settings={settings} />)

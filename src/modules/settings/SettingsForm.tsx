@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { Currency, Settings } from '../../types/domain'
 import type { SaveSettingsInput } from './SettingsRepository'
 
@@ -11,11 +11,6 @@ export function SettingsForm({ onSave, settings }: SettingsFormProps) {
   const [currency, setCurrency] = useState<Currency>(settings.currency)
   const [dueAlertDays, setDueAlertDays] = useState(String(settings.dueAlertDays))
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    setCurrency(settings.currency)
-    setDueAlertDays(String(settings.dueAlertDays))
-  }, [settings])
 
   async function save() {
     const parsedDueAlertDays = Number(dueAlertDays)

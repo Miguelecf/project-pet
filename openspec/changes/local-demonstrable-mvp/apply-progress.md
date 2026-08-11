@@ -200,4 +200,30 @@
 - `npm run test:coverage`: 225 passed, 1 skipped; coverage 93.43% statements, 86.24% branches, 95.97% functions, 98.10% lines.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.
 
+## M3.1 settings gate-stability correction — complete
+
+### First-failure root cause
+
+`SettingsPage.test.tsx:29` was not sharing `localStorage`: every test creates its
+own `MemoryStorage` and `LocalStateGateway`. The intermittent state loss came from
+`SettingsForm` itself. Its `useEffect` copied every new `settings` prop object into
+local form state. A stale settings refresh (including the revision-triggered refresh
+after save) could therefore overwrite a just-selected `ARS` value with the prior
+`USD` prop before submit. The repository then correctly persisted that overwritten
+`USD` input, producing the observed `expected ARS, received USD` failure.
+
+### Corrective TDD evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| M3.1 gate stability | `src/modules/settings/SettingsForm.test.tsx` | Component | `SettingsPage.test.tsx` 4/4 passed before the corrective test; repeated focused run reproduced the original failure after 24 passes. | A stale-prop `rerender` test failed deterministically: save received `{ currency: 'USD', dueAlertDays: 7 }` instead of `{ currency: 'ARS', dueAlertDays: 10 }`. | 4/4 form tests and 4/4 page tests passed after removing the prop-to-local-state synchronization effect. | The regression forces the stale-refresh path; the page test proves save/reload through an isolated real gateway. | Form state is initialized once per mount, so a refresh cannot clobber an active edit; no finance behavior changed. |
+
+### Stable rerun evidence
+
+- Before the correction, 30 sequential focused `SettingsPage` invocations reproduced the failure once (run 25): `SettingsPage.test.tsx:29` received persisted `USD` while `dueAlertDays` was 10.
+- After the correction, 30 sequential focused `SettingsPage` invocations passed: 4/4 each, with no shared-storage or module-global state.
+- Sequential gate run 1: focused SettingsPage 4/4; `npm run test:run` 226 passed, 1 skipped; two consecutive `npm run test:coverage` runs each 226 passed, 1 skipped (93.41% statements, 86.24% branches, 95.96% functions, 98.09% lines); build, lint, and diff check passed.
+- Sequential gate run 2: focused SettingsPage 4/4; `npm run test:run` 226 passed, 1 skipped; `npm run test:coverage` 226 passed, 1 skipped with the same metrics; build, lint, and diff check passed.
+- M3.1 remains complete; M3.2 remains the only next, unstarted milestone.
+
 **Next:** M3.2 is next and remains unstarted.
