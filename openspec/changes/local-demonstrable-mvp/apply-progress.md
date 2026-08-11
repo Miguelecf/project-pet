@@ -12,6 +12,7 @@
 - [x] M2.3 — Settings CRUD routes/forms and currency-lock enforcement.
 - [x] G2-LOCAL — Catalog reachable branch-coverage gate.
 - [x] M3.1 — Pure financial calculations, dates, and validation utilities.
+- [x] M3.2 — Revision-aware invoice create/edit forms and line editor.
 
 ## Completed tasks
 
@@ -25,6 +26,7 @@
 - [x] 2.3.1–2.3.7: Revision-aware settings loading, validated ARS/USD and due-alert saves, currency-lock errors, accessible form controls, and persistence reload.
 - [x] G2.1–G2.3: Catalog coverage review, meaningful reachable-path tests, documented per-module threshold, and sequential gate verification.
 - [x] 3.1.1–3.1.9: Table-driven pure finance/date/validation tests, deterministic safe-integer calculations, strict injected-clock date validation, and refactor verification.
+- [x] 3.2.1–3.2.7: Revision-aware invoices hook, accessible create/edit form, pure-finance line editor, route wiring, and active-payment edit block.
 
 ## TDD cycle evidence
 
@@ -226,4 +228,25 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 - Sequential gate run 2: focused SettingsPage 4/4; `npm run test:run` 226 passed, 1 skipped; `npm run test:coverage` 226 passed, 1 skipped with the same metrics; build, lint, and diff check passed.
 - M3.1 remains complete; M3.2 remains the only next, unstarted milestone.
 
-**Next:** M3.2 is next and remains unstarted.
+**Historical next marker:** M3.2 followed the M3.1 correction.
+
+## M3.2 verification — complete
+
+- [x] 3.2.1–3.2.7 completed with real `RepositoryProvider` local adapters in production paths; no direct `localStorage` or Supabase imports entered invoice UI.
+- Create validates supplier/category IDs, required product reference and description, optional external SKU, at least one line, positive quantity with at most three decimals, integer non-negative minor-unit cost, and non-future issue date. Due dates remain future-capable.
+- `InvoiceLineEditor` displays totals using the M3.1 pure finance utility. Edit routes load existing invoice lines and disable every mutation control when an active payment exists.
+
+### M3.2 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.2.1–3.2.2 | `src/modules/invoices/useInvoices.test.tsx` | Component | N/A (new) | Missing `useInvoices` module; suite collected 0 tests. | 3/3 hook scenarios passed. | Loading/data, error/retry, and provider-revision refetch use distinct repository outcomes. | Memoized repository callbacks prevent route-loading effects from rerunning needlessly. |
+| 3.2.3–3.2.4 | `src/modules/invoices/InvoiceForm.test.tsx` | Component | N/A (new) | Missing `InvoiceForm` module; suite collected 0 tests. | 3/3 form scenarios passed. | Valid local create, no-line and quantity/date/cost rejections, successful edit, and active-payment block cover distinct paths. | Form derives repository input from validated drafts and delegates line totals to the editor. |
+| 3.2.5–3.2.6 | `src/modules/invoices/InvoiceLineEditor.test.tsx` | Component | N/A (new) | Missing `InvoiceLineEditor` module; suite collected 0 tests. | 3/3 editor scenarios passed. | Dynamic add/remove, category selection/total, and precision/cost validation cover separate paths. | Controlled drafts keep editing and total calculation independent of persistence. |
+| 3.2.7 | `src/modules/invoices/InvoiceForm.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 22/22 focused invoice/router tests passed. | Added disabled-control assertion; it failed because active-payment edit blocking did not disable line fields. | 23/23 focused invoice/router scenarios passed after the editor received the disabled state. | Form plus real seeded create/edit route exercise provider-backed loading and active-payment protection. | No further refactor required. |
+
+## M3.2 scope and next
+
+- Invoice list/detail pages and payment UI remain deferred to M3.3/M3.4; `/invoices/*` retains its placeholder except for `/invoices/new` and `/invoices/:id/edit`.
+- Focused invoice/router suite: 23/23 passed. Full suite: 236 passed, 1 skipped. Coverage: 92.97% statements, 85.52% branches, 94.41% functions, and 97.66% lines. Build, lint, and diff check passed sequentially.
+- **Next:** M3.3 invoice list and detail pages.

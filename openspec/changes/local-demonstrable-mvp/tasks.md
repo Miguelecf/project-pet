@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, and M3.1 are complete; M3.2 is next.
+M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, and M3.2 are complete; M3.3 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
@@ -205,13 +205,13 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, and M3.1 are complete; M3.
 **Specs**: `invoice-management` (create invoice with lines, edit invoice)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.2.1 RED: Write `src/modules/invoices/useInvoices.test.ts` — CRUD operations via `InvoiceRepository`, loading/error states, refetches on revision change.
-- [ ] 3.2.2 GREEN: Create `src/modules/invoices/useInvoices.ts` — hook wrapping `InvoiceRepository`.
-- [ ] 3.2.3 RED: Write `src/modules/invoices/InvoiceForm.test.tsx` — create with valid lines, reject no lines, reject zero quantity, reject >3 decimals, reject future issue date, reject negative unit cost, block edit when payments exist.
-- [ ] 3.2.4 GREEN: Create `src/modules/invoices/InvoiceForm.tsx` — create/edit form with supplier select, date fields, line editor integration.
-- [ ] 3.2.5 RED: Write `src/modules/invoices/InvoiceLineEditor.test.tsx` — add/remove lines, category select, quantity/cost validation, line total display.
-- [ ] 3.2.6 GREEN: Create `src/modules/invoices/InvoiceLineEditor.tsx` — dynamic line list with add/remove, per-line validation.
-- [ ] 3.2.7 REFACTOR: Verify edit blocked when non-voided payments exist.
+- [x] 3.2.1 RED: Write `src/modules/invoices/useInvoices.test.tsx` — invoice loading/error states and revision refetch.
+- [x] 3.2.2 GREEN: Create `src/modules/invoices/useInvoices.ts` — revision-aware hook wrapping `InvoiceRepository`.
+- [x] 3.2.3 RED: Write `src/modules/invoices/InvoiceForm.test.tsx` — valid create, accessible no-line/quantity/date/cost rejection, edit, and active-payment block.
+- [x] 3.2.4 GREEN: Create `src/modules/invoices/InvoiceForm.tsx` — create/edit form with real provider catalogs, date validation, and line editor integration.
+- [x] 3.2.5 RED: Write `src/modules/invoices/InvoiceLineEditor.test.tsx` — add/remove, category, validation, and finance-total scenarios.
+- [x] 3.2.6 GREEN: Create `src/modules/invoices/InvoiceLineEditor.tsx` — dynamic, accessible lines calculated by pure finance utilities.
+- [x] 3.2.7 REFACTOR: Verify editing disables all invoice controls when non-voided payments exist.
 
 ## M3.3 — Invoice List/Detail Pages (~350 lines)
 

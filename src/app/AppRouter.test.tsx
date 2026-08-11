@@ -106,4 +106,17 @@ describe('AppRouter', () => {
     expect((await screen.findByRole('heading', { level: 1, name: 'Create category' })).textContent).toBe('Create category')
     expect(window.location.pathname).toBe('/categories/new')
   })
+
+  it('wires create and edit invoice routes without implementing the deferred list or detail pages', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/invoices/new')
+    const { unmount } = render(<AppRouter />)
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Create invoice' })).textContent).toBe('Create invoice')
+    unmount()
+    window.history.replaceState({}, '', '/invoices/demo-invoice-pending/edit')
+    render(<AppRouter />)
+    expect((await screen.findByRole('heading', { level: 1, name: 'Edit invoice' })).textContent).toBe('Edit invoice')
+    expect((screen.getByLabelText('Product reference') as HTMLInputElement).value).toBe('DEMO-PENDING')
+  })
 })

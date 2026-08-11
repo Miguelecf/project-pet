@@ -1,14 +1,14 @@
 # Executable Delivery Plan
 
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
-protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, and
-M3.1 pure financial rules are complete.** The next executable unit is **M3.2:
-invoice create/edit form and line editor**.
+protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
+pure financial rules, and M3.2 invoice create/edit forms are complete.** The
+next executable unit is **M3.3: invoice list and detail pages**.
 
 ## Quick path
 
-1. Begin M3.2 with RED tests for invoice creation/editing and line editing.
-2. Reuse M3.1 pure validation, date, and financial functions; do not duplicate their rules.
+1. Begin M3.3 with RED tests for invoice list, detail, and status display.
+2. Reuse M3.2 invoice hooks and forms; do not duplicate financial rules.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -119,6 +119,17 @@ reachable branch-coverage threshold; M3.1 may proceed.
 **M3.1 exit criteria met:** pure dependency-free utilities provide deterministic
 financial calculations and runtime validation without React, storage, adapters,
 or remote dependencies.
+
+### Completed — M3.2 invoice create and edit forms
+
+- [x] Load invoices through a revision-aware repository hook and route only create/edit forms.
+- [x] Create invoices with supplier/category IDs, required product references and descriptions, optional external SKU, and at least one valid line.
+- [x] Reuse pure M3.1 quantity, minor-unit, date, and finance calculations for accessible validation and line totals.
+- [x] Block and disable editing whenever a non-voided payment exists; keep list/detail/payment UI deferred.
+
+**M3.2 exit criteria met:** the real local provider supplies form catalogs and
+repositories; create/edit inputs are validated before persistence and active
+payments prevent editing.
 
 ### Deferred — productization
 

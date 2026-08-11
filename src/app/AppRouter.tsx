@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import App from '../App'
 import { StateOverlay } from '../components/StateOverlay'
 import { CategoryForm } from '../modules/categories/CategoryForm'
 import { CategoryPage } from '../modules/categories/CategoryPage'
 import { useCategories } from '../modules/categories/useCategories'
+import { InvoiceForm } from '../modules/invoices/InvoiceForm'
+import type { InvoiceWithLines } from '../modules/invoices/InvoiceRepository'
+import { useInvoices } from '../modules/invoices/useInvoices'
 import { SettingsPage } from '../modules/settings/SettingsPage'
 import { SupplierForm } from '../modules/suppliers/SupplierForm'
 import { SupplierPage } from '../modules/suppliers/SupplierPage'
@@ -45,6 +49,8 @@ export function AppRouter() {
         <Route element={<Layout><CategoryPage /></Layout>} path="/categories" />
         <Route element={<Layout><CategoryForm /></Layout>} path="/categories/new" />
         <Route element={<Layout><CategoryEditRoute /></Layout>} path="/categories/:id/edit" />
+        <Route element={<Layout><InvoiceForm /></Layout>} path="/invoices/new" />
+        <Route element={<Layout><InvoiceEditRoute /></Layout>} path="/invoices/:id/edit" />
         <Route element={pageRoute(placeholderPages.invoices)} path="/invoices/*" />
         <Route element={pageRoute(placeholderPages.dailyIncome)} path="/daily-income/*" />
         <Route element={<Layout><SettingsPage /></Layout>} path="/settings" />
@@ -69,4 +75,18 @@ function CategoryEditRoute() {
   if (loading) return <StateOverlay state="loading"><section aria-label="Category form" /></StateOverlay>
   const category = categories.find((candidate) => candidate.id === id)
   return category ? <CategoryForm category={category} /> : <Navigate replace to="/categories" />
+}
+
+function InvoiceEditRoute() {
+  const { id } = useParams()
+  const { findById } = useInvoices()
+  const [invoice, setInvoice] = useState<InvoiceWithLines | null | undefined>(undefined)
+
+  useEffect(() => {
+    if (!id) return
+    void findById(id as never).then(setInvoice).catch(() => setInvoice(null))
+  }, [findById, id])
+
+  if (invoice === undefined) return <StateOverlay state="loading"><section aria-label="Invoice form" /></StateOverlay>
+  return invoice ? <InvoiceForm invoice={invoice} /> : <Navigate replace to="/invoices" />
 }
