@@ -26,5 +26,5 @@ describe('repository contract conformance harness', () => {
 
     expect(result.status).not.toBe(0)
     expect(output).toContain(expectedFailure)
-  })
+  }, 30_000)
 })

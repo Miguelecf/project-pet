@@ -29,7 +29,7 @@ next executable unit remains **M0.3a: local persistence core and catalog adapter
 - [x] Keep repository contracts independent of `localStorage` and the Supabase client.
 - [x] Create reusable, executable contract tests for local and future Supabase adapters.
 - [x] Verify domain contracts remain independent of React and infrastructure.
-- [x] Run focused contract tests plus tests, coverage, lint, and build; record the evidence in apply progress.
+- [x] Run focused contract tests plus tests, coverage, lint, and build; record reproducible evidence in apply progress.
 - [x] Correct the M0.2 contract gate: real category invoice-line references,
   complete settings defaults, persisted payment balance/status, and observable CRUD lists.
 - [x] Prove representative broken test-only adapters fail the shared contracts
