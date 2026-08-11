@@ -11,6 +11,7 @@
 - [x] M2.2 — Category CRUD routes/forms and block-delete protection.
 - [x] M2.3 — Settings CRUD routes/forms and currency-lock enforcement.
 - [x] G2-LOCAL — Catalog reachable branch-coverage gate.
+- [x] M3.1 — Pure financial calculations, dates, and validation utilities.
 
 ## Completed tasks
 
@@ -23,6 +24,7 @@
 - [x] 2.2.1–2.2.7: Revision-aware category loading states, accessible list/form routes, trimmed normalized validation, and invoice-line reference protection.
 - [x] 2.3.1–2.3.7: Revision-aware settings loading, validated ARS/USD and due-alert saves, currency-lock errors, accessible form controls, and persistence reload.
 - [x] G2.1–G2.3: Catalog coverage review, meaningful reachable-path tests, documented per-module threshold, and sequential gate verification.
+- [x] 3.1.1–3.1.9: Table-driven pure finance/date/validation tests, deterministic safe-integer calculations, strict injected-clock date validation, and refactor verification.
 
 ## TDD cycle evidence
 
@@ -165,4 +167,23 @@
 | G2.2 | Existing nine catalog test files | Component | 48/48 catalog-focused tests passed | Tests were already uncommitted from the blocked attempt and were reviewed before preservation | 48/48 catalog-focused tests passed | Supplier/category/settings paths exercise distinct reachable branches | No product-code refactor; retained valid tests |
 | G2.3 | Catalog suite and full gate commands | Component | 48/48 catalog-focused tests passed | N/A — verification-only | All required commands exited 0 | Focused plus full-suite and per-module coverage evidence | No code changes |
 
-**Next:** M3.1 is next and remains unstarted.
+**Historical next marker:** M3.1 followed G2-LOCAL.
+
+## M3.1 verification — complete
+
+- [x] 3.1.1–3.1.9 completed using only pure dependency-free utilities and unit tests.
+- `lineTotalMinor` normalizes valid quantities to thousandths, uses safe-integer arithmetic, and rounds half-up once per line.
+- `invoiceTotals` sums rounded line totals with zero default tax; `deriveStatus` exposes only pending, partially paid, and paid while rejecting overpayment.
+- `validateISODate` uses an injected `Clock`; issue, payment, and sale dates reject future values, while due dates allow them.
+- Focused utilities: 59/59 passed. Full suite: 223 passed, 1 skipped. Coverage: 93.42% statements, 86.46% branches, 95.95% functions, and 98.18% lines. Build, lint, and diff check passed sequentially.
+
+### M3.1 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.1.1–3.1.4 | `src/utils/finance.test.ts` | Unit | N/A (new files) | Missing `finance` module; focused suite collected 0 tests and failed. | 32/32 finance tests passed. | Standard/decimal/0.005/large inputs, invalid values, empty/multi-line totals, all statuses, overpayment, and 100 repeated calls. | Integer thousandths arithmetic kept line rounding independent of floating-point multiplication. |
+| 3.1.5–3.1.6 | `src/utils/dates.test.ts` | Unit | N/A (new files) | Missing `dates` module; focused suite collected 0 tests and failed. | 13/13 date tests passed. | Valid/leap/invalid dates, today/future boundary, three restricted date kinds, and future due dates. | `isFuture` now validates both supplied dates and injected clock output before comparison. |
+| 3.1.7–3.1.8 | `src/utils/validation.test.ts` | Unit | N/A (new files) | Missing `validation` module; focused suite collected 0 tests and failed. | 14/14 validation tests passed. | Valid and invalid finite/precision/safe-integer/blank inputs exercise each validator boundary. | Shared branded validation functions avoid duplicated numeric constraints. |
+| 3.1.9 | Focused utility suite | Unit | 59/59 focused tests passed. | N/A — verification-only. | 59/59 focused tests passed. | Financial, date, and validation behavior run together without I/O dependencies. | No further refactor required. |
+
+**Next:** M3.2 is next and remains unstarted.

@@ -1,13 +1,14 @@
 # Executable Delivery Plan
 
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
-protection, M2.3 settings CRUD with currency-lock enforcement, and G2-LOCAL are
-complete.** The next executable unit is **M3.1: pure financial rules**.
+protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, and
+M3.1 pure financial rules are complete.** The next executable unit is **M3.2:
+invoice create/edit form and line editor**.
 
 ## Quick path
 
-1. Begin M3.1 with table-driven RED tests for financial rules.
-2. Implement only the minimum pure functions required by those tests.
+1. Begin M3.2 with RED tests for invoice creation/editing and line editing.
+2. Reuse M3.1 pure validation, date, and financial functions; do not duplicate their rules.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -106,7 +107,18 @@ successful saves publish a revision and reload the saved local values.
 - [x] Run catalog-focused tests, full tests, coverage, build, lint, and diff checks sequentially.
 
 **G2-LOCAL exit criteria met:** each catalog module satisfies the documented >=90%
-reachable branch-coverage threshold; M3.1 remains unstarted.
+reachable branch-coverage threshold; M3.1 may proceed.
+
+### Completed — M3.1 pure financial rules
+
+- [x] Add table-driven unit tests before production code for financial, date, and validation boundaries.
+- [x] Calculate line totals with thousandths normalization, one half-up round, and safe-integer guards.
+- [x] Aggregate rounded line totals and derive only pending, partially paid, or paid status while rejecting overpayment.
+- [x] Validate strict calendar ISO dates through an injected clock; due dates alone may be future.
+
+**M3.1 exit criteria met:** pure dependency-free utilities provide deterministic
+financial calculations and runtime validation without React, storage, adapters,
+or remote dependencies.
 
 ### Deferred — productization
 

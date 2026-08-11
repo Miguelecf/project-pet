@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, and G2-LOCAL are complete; M3.1 is next.
+M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, and M3.1 are complete; M3.2 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
@@ -189,15 +189,15 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, and G2-LOCAL are complete; M3.1 is n
 **Specs**: `financial-rules` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.1.1 RED: Write `src/utils/finance.test.ts` — table-driven tests: `lineTotalMinor(3, 1500)=4500`, `lineTotalMinor(1.255, 100)=126`, `lineTotalMinor(10000, 5)=50000`, reject invalid quantity, 0.005 rounding, large-qty precision, deterministic 100× call.
-- [ ] 3.1.2 GREEN: Create `src/utils/finance.ts` — `lineTotalMinor`, `invoiceTotals`, `deriveStatus`, `roundHalfUp`. Thousandths normalization, safe-integer guards, half-up rounding.
-- [ ] 3.1.3 RED: Write `src/utils/finance.test.ts` — `invoiceTotals` multi-line sum=8000, empty=0. `deriveStatus` pending/partial/paid, reject overpayment.
-- [ ] 3.1.4 GREEN: Implement `invoiceTotals` and `deriveStatus` in `finance.ts`.
-- [ ] 3.1.5 RED: Write `src/utils/dates.test.ts` — validate ISO date format, reject future dates for issue/payment/sale, allow future due date.
-- [ ] 3.1.6 GREEN: Create `src/utils/dates.ts` — `validateISODate`, `isFuture`, `Clock` interface.
-- [ ] 3.1.7 RED: Write `src/utils/validation.test.ts` — positive finite ≤3 decimals, non-negative safe integer, trimmed non-empty string.
-- [ ] 3.1.8 GREEN: Create `src/utils/validation.ts` — `validateQuantity`, `validateMoneyMinor`, `validateNonEmpty`.
-- [ ] 3.1.9 REFACTOR: Verify all financial edge cases pass. Confirm pure function contract (no I/O).
+- [x] 3.1.1 RED: Write `src/utils/finance.test.ts` — table-driven tests: `lineTotalMinor(3, 1500)=4500`, `lineTotalMinor(1.255, 100)=126`, `lineTotalMinor(10000, 5)=50000`, reject invalid quantity, 0.005 rounding, large-qty precision, deterministic 100× call.
+- [x] 3.1.2 GREEN: Create `src/utils/finance.ts` — `lineTotalMinor`, `invoiceTotals`, `deriveStatus`, `roundHalfUp`. Thousandths normalization, safe-integer guards, half-up rounding.
+- [x] 3.1.3 RED: Write `src/utils/finance.test.ts` — `invoiceTotals` multi-line sum=8000, empty=0. `deriveStatus` pending/partial/paid, reject overpayment.
+- [x] 3.1.4 GREEN: Implement `invoiceTotals` and `deriveStatus` in `finance.ts`.
+- [x] 3.1.5 RED: Write `src/utils/dates.test.ts` — validate ISO date format, reject future dates for issue/payment/sale, allow future due date.
+- [x] 3.1.6 GREEN: Create `src/utils/dates.ts` — `validateISODate`, `isFuture`, `Clock` interface.
+- [x] 3.1.7 RED: Write `src/utils/validation.test.ts` — positive finite ≤3 decimals, non-negative safe integer, trimmed non-empty string.
+- [x] 3.1.8 GREEN: Create `src/utils/validation.ts` — `validateQuantity`, `validateMoneyMinor`, `validateNonEmpty`.
+- [x] 3.1.9 REFACTOR: Verify all financial edge cases pass. Confirm pure function contract (no I/O).
 
 ## M3.2 — Invoice Create/Edit Form + Line Editor (~500 lines)
 

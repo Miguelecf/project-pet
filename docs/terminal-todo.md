@@ -27,7 +27,7 @@
 
 ## Core Financial Modules
 
-- [ ] **M3.1** — Pure financial functions: lineTotalMinor, invoiceTotals, deriveStatus, rounding (~350 lines)
+- [x] **M3.1** — Pure financial functions: lineTotalMinor, invoiceTotals, deriveStatus, rounding (~350 lines)
 - [ ] **M3.2** — Invoice create/edit form + line editor (~500 lines)
 - [ ] **M3.3** — Invoice list/detail pages (~350 lines)
 - [ ] **M3.4** — Payment form + void (invariants #4–#7) (~490 lines)
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 9 | 24 | 38% |
+| 10 | 24 | 42% |
 
 ## Preserved Boundaries (read-only)
 
