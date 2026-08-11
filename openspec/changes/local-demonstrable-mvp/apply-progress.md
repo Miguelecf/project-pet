@@ -89,7 +89,7 @@ Historical corrected evidence: gateway 16/16; focused local gateway/adapters
 23/23; `npm run test:run` and `npm run test:coverage` 63 passed / 1 skipped;
 coverage 92.83% statements, 84.66% branches, 96.96% functions, 97.73% lines;
 build, lint, and `git diff --check` passed. Current correction: gateway 21/21;
-focused local gateway/adapters 28/28; full/coverage 68 passed / 1 skipped;
+focused local gateway/adapters 28/28; full/coverage 69 passed / 1 skipped;
 coverage 92.96% statements, 85.09% branches, 96.98% functions, 97.77% lines.
 
 Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat
@@ -99,8 +99,8 @@ remaining under 800. Calendar conformance reproducer: at commit `38cbefa`,
 → 1 file / 1 test passed (exit 0). It launches the committed gateway suite
 against an isolated test-only permissive-calendar mutation; the child suite exits
 non-zero and names `impossible invoice issue date`. Current cumulative M0.3a
-(`cefedc1..38cbefa`): 17 files, 723 insertions, 34 deletions, 757 changed lines;
-43 remain under 800. No prior commit is amended or rewritten.
+(`cefedc1..7047ecb`): 17 files, 736 insertions, 36 deletions, 772 changed lines;
+28 remain under 800. No prior commit is amended or rewritten.
 
 ## Delivery boundary
 
