@@ -8,6 +8,7 @@
 - [x] M1.1 — BrowserRouter route map, accessible layout, and responsive sidebar navigation.
 - [x] M1.2 — StateOverlay, ConfirmDialog, skip-link, and route-heading focus management.
 - [x] M2.1 — Repository provider, supplier CRUD routes/forms, and soft delete.
+- [x] M2.2 — Category CRUD routes/forms and block-delete protection.
 
 ## Completed tasks
 
@@ -17,6 +18,7 @@
 - [x] 1.1.1–1.1.8: BrowserRouter route map, module placeholders, Layout, Sidebar, application wiring, and navigation refactor verification.
 - [x] 1.2.1–1.2.7: Async state overlays, keyboard-safe confirmation dialog, route-heading focus, and skip-link focus jump.
 - [x] 2.1.1–2.1.10: Revision-aware local repositories, supplier loading states, accessible list/form routes, normalized validation, and confirmed soft delete.
+- [x] 2.2.1–2.2.7: Revision-aware category loading states, accessible list/form routes, trimmed normalized validation, and invoice-line reference protection.
 
 ## TDD cycle evidence
 
@@ -101,10 +103,18 @@
 - `npm run test:coverage`: 123 passed, 1 skipped; statements 91.92%, branches 83.36%, functions 94.29%, lines 97.84%.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 
+### M2.2 TDD Cycle Evidence
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 2.2.1–2.2.2 | `src/modules/categories/useCategories.test.tsx` | Component | 12/12 AppRouter/local-category tests passed. | Missing `useCategories` module; suite failed to collect. | 3/3 hook scenarios passed. | Loading/data, error/retry, and real-provider restore revision paths. | Named refresh callback is shared by effect and retry. |
+| 2.2.3–2.2.4 | `src/modules/categories/CategoryPage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 12/12 AppRouter/local-category tests passed. | Missing `CategoryPage` module; suite failed to collect. | 4/4 page scenarios passed. | Multiple-item list/edit link, empty action, two-line reference block, and real-provider confirmed unreferenced deletion/refetch. | Reference check precedes confirmation; repository remains the enforcement boundary. |
+| 2.2.5–2.2.6 | `src/modules/categories/CategoryForm.test.tsx` | Component | N/A (new file). | Missing `CategoryForm` module; suite failed to collect. | 4/4 form scenarios passed. | Trimmed create, empty/duplicate validation, unique update, and duplicate normalized edit with real local-state immutability. | Shared save failure handling keeps validation and repository errors accessible. |
+| 2.2.7 | Focused category/local suite | Component + Unit | 24/24 focused scenarios passed. | N/A — verification-only task. | 24/24 focused scenarios passed. | Hook, page, form, router, and local contract paths run together. | No further refactor required. |
+## M2.2 verification
+- Focused category/provider/router and local-category contract suite: 24/24 passed.
+- `npm run test:run` and `npm run test:coverage`: 135 passed, 1 skipped; coverage 91.68% statements, 83.00% branches, 93.45% functions, 97.50% lines. Build, lint, and `git diff --check`: passed.
 ## Scope and delivery
-
-- M0.2, M0.3a, M0.3b, M1.1, M1.2, and M2.1 are complete; M2.2 is next.
-- M2.1 adds only the local repository provider and supplier catalog behavior; categories, settings, invoices, payments, daily income, and dashboard remain deferred.
-- No domain type, Supabase, or auth behavior was added.
-- `@testing-library/user-event` is pinned as a development dependency for real Tab traversal evidence.
+- M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, and M2.2 are complete; M2.3 is next.
+- M2.2 adds only category catalog behavior over RepositoryProvider and LocalCategoryRepository; settings, invoices, payments, daily income, dashboard, domain types, Supabase, and auth remain deferred.
 - Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.
+- The first parallel coverage invocation raced the calendar-mutant test's temporary directory and produced five false mutant-suite failures; a sequential rerun passed 135/135 executable tests and cleaned the temporary directory.

@@ -21,7 +21,7 @@
 ## Catalog Modules
 
 - [x] **M2.1** — Supplier CRUD + soft delete (~430 lines)
-- [ ] **M2.2** — Category CRUD + block-delete (~240 lines)
+- [x] **M2.2** — Category CRUD + block-delete (~240 lines)
 - [ ] **M2.3** — Settings CRUD + currency-lock (~240 lines)
 - [ ] **G2-LOCAL** — Catalog gate: 100% branch coverage on M2 modules (~100 lines)
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 6 | 24 | 25% |
+| 7 | 24 | 29% |
 
 ## Preserved Boundaries (read-only)
 

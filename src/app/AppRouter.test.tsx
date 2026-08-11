@@ -13,7 +13,7 @@ describe('AppRouter', () => {
 
   it.each([
     ['/', 'A clear view of daily operations, starting here.'],
-    ['/categories/new', 'Categories'],
+    ['/categories/new', 'Create category'],
     ['/invoices/example-id', 'Invoices'],
     ['/daily-income/new', 'Daily income'],
     ['/settings', 'Settings'],
@@ -61,5 +61,16 @@ describe('AppRouter', () => {
 
     expect((await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).textContent).toBe('Edit supplier')
     expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe('Demo Supplier A')
+  })
+
+  it('navigates from a category list edit link to the pre-filled category form', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/categories')
+
+    render(<AppRouter />)
+    fireEvent.click(await screen.findByRole('link', { name: 'Edit Demo Category A' }))
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Edit category' })).textContent).toBe('Edit category')
+    expect((screen.getByLabelText('Category name') as HTMLInputElement).value).toBe('Demo Category A')
   })
 })

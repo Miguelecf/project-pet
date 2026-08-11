@@ -148,13 +148,13 @@ M0.3a, M0.3b, M1.1, M1.2, and M2.1 are complete; M2.2 is next.
 **Specs**: `category-management` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 2.2.1 RED: Write `src/modules/categories/useCategories.test.ts` — loading/error/data states, calls `CategoryRepository` methods, refetches on revision change.
-- [ ] 2.2.2 GREEN: Create `src/modules/categories/useCategories.ts` — hook.
-- [ ] 2.2.3 RED: Write `src/modules/categories/CategoryPage.test.tsx` — list all, empty prompt, block-delete referenced category with count message.
-- [ ] 2.2.4 GREEN: Create `src/modules/categories/CategoryPage.tsx` — list with delete protection.
-- [ ] 2.2.5 RED: Write `src/modules/categories/CategoryForm.test.tsx` — create valid, reject duplicate, reject empty, edit unique.
-- [ ] 2.2.6 GREEN: Create `src/modules/categories/CategoryForm.tsx` — create/edit form.
-- [ ] 2.2.7 REFACTOR: Verify block-delete shows reference count.
+- [x] 2.2.1 RED: Write `src/modules/categories/useCategories.test.ts` — loading/error/data states, calls `CategoryRepository` methods, refetches on revision change.
+- [x] 2.2.2 GREEN: Create `src/modules/categories/useCategories.ts` — hook.
+- [x] 2.2.3 RED: Write `src/modules/categories/CategoryPage.test.tsx` — list all, empty prompt, block-delete referenced category with count message.
+- [x] 2.2.4 GREEN: Create `src/modules/categories/CategoryPage.tsx` — list with delete protection.
+- [x] 2.2.5 RED: Write `src/modules/categories/CategoryForm.test.tsx` — create valid, reject duplicate, reject empty, edit unique.
+- [x] 2.2.6 GREEN: Create `src/modules/categories/CategoryForm.tsx` — create/edit form.
+- [x] 2.2.7 REFACTOR: Verify block-delete shows reference count.
 
 ## M2.3 — Settings CRUD + Currency-Lock (~240 lines)
 

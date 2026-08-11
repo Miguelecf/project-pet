@@ -1,11 +1,12 @@
 # Executable Delivery Plan
 
-**M2.1 supplier CRUD and soft delete are complete.** The next executable unit
-is **M2.2: Category CRUD and block-delete protection**.
+**M2.1 supplier CRUD and soft delete and M2.2 category CRUD with block-delete
+protection are complete.** The next executable unit is **M2.3: Settings CRUD
+and currency-lock enforcement**.
 
 ## Quick path
 
-1. Add category CRUD over the completed local repository contracts.
+1. Add settings CRUD over the completed local repository contracts.
 2. Keep deterministic seed and restore behavior inside the local gateway.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
@@ -76,6 +77,16 @@ trigger, and navigation/skip links move focus to the intended content.
 
 **M2.1 exit criteria met:** supplier mutations refresh consumers only after a
 successful local write, and restore publishes a refetch revision.
+
+### Completed — M2.2 category catalog
+
+- [x] List categories with accessible loading, error/retry, empty, create, edit, and delete actions.
+- [x] Create and edit trimmed, normalized unique category names through the real local repository.
+- [x] Block deletion before confirmation when invoice-line references exist, showing their exact count; delete unreferenced categories only after confirmation.
+
+**M2.2 exit criteria met:** category mutations publish a provider revision only
+after successful local writes, while referenced categories remain intact with an
+explicit reference-count message.
 
 ### Deferred — productization
 

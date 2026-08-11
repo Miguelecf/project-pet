@@ -1,6 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import App from '../App'
 import { StateOverlay } from '../components/StateOverlay'
+import { CategoryForm } from '../modules/categories/CategoryForm'
+import { CategoryPage } from '../modules/categories/CategoryPage'
+import { useCategories } from '../modules/categories/useCategories'
 import { SupplierForm } from '../modules/suppliers/SupplierForm'
 import { SupplierPage } from '../modules/suppliers/SupplierPage'
 import { useSuppliers } from '../modules/suppliers/useSuppliers'
@@ -38,7 +41,9 @@ export function AppRouter() {
         <Route element={<Layout><SupplierPage /></Layout>} path="/suppliers" />
         <Route element={<Layout><SupplierForm /></Layout>} path="/suppliers/new" />
         <Route element={<Layout><SupplierEditRoute /></Layout>} path="/suppliers/:id/edit" />
-        <Route element={pageRoute(placeholderPages.categories)} path="/categories/*" />
+        <Route element={<Layout><CategoryPage /></Layout>} path="/categories" />
+        <Route element={<Layout><CategoryForm /></Layout>} path="/categories/new" />
+        <Route element={<Layout><CategoryEditRoute /></Layout>} path="/categories/:id/edit" />
         <Route element={pageRoute(placeholderPages.invoices)} path="/invoices/*" />
         <Route element={pageRoute(placeholderPages.dailyIncome)} path="/daily-income/*" />
         <Route element={pageRoute(placeholderPages.settings)} path="/settings" />
@@ -55,4 +60,12 @@ function SupplierEditRoute() {
   if (loading) return <StateOverlay state="loading"><section aria-label="Supplier form" /></StateOverlay>
   const supplier = suppliers.find((candidate) => candidate.id === id)
   return supplier ? <SupplierForm supplier={supplier} /> : <Navigate replace to="/suppliers" />
+}
+
+function CategoryEditRoute() {
+  const { categories, loading } = useCategories()
+  const { id } = useParams()
+  if (loading) return <StateOverlay state="loading"><section aria-label="Category form" /></StateOverlay>
+  const category = categories.find((candidate) => candidate.id === id)
+  return category ? <CategoryForm category={category} /> : <Navigate replace to="/categories" />
 }
