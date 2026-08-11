@@ -131,16 +131,16 @@ M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next.
 **Specs**: `supplier-management` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 2.1.1 RED: Write `src/app/RepositoryProvider.test.tsx` — provides repositories to children, revision counter increments after successful atomic mutation, `restore()` resets state and refetches.
-- [ ] 2.1.2 GREEN: Create `src/app/RepositoryProvider.tsx` — provides repositories + revision counter + `restore()`. Increment revision after successful atomic mutation.
-- [ ] 2.1.3 GREEN: Create `src/app/useRepositories.ts` — context hook returning `RepositoryProviderValue`. _(Trivial `useContext` wrapper; behavior tested via RepositoryProvider.)_
-- [ ] 2.1.4 RED: Write `src/modules/suppliers/useSuppliers.test.ts` — loading/error/data states, calls `SupplierRepository` methods, refetches on revision change.
-- [ ] 2.1.5 GREEN: Create `src/modules/suppliers/useSuppliers.ts` — hook wrapping repository calls with loading/error state.
-- [ ] 2.1.6 RED: Write `src/modules/suppliers/SupplierPage.test.tsx` — list excludes deleted, empty-state prompt, navigate to edit.
-- [ ] 2.1.7 GREEN: Create `src/modules/suppliers/SupplierPage.tsx` — list page with edit/delete actions, `StateOverlay` integration.
-- [ ] 2.1.8 RED: Write `src/modules/suppliers/SupplierForm.test.tsx` — create valid, reject duplicate normalized name, reject empty, edit succeeds, soft-delete with confirm dialog.
-- [ ] 2.1.9 GREEN: Create `src/modules/suppliers/SupplierForm.tsx` — create/edit form, `ConfirmDialog` for delete.
-- [ ] 2.1.10 REFACTOR: Verify all supplier scenarios pass.
+- [x] 2.1.1 RED: Write `src/app/RepositoryProvider.test.tsx` — provides repositories to children, revision counter increments after successful atomic mutation, `restore()` resets state and refetches.
+- [x] 2.1.2 GREEN: Create `src/app/RepositoryProvider.tsx` — provides repositories + revision counter + `restore()`. Increment revision after successful atomic mutation.
+- [x] 2.1.3 GREEN: Create `src/app/useRepositories.ts` — context hook returning `RepositoryProviderValue`. _(Trivial `useContext` wrapper; behavior tested via RepositoryProvider.)_
+- [x] 2.1.4 RED: Write `src/modules/suppliers/useSuppliers.test.ts` — loading/error/data states, calls `SupplierRepository` methods, refetches on revision change.
+- [x] 2.1.5 GREEN: Create `src/modules/suppliers/useSuppliers.ts` — hook wrapping repository calls with loading/error state.
+- [x] 2.1.6 RED: Write `src/modules/suppliers/SupplierPage.test.tsx` — list excludes deleted, empty-state prompt, navigate to edit.
+- [x] 2.1.7 GREEN: Create `src/modules/suppliers/SupplierPage.tsx` — list page with edit/delete actions, `StateOverlay` integration.
+- [x] 2.1.8 RED: Write `src/modules/suppliers/SupplierForm.test.tsx` — create valid, reject duplicate normalized name, reject empty, edit succeeds, soft-delete with confirm dialog.
+- [x] 2.1.9 GREEN: Create `src/modules/suppliers/SupplierForm.tsx` — create/edit form, `ConfirmDialog` for delete.
+- [x] 2.1.10 REFACTOR: Verify all supplier scenarios pass.
 
 ## M2.2 — Category CRUD + Block-Delete (~240 lines)
 

@@ -1,11 +1,11 @@
 # Executable Delivery Plan
 
-**M1.2 app-shell accessibility primitives are complete.** The next executable
-unit is **M2.1: Supplier CRUD and soft delete**.
+**M2.1 supplier CRUD and soft delete are complete.** The next executable unit
+is **M2.2: Category CRUD and block-delete protection**.
 
 ## Quick path
 
-1. Add supplier CRUD over the completed local repository contracts.
+1. Add category CRUD over the completed local repository contracts.
 2. Keep deterministic seed and restore behavior inside the local gateway.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
@@ -67,6 +67,15 @@ restore write validated deep copies through the atomic gateway.
 **M1.2 exit criteria met:** async states expose inert loading content, actionable
 error/empty states, dialogs keep keyboard focus contained and restore their
 trigger, and navigation/skip links move focus to the intended content.
+
+### Completed — M2.1 supplier catalog
+
+- [x] Provide real local repositories through a revision-aware provider and restore hook.
+- [x] List active suppliers with accessible empty, error/retry, edit, and delete actions.
+- [x] Create and edit normalized unique supplier names; confirm soft deletion before mutation.
+
+**M2.1 exit criteria met:** supplier mutations refresh consumers only after a
+successful local write, and restore publishes a refetch revision.
 
 ### Deferred — productization
 

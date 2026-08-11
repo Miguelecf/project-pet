@@ -7,6 +7,7 @@
 - [x] M0.3b — Invoice/payment/daily-income adapters, deterministic seed data, and restore.
 - [x] M1.1 — BrowserRouter route map, accessible layout, and responsive sidebar navigation.
 - [x] M1.2 — StateOverlay, ConfirmDialog, skip-link, and route-heading focus management.
+- [x] M2.1 — Repository provider, supplier CRUD routes/forms, and soft delete.
 
 ## Completed tasks
 
@@ -15,6 +16,7 @@
 - [x] 0.3b.1–0.3b.11: Invoice/payment/daily-income adapters, deterministic seed data, atomic seed load/restore, and local contract verification.
 - [x] 1.1.1–1.1.8: BrowserRouter route map, module placeholders, Layout, Sidebar, application wiring, and navigation refactor verification.
 - [x] 1.2.1–1.2.7: Async state overlays, keyboard-safe confirmation dialog, route-heading focus, and skip-link focus jump.
+- [x] 2.1.1–2.1.10: Revision-aware local repositories, supplier loading states, accessible list/form routes, normalized validation, and confirmed soft delete.
 
 ## TDD cycle evidence
 
@@ -82,10 +84,27 @@
 - `npm run build` and `npm run lint`: passed.
 - `git diff --check`: passed.
 
+### M2.1 TDD Cycle Evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 2.1.1–2.1.3 | `src/app/RepositoryProvider.test.tsx` | Component | 15/15 shell/dialog tests; 2/2 local supplier tests | Missing provider/context modules; 4 suites failed to collect. | 2/2 provider scenarios passed. | Successful create increments once, duplicate rejection leaves revision unchanged, restore resets seed and increments. | Shared mutation proxy centralizes successful-write revisions. |
+| 2.1.4–2.1.5 | `src/modules/suppliers/useSuppliers.test.tsx` | Component | N/A (new) | Missing provider/hook modules; suite failed to collect. | 3/3 hook scenarios passed. | Data, error-to-retry recovery, and provider restore revision refetch use distinct paths. | Refresh is a named callback shared by effect and retry UI. |
+| 2.1.6–2.1.7 | `src/modules/suppliers/SupplierPage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 15/15 shell/dialog tests | Missing supplier page module; suite failed to collect. | 11/11 focused page/router scenarios passed. | Active versus deleted data, empty action, edit href, failed deletion error/retry, and prefilled client route each exercise distinct rendering paths. | Active filtering stays explicit at the page boundary. |
+| 2.1.8–2.1.9 | `src/modules/suppliers/SupplierForm.test.tsx` | Component | N/A (new) | Missing supplier form module; suite failed to collect. | 3/3 form scenarios passed. | Trimmed create, empty/duplicate errors, update, and confirmed delete cover validation and mutation branches. | Shared save/delete error handling keeps failures visible. |
+| 2.1.10 | Focused supplier suite | Component | 18/18 focused scenarios passed | N/A — verification-only task. | 18/18 focused scenarios passed. | All supplier acceptance scenarios run together. | No further refactor required. |
+
+## M2.1 verification
+
+- Focused provider, hook, page, form, and supplier-route suite: 18/18 passed.
+- `npm run test:run`: 119 passed, 1 skipped.
+- `npm run test:coverage`: 119 passed, 1 skipped; statements 91.70%, branches 83.36%, functions 93.95%, lines 97.69%.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed.
+
 ## Scope and delivery
 
-- M0.2, M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next.
-- M1.2 adds only shell accessibility primitives; no CRUD, provider, repository, Supabase, or auth behavior.
+- M0.2, M0.3a, M0.3b, M1.1, M1.2, and M2.1 are complete; M2.2 is next.
+- M2.1 adds only the local repository provider and supplier catalog behavior; categories, settings, invoices, payments, daily income, and dashboard remain deferred.
 - No domain type, Supabase, or auth behavior was added.
 - `@testing-library/user-event` is pinned as a development dependency for real Tab traversal evidence.
 - Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.
