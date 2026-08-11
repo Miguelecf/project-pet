@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
+import { LocalStateGateway } from '../../infrastructure/local/LocalStateGateway'
+import { MemoryStorage } from '../../infrastructure/local/LocalRepositoryTestFixtures'
 import type { Supplier } from '../../types/domain'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
 import { SupplierForm } from './SupplierForm'
@@ -48,5 +50,35 @@ describe('SupplierForm', () => {
     expect(softDelete).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(softDelete).toHaveBeenCalledWith('alpha'))
+  })
+
+  it('rejects editing a supplier to an existing normalized name without mutating stored data', async () => {
+    const gateway = new LocalStateGateway(new MemoryStorage())
+    await gateway.loadSeed()
+    const [editable, existing] = gateway.read().suppliers
+    render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierForm supplier={editable} /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate supplier name'))
+    expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe(`  ${existing.name.toLowerCase()}  `)
+    expect(gateway.read().suppliers.map((supplier) => ({ id: supplier.id, name: supplier.name, normalizedName: supplier.normalizedName, deletedAt: supplier.deletedAt }))).toEqual([
+      { id: editable.id, name: editable.name, normalizedName: editable.normalizedName, deletedAt: null },
+      { id: existing.id, name: existing.name, normalizedName: existing.normalizedName, deletedAt: null },
+    ])
+  })
+
+  it('keeps a supplier active when deletion is cancelled', async () => {
+    const gateway = new LocalStateGateway(new MemoryStorage())
+    await gateway.loadSeed()
+    const [editable] = gateway.read().suppliers
+    render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierForm supplier={editable} /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(gateway.read().suppliers.find((supplier) => supplier.id === editable.id)?.deletedAt).toBeNull()
   })
 })

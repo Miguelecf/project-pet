@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { LocalStateGateway } from '../infrastructure/local/LocalStateGateway'
 import { AppRouter } from './AppRouter'
 
 describe('AppRouter', () => {
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    window.localStorage.clear()
+  })
 
   it.each([
     ['/', 'A clear view of daily operations, starting here.'],
@@ -19,7 +22,7 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeDefined()
+    expect((await screen.findByRole('heading', { level: 1, name: heading })).textContent).toBe(heading)
   })
 
   it('renders the supplier empty-state create action at /suppliers', async () => {
@@ -27,7 +30,7 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect(await screen.findByRole('button', { name: 'Create Supplier' })).toBeDefined()
+    expect((await screen.findByRole('button', { name: 'Create Supplier' })).textContent).toBe('Create Supplier')
   })
 
   it('redirects an unknown route to the dashboard', () => {
@@ -35,7 +38,7 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'A clear view of daily operations, starting here.' })).toBeDefined()
+    expect(screen.getByRole('heading', { level: 1, name: 'A clear view of daily operations, starting here.' }).textContent).toBe('A clear view of daily operations, starting here.')
     expect(window.location.pathname).toBe('/')
   })
 
@@ -45,7 +48,18 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect(await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).toBeDefined()
+    expect((await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).textContent).toBe('Edit supplier')
+    expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe('Demo Supplier A')
+  })
+
+  it('navigates from a list edit link to the pre-filled supplier form', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/suppliers')
+
+    render(<AppRouter />)
+    fireEvent.click(await screen.findByRole('link', { name: 'Edit Demo Supplier A' }))
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).textContent).toBe('Edit supplier')
     expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe('Demo Supplier A')
   })
 })

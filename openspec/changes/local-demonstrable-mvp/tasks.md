@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next.
+M0.3a, M0.3b, M1.1, M1.2, and M2.1 are complete; M2.2 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 

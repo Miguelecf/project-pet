@@ -90,15 +90,15 @@
 |---|---|---|---|---|---|---|---|
 | 2.1.1–2.1.3 | `src/app/RepositoryProvider.test.tsx` | Component | 15/15 shell/dialog tests; 2/2 local supplier tests | Missing provider/context modules; 4 suites failed to collect. | 2/2 provider scenarios passed. | Successful create increments once, duplicate rejection leaves revision unchanged, restore resets seed and increments. | Shared mutation proxy centralizes successful-write revisions. |
 | 2.1.4–2.1.5 | `src/modules/suppliers/useSuppliers.test.tsx` | Component | N/A (new) | Missing provider/hook modules; suite failed to collect. | 3/3 hook scenarios passed. | Data, error-to-retry recovery, and provider restore revision refetch use distinct paths. | Refresh is a named callback shared by effect and retry UI. |
-| 2.1.6–2.1.7 | `src/modules/suppliers/SupplierPage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 15/15 shell/dialog tests | Missing supplier page module; suite failed to collect. | 11/11 focused page/router scenarios passed. | Active versus deleted data, empty action, edit href, failed deletion error/retry, and prefilled client route each exercise distinct rendering paths. | Active filtering stays explicit at the page boundary. |
-| 2.1.8–2.1.9 | `src/modules/suppliers/SupplierForm.test.tsx` | Component | N/A (new) | Missing supplier form module; suite failed to collect. | 3/3 form scenarios passed. | Trimmed create, empty/duplicate errors, update, and confirmed delete cover validation and mutation branches. | Shared save/delete error handling keeps failures visible. |
-| 2.1.10 | Focused supplier suite | Component | 18/18 focused scenarios passed | N/A — verification-only task. | 18/18 focused scenarios passed. | All supplier acceptance scenarios run together. | No further refactor required. |
+| 2.1.6–2.1.7 | `src/modules/suppliers/SupplierPage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 21/21 focused baseline | The added list-edit click and real-provider delete scenarios initially failed only because this test environment does not install jest-dom matchers. | 13/13 named page/router scenarios passed after replacing unsupported matcher calls with exact visible text assertions. | Active versus deleted data, empty action, real client-side edit navigation with prefilled form, failed deletion error/retry, and confirmed provider revision/refetch each exercise distinct rendering paths. | Active filtering stays explicit at the page boundary. |
+| 2.1.8–2.1.9 | `src/modules/suppliers/SupplierForm.test.tsx` | Component | 21/21 focused baseline | The added edit-duplicate and cancel-delete scenarios initially failed only because this test environment does not install jest-dom matchers. | 5/5 form scenarios passed after exact alert text and dialog-scoped Cancel assertions. | Trimmed create, empty/duplicate errors, duplicate edit without stored mutation, update, confirmed delete, and cancelled delete cover validation and mutation branches. | Shared save/delete error handling keeps failures visible. |
+| 2.1.10 | Focused supplier suite | Component | 21/21 focused baseline | N/A — verification-only task. | 25/25 focused scenarios passed: 23 named M2.1 tests plus 2 local supplier contract tests. | All supplier acceptance scenarios run together. | No further refactor required. |
 
 ## M2.1 verification
 
-- Focused provider, hook, page, form, and supplier-route suite: 18/18 passed.
-- `npm run test:run`: 119 passed, 1 skipped.
-- `npm run test:coverage`: 119 passed, 1 skipped; statements 91.70%, branches 83.36%, functions 93.95%, lines 97.69%.
+- Focused supplier/provider/router suite: 25/25 passed (23 named M2.1 tests plus 2 local supplier contract tests).
+- `npm run test:run`: 123 passed, 1 skipped.
+- `npm run test:coverage`: 123 passed, 1 skipped; statements 91.92%, branches 83.36%, functions 94.29%, lines 97.84%.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 
 ## Scope and delivery
