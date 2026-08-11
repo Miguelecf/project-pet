@@ -1,13 +1,12 @@
 # Apply Progress: Local Demonstrable MVP
 
-## M0.2 complete — surgical corrective gate
+## M0.2 and M0.3a complete — corrective gates
 
 Six discoverable, reusable repository contract suites and a conformance harness
 execute against test-only in-memory fixtures. The fixtures use repository maps
 as the single source of truth: category references come from stored invoice
 lines; deletes remove stored category/daily-income records; and void replaces
-the stored payment object. No M0.3 adapter, UI, provider, auth, Supabase, or
-domain work was performed. The conformance tests use a 30-second per-test
+the stored payment object. The conformance tests use a 30-second per-test
   timeout because each deliberately launches a child Vitest process.
 
 ## Completed tasks
@@ -20,7 +19,7 @@ domain work was performed. The conformance tests use a 30-second per-test
 - [x] 0.2.13: No `CrudRepository<T>` or `BaseRepository` exists.
 - [x] M0.2 corrective gate: persisted mutation observations strengthened;
   reproducible conformance mutations now prove the four corrected behaviors;
-  M0.3 remains pending.
+  M0.3b remains pending.
 
 ## TDD cycle evidence
 
@@ -57,10 +56,40 @@ observed for that behavior; it is not represented as a RED cycle.
 - Cumulative M0.2 size measured from `b55d1c3`: **724 additions / 33
   deletions; 691 net lines; 757 changed lines (churn)**. The approved 400→800
   `size:exception` remains required; cumulative M0.2 is 43 changed lines below
-  the 800-line cap.
+   the 800-line cap.
+
+## M0.3a completion — persisted-domain validation correction
+
+- [x] 0.3a.1–0.3a.10: versioned schema, atomic gateway, and catalog adapters.
+- [x] Parseable malformed settings, supplier, category, invoice, invoice-line,
+  payment, and daily-income records recover to `needs_seed`; a valid full
+  envelope remains `ready`.
+- [ ] M0.3b: invoice/payment/daily-income adapters, seed data, and restore.
+
+### TDD cycle evidence
+
+This is reproduced current conformance evidence, not unavailable historical
+execution history. Safety net: `npx vitest run
+src/infrastructure/local/LocalStateGateway.test.ts` → 9/9 passed before the
+new cases.
+
+| Behavior | RED command/output | GREEN command/output | REFACTOR |
+|---|---|---|---|
+| Settings currency | Gateway command → 7 failed / 9 passed; malformed record was `ready`. | Gateway command → 16/16 passed; empty/`needs_seed`. | Predicate extracted. |
+| Supplier required field | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Predicate extracted. |
+| Category timestamp | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Predicate extracted. |
+| Invoice supplier ID | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Relationship predicate extracted. |
+| Invoice-line category ID | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Relationship predicate extracted. |
+| Payment union | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Union predicate extracted. |
+| Daily-income future date | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Date predicate extracted. |
+| Existing M0.3a gateway guarantees | Safety net above → 9/9 passed. | Gateway command → 16/16 passed; missing/malformed/version mismatch, clone, one `setItem`, failed write, and invalid candidate remain covered. | Existing atomic write path retained. |
+
+Verification: focused local gateway/adapters 23/23; `npm run test:run` and
+`npm run test:coverage` 63 passed / 1 skipped; build, lint, and `git diff
+--check` passed. Cumulative M0.3a churn is 720 changed lines, leaving 80 of 800.
 
 ## Delivery boundary
 
 - Strategy: one mainline corrective commit, approved 400→800 `size:exception`.
-- Scope: M0.2 only; M0.3 adapters and all UI remain pending.
+- Scope: M0.2 and M0.3a only; M0.3b adapters/seed/restore and all UI remain pending.
 - Rollback: revert this corrective commit before any M0.3 consumer work.

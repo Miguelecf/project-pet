@@ -35,9 +35,8 @@ executable unit is **M0.3b: invoice/payment/daily-income adapters, seed data, an
 - [x] Prove representative broken test-only adapters fail the shared contracts
   before retaining M0.2 completion.
 
-**Exit criteria:** UI-facing code depends only on module repositories/services, and
-the adapter contract suite can be executed against each implementation. M0.3 has
-not started.
+**Exit criteria met:** UI-facing code depends only on module repositories/services,
+and the adapter contract suite executes against completed M0.3a local adapters.
 
 ### Completed — M0.3a local persistence core and catalog adapters
 
