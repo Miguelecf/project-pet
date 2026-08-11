@@ -1,21 +1,33 @@
 import { describe, expect, it } from 'vitest'
 import type { SettingsRepository } from '../../modules/settings/SettingsRepository'
 
-export function describeSettingsRepositoryContract(createRepository: () => SettingsRepository): void {
+export interface SettingsContractFixture {
+  readonly repository: SettingsRepository
+  recordInvoice(): Promise<void>
+  recordDailyIncome(): Promise<void>
+}
+
+export function describeSettingsRepositoryContract(createFixture: () => SettingsContractFixture): void {
   describe('SettingsRepository contract', () => {
     it('returns defaults and saves singleton settings', async () => {
-      const repository = createRepository()
+      const { repository } = createFixture()
       const defaults = await repository.get()
 
-      expect(defaults).toMatchObject({ currency: 'USD' })
+      expect(defaults).toMatchObject({ currency: 'USD', dueAlertDays: expect.any(Number) })
       const saved = await repository.save({ currency: 'ARS', dueAlertDays: 10 as never })
       expect(saved).toMatchObject({ currency: 'ARS', dueAlertDays: 10 })
       expect(await repository.get()).toEqual(saved)
     })
 
-    it('propagates a rejected currency-lock save', async () => {
-      const repository = createRepository()
-      await expect(repository.save({ currency: 'INVALID' as never, dueAlertDays: 0 as never })).rejects.toThrow()
+    it('locks valid ARS and USD changes after financial activity', async () => {
+      const usdFixture = createFixture()
+      await usdFixture.recordInvoice()
+      await expect(usdFixture.repository.save({ currency: 'ARS', dueAlertDays: 0 as never })).rejects.toThrow()
+
+      const arsFixture = createFixture()
+      await arsFixture.repository.save({ currency: 'ARS', dueAlertDays: 0 as never })
+      await arsFixture.recordDailyIncome()
+      await expect(arsFixture.repository.save({ currency: 'USD', dueAlertDays: 0 as never })).rejects.toThrow()
     })
   })
 }

@@ -26,6 +26,8 @@ The system SHALL define a dedicated async repository interface for each domain m
 
 The system SHALL provide a shared test function per module that accepts any adapter implementation and validates full behavioral conformance. Contract tests MUST cover CRUD operations, edge cases, and error propagation.
 
+Daily-income repository contracts cover CRUD and sale-date uniqueness only. Provider revision and dashboard refresh are consumer behavior scheduled for M2.1 and M4.1; repository contracts MUST NOT invent subscriptions for them.
+
 #### Scenario: Contract test passes against local adapter
 
 - GIVEN a shared contract test function for suppliers

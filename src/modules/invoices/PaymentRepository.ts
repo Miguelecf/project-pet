@@ -1,4 +1,4 @@
-import type { InvoiceId, ISODate, MoneyMinor, Payment, PaymentId, PaymentMethod } from '../../types/domain'
+import type { ActivePayment, InvoiceId, ISODate, MoneyMinor, Payment, PaymentId, PaymentMethod, VoidedPayment } from '../../types/domain'
 
 export interface RegisterPaymentInput {
   readonly invoiceId: InvoiceId
@@ -11,6 +11,6 @@ export interface RegisterPaymentInput {
 
 export interface PaymentRepository {
   findByInvoice(invoiceId: InvoiceId): Promise<readonly Payment[]>
-  register(input: RegisterPaymentInput): Promise<Payment>
-  void(id: PaymentId, reason: string): Promise<Payment>
+  register(input: RegisterPaymentInput): Promise<ActivePayment>
+  void(id: PaymentId, reason: string): Promise<VoidedPayment>
 }

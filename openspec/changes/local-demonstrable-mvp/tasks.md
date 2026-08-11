@@ -43,7 +43,7 @@ Revert in this exact order: GMVP → Q5 → Q4 → Q3 → Q2 → M4.3 → M4.2 �
 - [x] 0.2.3 RED: Write contract test `src/test/contracts/settingsRepositoryContract.ts` — get/save, currency-lock, defaults assertions.
 - [x] 0.2.4 RED: Write contract test `src/test/contracts/invoiceRepositoryContract.ts` — CRUD with lines, status filter, soft-delete/restore, deleted-filter assertions.
 - [x] 0.2.5 RED: Write contract test `src/test/contracts/paymentRepositoryContract.ts` — register, void, overpayment reject, balance recalc assertions.
-- [x] 0.2.6 RED: Write contract test `src/test/contracts/dailyIncomeRepositoryContract.ts` — CRUD, unique sale-date, dashboard-refresh assertions.
+- [x] 0.2.6 RED: Write contract test `src/test/contracts/dailyIncomeRepositoryContract.ts` — CRUD and unique sale-date assertions. Provider revision/dashboard refresh remains M2.1/M4.1.
 - [x] 0.2.7 GREEN: Create `src/modules/suppliers/SupplierRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `softDelete`.
 - [x] 0.2.8 GREEN: Create `src/modules/categories/CategoryRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`, `isReferenced`.
 - [x] 0.2.9 GREEN: Create `src/modules/settings/SettingsRepository.ts` — async interface with `get`, `save` only (no CRUD symmetry).

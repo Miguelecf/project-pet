@@ -1,11 +1,11 @@
 # Executable Delivery Plan
 
-The next executable unit is **M0.2: repository contracts**. It unlocks local persistence without coupling UI components to `localStorage` or Supabase.
+**M0.2 repository contracts is complete.** The next executable unit is **M0.3a: local persistence core and catalog adapters**.
 
 ## Quick path
 
-1. Create the M0.2 SDD change artifacts before implementation.
-2. Define repository interfaces and reusable adapter contract tests using RED-GREEN-REFACTOR.
+1. Implement the M0.3a local schema and gateway behind completed repository contracts.
+2. Run the reusable supplier, category, and settings contracts against local adapters.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -21,25 +21,25 @@ The next executable unit is **M0.2: repository contracts**. It unlocks local per
 
 ## Persistent TODOs
 
-### Now — M0.2 repository contracts
+### Completed — M0.2 repository contracts
 
-- [ ] Create an OpenSpec change for local repository contracts and persist its SDD artifacts in Engram.
-- [ ] Define module-facing repository operations for settings, suppliers, categories, invoices, payments, and daily income.
-- [ ] Ensure pages and components do not import `localStorage` or the Supabase client.
-- [ ] Create reusable contract tests that a local adapter and a future Supabase adapter can share.
-- [ ] Verify domain contracts remain independent of React and infrastructure.
-- [ ] Run tests, coverage, lint, and build; record the evidence in the change verification artifact.
+- [x] Create an OpenSpec change for local repository contracts and persist its SDD artifacts in Engram.
+- [x] Define module-facing repository operations for settings, suppliers, categories, invoices, payments, and daily income.
+- [x] Keep repository contracts independent of `localStorage` and the Supabase client.
+- [x] Create reusable, executable contract tests for local and future Supabase adapters.
+- [x] Verify domain contracts remain independent of React and infrastructure.
+- [x] Run focused contract tests plus tests, coverage, lint, and build; record the evidence in apply progress.
 
 **Exit criteria:** UI-facing code depends only on module repositories/services, and the adapter contract suite can be executed against each implementation.
 
-### Next — M0.3 local persistence adapter
+### Next — M0.3a local persistence core and catalog adapters
 
-- [ ] Implement a versioned local schema and deterministic seed data behind the M0.2 contracts.
+- [ ] Implement a versioned local schema behind the M0.2 contracts.
 - [ ] Defensively recover from empty, malformed, or incompatible persisted JSON.
-- [ ] Add an explicit, confirmed demo-data restore action.
-- [ ] Prove refresh persistence and recovery with automated tests.
+- [ ] Run supplier, category, and settings contracts against local adapters.
+- [ ] Prove empty, malformed, incompatible, and failed-write recovery with automated tests.
 
-**Exit criteria:** local demo data survives refresh, restores deterministically, and stores no passwords, tokens, or secrets.
+**Exit criteria:** catalog data survives refresh and recovery behavior is proven. Seed restore remains M0.3b.
 
 ### Then — M1 local shell and navigation
 
@@ -59,7 +59,7 @@ The next executable unit is **M0.2: repository contracts**. It unlocks local per
 
 - [ ] Scope is contained; no unrelated productization work entered the milestone.
 - [ ] Changed lines do not exceed 800. If they do, split before review.
-- [ ] A conventional milestone commit is prepared on `main` when the user asks to commit.
+- [ ] A conventional milestone commit is created on `main` after all requested gates pass.
 - [ ] `npm run test:run` passes with no focused tests (`allowOnly: false`).
 - [ ] `npm run test:coverage`, `npm run lint`, and `npm run build` pass.
 - [ ] OpenSpec task state, this plan, and Engram progress describe the same status.

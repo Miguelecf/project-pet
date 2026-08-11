@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import type { CategoryRepository } from '../../modules/categories/CategoryRepository'
 
-export function describeCategoryRepositoryContract(createRepository: () => CategoryRepository): void {
+export interface CategoryContractFixture {
+  readonly repository: CategoryRepository
+  createReference(categoryId: Parameters<CategoryRepository['isReferenced']>[0]): Promise<void>
+}
+
+export function describeCategoryRepositoryContract(createFixture: () => CategoryContractFixture): void {
   describe('CategoryRepository contract', () => {
     it('creates, reads, updates, and deletes unreferenced categories', async () => {
-      const repository = createRepository()
+      const { repository } = createFixture()
       const created = await repository.create({ name: '  Demo Category A  ' })
 
       expect(created).toMatchObject({ name: 'Demo Category A', normalizedName: 'demo category a' })
@@ -17,11 +22,13 @@ export function describeCategoryRepositoryContract(createRepository: () => Categ
     })
 
     it('rejects duplicate names and deleting referenced categories', async () => {
-      const repository = createRepository()
+      const { createReference, repository } = createFixture()
       const created = await repository.create({ name: 'Demo Category A' })
       await expect(repository.create({ name: 'demo category a' })).rejects.toThrow()
 
-      expect(await repository.isReferenced(created.id)).toBeGreaterThanOrEqual(0)
+      await createReference(created.id)
+      expect(await repository.isReferenced(created.id)).toBe(1)
+      await expect(repository.delete(created.id)).rejects.toThrow()
     })
   })
 }
