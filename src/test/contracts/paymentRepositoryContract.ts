@@ -25,7 +25,13 @@ export function describePaymentRepositoryContract(createFixture: () => PaymentCo
       expect(await repository.getBalance(invoiceId)).toEqual({ remainingMinor: 0, status: 'paid' })
       expect(await invoiceRepository.findById(invoiceId)).toMatchObject({ invoice: { totalMinor: 1000, status: 'paid' } })
       const voided = await repository.void(payment.id, 'Recorded in error')
-      expect(voided).toMatchObject({ id: payment.id, isVoid: true })
+      expect(voided).toMatchObject({ id: payment.id, isVoid: true, voidReason: 'Recorded in error', voidedAt: '2026-08-10T00:00:00.000Z' })
+      expect(await repository.findByInvoice(invoiceId)).toContainEqual(expect.objectContaining({
+        id: payment.id,
+        isVoid: true,
+        voidReason: 'Recorded in error',
+        voidedAt: '2026-08-10T00:00:00.000Z',
+      }))
       expect(await repository.findByInvoice(invoiceId)).toContainEqual(expect.objectContaining({ id: remainder.id, isVoid: false }))
       expect(await repository.getBalance(invoiceId)).toEqual({ remainingMinor: 600, status: 'partially_paid' })
       expect(await invoiceRepository.findById(invoiceId)).toMatchObject({ invoice: { totalMinor: 1000, status: 'partially_paid' } })

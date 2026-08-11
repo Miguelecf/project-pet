@@ -48,7 +48,7 @@ Revert in this exact order: GMVP → Q5 → Q4 → Q3 → Q2 → M4.3 → M4.2 �
 - [x] 0.2.8 GREEN: Create `src/modules/categories/CategoryRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`, `isReferenced`.
 - [x] 0.2.9 GREEN: Create `src/modules/settings/SettingsRepository.ts` — async interface with `get`, `save` only (no CRUD symmetry).
 - [x] 0.2.10 GREEN: Create `src/modules/invoices/InvoiceRepository.ts` — async interface with `findAll`, `findById`, `findByStatus`, `findDeleted`, `create`, `update`, `softDelete`, `restore`.
-- [x] 0.2.11 GREEN: Create `src/modules/invoices/PaymentRepository.ts` — async interface with `findByInvoice`, `register`, `void`.
+- [x] 0.2.11 GREEN: Create `src/modules/invoices/PaymentRepository.ts` — async interface with `findByInvoice`, `getBalance`, `register`, `void`.
 - [x] 0.2.12 GREEN: Create `src/modules/daily-income/DailyIncomeRepository.ts` — async interface with `findAll`, `findById`, `create`, `update`, `delete`.
 - [x] 0.2.13 REFACTOR: Verify no `CrudRepository<T>` or `BaseRepository` exists. Confirm interface segregation per spec.
 

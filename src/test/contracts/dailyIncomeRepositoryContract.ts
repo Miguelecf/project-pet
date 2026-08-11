@@ -15,6 +15,7 @@ export function describeDailyIncomeRepositoryContract(createRepository: () => Da
       expect(await repository.findAll()).toContainEqual(expect.objectContaining({ id: created.id, amountMinor: 2000, note: null }))
 
       await repository.delete(created.id)
+      expect(await repository.findById(created.id)).toBeNull()
       expect(await repository.findAll()).not.toContainEqual(expect.objectContaining({ id: created.id }))
     })
 

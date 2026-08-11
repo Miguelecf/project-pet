@@ -22,6 +22,7 @@ export function describeCategoryRepositoryContract(createFixture: () => Category
       expect(await repository.isReferenced(created.id)).toBe(0)
       await repository.delete(created.id)
       expect(await repository.findById(created.id)).toBeNull()
+      expect(await repository.findAll()).not.toContainEqual(expect.objectContaining({ id: created.id }))
     })
 
     it('rejects duplicate names and deleting referenced categories', async () => {

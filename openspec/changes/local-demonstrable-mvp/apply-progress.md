@@ -1,62 +1,57 @@
 # Apply Progress: Local Demonstrable MVP
 
-## M0.2 complete — corrective gate
+## M0.2 complete — surgical corrective gate
 
-Async, module-specific repository contracts and reusable, runtime-executed adapter
-contract suites are ready for local adapter implementation in M0.3a. This
-corrective pass makes adapter conformance observable from persisted repository
-state: category references arise from real invoice lines, settings defaults are
-complete and deterministic, payments update persisted invoice status, and CRUD
-lists prove mutations are not no-ops. No production adapter, UI, or M0.3 behavior
-was implemented.
+Six discoverable, reusable repository contract suites execute against test-only
+in-memory fixtures. The fixtures use their repository maps as the single source
+of truth: category references come from stored invoice lines; deletes remove the
+stored category/daily-income; and void replaces the stored payment object. No
+M0.3 adapter, UI, provider, auth, Supabase, or domain work was performed.
 
 ## Completed tasks
 
-- [x] 0.2.1–0.2.6: Added and runtime-executed reusable supplier, category,
-  settings, invoice, payment, and daily-income contract suites against test-only
-  in-memory fixtures.
-- [x] 0.2.7–0.2.12: Added the six async, per-module repository interfaces.
-- [x] 0.2.13: Confirmed there is no `CrudRepository<T>` or `BaseRepository`.
-- [x] M0.2 corrective gate: strengthened all six discoverable contract suites
-  without advancing M0.3.
+- [x] 0.2.1–0.2.6: Runtime-executed supplier, category, settings, invoice,
+  payment, and daily-income contract suites.
+- [x] 0.2.7–0.2.12: Six async per-module interfaces. Task 0.2.11 now correctly
+  maps `PaymentRepository.getBalance()` with `findByInvoice`, `register`, and
+  `void`.
+- [x] 0.2.13: No `CrudRepository<T>` or `BaseRepository` exists.
+- [x] M0.2 corrective gate: persisted mutation observations strengthened;
+  M0.3 remains pending.
 
-## TDD Cycle Evidence
+## TDD cycle evidence
 
-| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
-|---|---|---|---|---|---|---|---|
-| 0.2.1–0.2.6 original corrective | `repositoryContracts.test.ts` | Unit contract | 20/20 baseline | Missing fixture import failed (0 tests); injected invoice write failed (2/12) | 12/12 contracts passed | CRUD plus duplicate/reference/lock/update/overpayment paths | Test-only fixture extracted; no production adapter |
-| 0.2.1–0.2.6 gate corrective | Six `*RepositoryContract.ts` files | Unit contract | 12/12 focused baseline | Category real-reference fixture and persisted payment invoice lookup failed (2/12) after tests were written first | 12/12 focused contracts passed after the minimal fixture/interface changes | Non-empty lists, updates, delete/restore lists, both ARS↔USD locks, partial/exact/void payment balance and status | Extracted synchronous payment-balance/status helper; status is persisted on the invoice and independently asserted |
-| 0.2.1–0.2.6 original | Six `*RepositoryContract.ts` files | Unit contract | N/A (new) | `npm run build` failed: missing interfaces | Interfaces added; build passed | Original structural coverage | Corrected by executable runtime suite |
-| 0.2.7–0.2.12 | Repository interfaces | Type-level | N/A (new) | Covered by the six missing-module compile failures | `npm run build` passed | Skipped: structural declarations | Names and module boundaries reviewed |
-| 0.2.13 | Repository contract tree | Static inspection | N/A (new) | N/A | `CrudRepository|BaseRepository` search returned no matches | Skipped: one structural outcome | Interface segregation retained |
+All commands below ran from the repository root. “Not claimed” deliberately
+means no failing run was observed for that behavior; it is not represented as a
+RED cycle.
 
-## Command evidence
+| Behavior / task | Test layer and safety net | RED evidence | GREEN evidence | REFACTOR evidence |
+|---|---|---|---|---|
+| Category reference (0.2.2) | Unit contract; prior focused baseline 12/12 | Historical gate RED: `npm run test:run -- src/test/contracts/repositoryContracts.test.ts` failed because the fixture had no real stored invoice-line reference. | Historical gate GREEN: same focused suite passed after `isReferenced()` derived its count from stored invoice lines. | Fixture retains one `lines` map; no reference set. |
+| Category delete (0.2.2) | Unit contract; `npx vitest run src/test/contracts/repositoryContracts.test.ts` baseline: 12/12 | Corrective RED: same command, 3 failed / 9 passed after `delete()` stopped removing the map entry; category failed at `findById(...)` expected `null`, received category. | GREEN: same command 12/12 after restoring `categories.delete(id)`. | No refactor needed; map remains the sole category store. |
+| Category post-delete list (0.2.2) | Unit contract; same 12/12 baseline | The corrective faulty delete state above was observed with the new list assertion written first; the first post-delete assertion stopped that test before its list assertion could execute, so a separate list-only RED is not claimed. | GREEN: same command 12/12; contract now asserts both `findById(id) === null` and `findAll()` excludes the id. | No refactor needed. |
+| Settings defaults (0.2.3) | Unit contract; focused baseline 12/12 | Not claimed: no failing defaults state was observed in this correction. | `npx vitest run src/test/contracts/repositoryContracts.test.ts`: 12/12 verifies the complete deterministic settings object. | Existing `defaults()` factory retained. |
+| Settings currency lock (0.2.3) | Unit contract; focused baseline 12/12 | Not claimed: no failing lock state was observed in this correction. | Same command 12/12 verifies USD→ARS after invoice and ARS→USD after daily income reject. | Existing map-backed financial-record check retained. |
+| Invoice update (0.2.4) | Unit contract; focused baseline 12/12 | Not claimed: no failing update state was observed in this correction. | Same command 12/12 verifies persisted invoice/line update and active/deleted/restore queries. | No refactor needed. |
+| Invoice errors (0.2.4) | Unit contract; focused baseline 12/12 | Historical RED: injected invoice write failed in the original contract run (2/12 failures). | Same focused command 12/12 verifies unknown read is null and adapter update error rejects. | One-shot `failNextInvoiceUpdate` remains test-only. |
+| Payment partial/status (0.2.5) | Unit contract; focused baseline 12/12 | Not claimed: no failing partial/status state was observed in this correction. | Same command 12/12 verifies 600/1000 balance and persisted `partially_paid`, then paid and void-return status. | Shared balance/status helper remains synchronous and map-derived. |
+| Payment overpay (0.2.5) | Unit contract; focused baseline 12/12 | Not claimed: no failing overpay state was observed in this correction. | Same command 12/12 verifies 401 after partial and 1001 before any payment reject. | No refactor needed. |
+| Payment persisted void (0.2.5) | Unit contract; focused baseline 12/12 | Corrective RED: `npx vitest run src/test/contracts/repositoryContracts.test.ts`, 3 failed / 9 passed after `void()` returned a voided copy without storing it; `findByInvoice()` returned the active payment. | GREEN: same command 12/12 after `payments.set(id, voided)`; it asserts stored `isVoid`, reason, and date, plus balance/status. | No refactor needed; payment map is the sole payment store. |
+| Daily-income delete (0.2.6) | Unit contract; focused baseline 12/12 | Corrective RED: same command, 3 failed / 9 passed after `delete()` stopped removing its map entry; `findById(...)` expected `null`, received updated income. | GREEN: same command 12/12 after restoring `incomes.delete(id)`; it asserts `findById` null and list exclusion. | No refactor needed; income map is the sole store. |
+| Positive list/create/update/restore (0.2.1–0.2.6) | Unit contract; focused baseline 12/12 | Not claimed: no failing positive CRUD state was observed in this correction. | Same command 12/12 observes non-empty supplier/category/invoice/income lists, persisted updates, and invoice restore to active list. | No refactor needed. |
 
-- RED: `npm run build` exited non-zero because all six repository modules were
-  absent (`TS2307`).
-- GREEN: `npm run build` passed after the contracts were added.
-- Corrective RED: `npm run test:run -- src/test/contracts/repositoryContracts.test.ts`
-  failed because the test-only fixture module did not exist.
-- Corrective GREEN: the focused contract suite passed 12 tests after adding the
-  fixture and strengthening the contracts.
-- Gate corrective RED: `npm run test:run -- src/test/contracts/repositoryContracts.test.ts`
-  failed with two failures after the new assertions were written: no real category
-  invoice-line reference fixture and no persisted invoice lookup in payment state.
-- Gate corrective GREEN: the focused contract suite passed all 12 tests after the
-  fixture created a real invoice line and `PaymentRepository.getBalance()` plus
-  persisted invoice status were implemented in the test adapter.
-- Final verification: focused contracts, `npm run test:run`, coverage, build,
-  lint, and `git diff --check` are recorded after this corrective commit.
-- Diff: measured from the M0.2 base `b55d1c3`, the cumulative M0.2 diff is 628
-  additions and 32 deletions: **596 net lines** (660 changed lines). This
-  corrective work unit is 114 additions and 41 deletions: **73 net lines** (155
-  changed lines). The approved `size:exception` raises the review budget from
-  400 to 800 because the cumulative net diff exceeds 400; it is required, not
-  unnecessary.
+## Verification and size
+
+- Focused six-suite harness (GREEN/REFACTOR): `npx vitest run
+  src/test/contracts/repositoryContracts.test.ts` — 1 file, 12/12 passed.
+- Required gates run after this correction: `npm run test:run`, `npm run
+  test:coverage`, `npm run build`, `npm run lint`, and `git diff --check`.
+- Cumulative M0.2 size measured from `b55d1c3` is 663 additions / 32 deletions:
+  **631 net lines, 695 changed lines**. The approved 400→800 `size:exception`
+  remains required and the cumulative change remains below 800 lines.
 
 ## Delivery boundary
 
-- Strategy: single mainline corrective commit using the approved 400→800
-  `size:exception`.
+- Strategy: one mainline corrective commit, approved 400→800 `size:exception`.
 - Scope: M0.2 only; M0.3 adapters and all UI remain pending.
-- Rollback: revert this milestone before any adapter or consumer milestone.
+- Rollback: revert this corrective commit before any M0.3 consumer work.
