@@ -76,7 +76,7 @@
 | Skip-link traversal and activation evidence | `src/app/Layout.test.tsx` | Component | 10/10 focused M1.2 tests passed before this correction. | The causal Enter `keydown` assertion failed: focus remained on the skip link (9/10 focused). | 10/10 focused tests passed after the explicit Enter/Space handler. | `userEvent.setup()` + `await user.tab()` starts at `body` and reaches the first source-order focusable skip link; independent Enter and Space keydown paths both focus main; route navigation still focuses `h1`. | Extracted a named key handler; its click handler does not cancel the anchor default, preserving the native `href` behavior. |
 | ConfirmDialog disconnected-trigger evidence | `src/components/ConfirmDialog.test.tsx` | Component | Same 10/10 focused baseline. | Strengthened test passed on first run because the existing restoration guard already rejected detached triggers; no production correction was needed. | 10/10 focused tests passed with trigger focused before opening, removed before closure, and focus verified not to land on the disconnected element. | Confirm, cancel, Escape, controlled unmount, detached trigger, and forward/reverse Tab boundaries cover all closure paths. | Retained one effect for capture, dialog focus, and guarded cleanup restoration. |
 
-## Current verification
+## M1.2 historical verification
 
 - Focused M1.2 suite: 10/10 passed.
 - `npm run test:run`: 107 passed, 1 skipped.
