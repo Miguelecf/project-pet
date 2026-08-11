@@ -1,12 +1,12 @@
 # Executable Delivery Plan
 
-**M0.2 repository contracts is complete after its corrective contract gate.** The
-next executable unit remains **M0.3a: local persistence core and catalog adapters**.
+**M0.3a local persistence core and catalog adapters is complete.** The next
+executable unit is **M0.3b: invoice/payment/daily-income adapters, seed data, and restore**.
 
 ## Quick path
 
-1. Implement the M0.3a local schema and gateway behind completed repository contracts.
-2. Run the reusable supplier, category, and settings contracts against local adapters.
+1. Implement the remaining local adapters behind the completed persistence gateway.
+2. Add deterministic seed and restore behavior only in M0.3b.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -39,14 +39,20 @@ next executable unit remains **M0.3a: local persistence core and catalog adapter
 the adapter contract suite can be executed against each implementation. M0.3 has
 not started.
 
-### Next — M0.3a local persistence core and catalog adapters
+### Completed — M0.3a local persistence core and catalog adapters
 
-- [ ] Implement a versioned local schema behind the M0.2 contracts.
-- [ ] Defensively recover from empty, malformed, or incompatible persisted JSON.
-- [ ] Run supplier, category, and settings contracts against local adapters.
-- [ ] Prove empty, malformed, incompatible, and failed-write recovery with automated tests.
+- [x] Implement a versioned local schema behind the M0.2 contracts.
+- [x] Defensively recover from empty, malformed, or incompatible persisted JSON.
+- [x] Run supplier, category, and settings contracts against local adapters.
+- [x] Prove empty, malformed, incompatible, and failed-write recovery with automated tests.
 
-**Exit criteria:** catalog data survives refresh and recovery behavior is proven. Seed restore remains M0.3b.
+**Exit criteria met:** catalog data survives refresh and recovery behavior is proven. Seed restore remains M0.3b.
+
+### Next — M0.3b persistence completion
+
+- [ ] Implement invoice, payment, and daily-income local adapters.
+- [ ] Add deterministic seed loading and restore behavior.
+- [ ] Run the remaining local adapter contracts.
 
 ### Then — M1 local shell and navigation
 

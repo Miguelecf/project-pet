@@ -67,16 +67,16 @@ M0.3 remains pending.
 **Specs**: `local-persistence` (versioned key, defensive parse, write atomicity), `repository-contracts` (contract tests pass against local adapter for suppliers/categories/settings)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 0.3a.1 RED: Write `src/infrastructure/local/LocalStateGateway.test.ts` — test versioned key read, missing/malformed/mismatched degrades to empty, single `setItem` per write, failed write rejects without publishing.
-- [ ] 0.3a.2 GREEN: Create `src/infrastructure/local/LocalStateSchema.ts` — `SCHEMA_VERSION = 1`, storage key `project-pet-v1`, full envelope type.
-- [ ] 0.3a.3 GREEN: Create `src/infrastructure/local/LocalStateGateway.ts` — `read()` with defensive parse, `write(envelope)` with clone-validate + single `setItem`, recovery type `'ready' | 'needs_seed' | 'unavailable'`.
-- [ ] 0.3a.4 RED: Write `src/infrastructure/local/LocalSupplierRepository.test.ts` — run `describeSupplierRepositoryContract` against local adapter.
-- [ ] 0.3a.5 GREEN: Create `src/infrastructure/local/LocalSupplierRepository.ts` — implements `SupplierRepository` via gateway.
-- [ ] 0.3a.6 RED: Write `src/infrastructure/local/LocalCategoryRepository.test.ts` — run `describeCategoryRepositoryContract` against local adapter.
-- [ ] 0.3a.7 GREEN: Create `src/infrastructure/local/LocalCategoryRepository.ts` — implements `CategoryRepository` via gateway.
-- [ ] 0.3a.8 RED: Write `src/infrastructure/local/LocalSettingsRepository.test.ts` — run `describeSettingsRepositoryContract` against local adapter.
-- [ ] 0.3a.9 GREEN: Create `src/infrastructure/local/LocalSettingsRepository.ts` — implements `SettingsRepository` via gateway.
-- [ ] 0.3a.10 REFACTOR: Extract shared gateway test helpers if duplicated.
+- [x] 0.3a.1 RED: Write `src/infrastructure/local/LocalStateGateway.test.ts` — test versioned key read, missing/malformed/mismatched degrades to empty, single `setItem` per write, failed write rejects without publishing.
+- [x] 0.3a.2 GREEN: Create `src/infrastructure/local/LocalStateSchema.ts` — `SCHEMA_VERSION = 1`, storage key `project-pet-v1`, full envelope type.
+- [x] 0.3a.3 GREEN: Create `src/infrastructure/local/LocalStateGateway.ts` — `read()` with defensive parse, `write(envelope)` with clone-validate + single `setItem`, recovery type `'ready' | 'needs_seed' | 'unavailable'`.
+- [x] 0.3a.4 RED: Write `src/infrastructure/local/LocalSupplierRepository.test.ts` — run `describeSupplierRepositoryContract` against local adapter.
+- [x] 0.3a.5 GREEN: Create `src/infrastructure/local/LocalSupplierRepository.ts` — implements `SupplierRepository` via gateway.
+- [x] 0.3a.6 RED: Write `src/infrastructure/local/LocalCategoryRepository.test.ts` — run `describeCategoryRepositoryContract` against local adapter.
+- [x] 0.3a.7 GREEN: Create `src/infrastructure/local/LocalCategoryRepository.ts` — implements `CategoryRepository` via gateway.
+- [x] 0.3a.8 RED: Write `src/infrastructure/local/LocalSettingsRepository.test.ts` — run `describeSettingsRepositoryContract` against local adapter.
+- [x] 0.3a.9 GREEN: Create `src/infrastructure/local/LocalSettingsRepository.ts` — implements `SettingsRepository` via gateway.
+- [x] 0.3a.10 REFACTOR: Extract shared gateway test helpers if duplicated.
 
 ## M0.3b — Invoice/Payment/DailyIncome Repos + Seed + Restore (~620 lines)
 
