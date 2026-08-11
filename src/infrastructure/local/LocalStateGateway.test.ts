@@ -5,6 +5,7 @@ import {
   STORAGE_KEY,
   createEmptyLocalState,
 } from './LocalStateGateway'
+import { SEED_DATA } from './SeedData'
 
 class MemoryStorage {
   readonly values = new Map<string, string>()
@@ -28,7 +29,7 @@ function createValidPersistedState() {
     settings: { currency: 'ARS', dueAlertDays: 7, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' },
     suppliers: [{ id: 'supplier-1', name: 'Supplier', normalizedName: 'supplier', defaultDueDays: 30, deletedAt: null, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
     categories: [{ id: 'category-1', name: 'Category', normalizedName: 'category', createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
-    invoices: [{ id: 'invoice-1', supplierId: 'supplier-1', docRef: 'DOC-1', issueDate: '2020-01-01', dueDate: '2020-01-31', currency: 'ARS', totalMinor: 1000, status: 'pending', notes: null, deletedAt: null, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
+    invoices: [{ id: 'invoice-1', supplierId: 'supplier-1', docRef: 'DOC-1', issueDate: '2020-01-01', dueDate: '2020-01-31', currency: 'ARS', totalMinor: 1000, status: 'paid', notes: null, deletedAt: null, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
     invoiceLines: [{ id: 'line-1', invoiceId: 'invoice-1', categoryId: 'category-1', productRef: 'Product', externalSku: null, description: 'Description', quantity: 1, unitCostMinor: 1000, lineTotalMinor: 1000, position: 1, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
     payments: [{ id: 'payment-1', invoiceId: 'invoice-1', amountMinor: 1000, paymentDate: '2020-01-01', method: 'cash', reference: null, notes: null, createdAt: '2020-01-01T00:00:00.000Z', isVoid: false, voidedAt: null, voidReason: null }],
     dailyIncomes: [{ id: 'income-1', saleDate: '2020-01-01', amountMinor: 1000, currency: 'ARS', note: null, createdAt: '2020-01-01T00:00:00.000Z', updatedAt: '2020-01-01T00:00:00.000Z' }],
@@ -69,6 +70,8 @@ describe('LocalStateGateway', () => {
     ['invoice supplier relationship', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].supplierId = 'missing-supplier' }],
     ['invoice line relationship', (state: ReturnType<typeof createValidPersistedState>) => { state.invoiceLines[0].categoryId = 'missing-category' }],
     ['payment union', (state: ReturnType<typeof createValidPersistedState>) => { state.payments[0].isVoid = true }],
+    ['invoice payment status', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].status = 'pending' }],
+    ['invoice payment balance', (state: ReturnType<typeof createValidPersistedState>) => { state.payments[0].amountMinor = 1001 }],
     ['daily income non-future date', (state: ReturnType<typeof createValidPersistedState>) => { state.dailyIncomes[0].saleDate = '2999-01-01' }],
     ['impossible invoice issue date', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].issueDate = '2026-02-30' }],
     ['impossible invoice due date', (state: ReturnType<typeof createValidPersistedState>) => { state.invoices[0].dueDate = '2026-02-30' }],
@@ -124,5 +127,37 @@ describe('LocalStateGateway', () => {
 
     expect(storage.setItemCalls).toBe(0)
     expect(gateway.read()).toEqual(createEmptyLocalState())
+  })
+
+  it('loads the complete deterministic seed in one atomic write without mutating the constant', async () => {
+    const storage = new MemoryStorage()
+    const gateway = new LocalStateGateway(storage)
+
+    await gateway.loadSeed()
+    const persisted = JSON.parse(storage.getItem(STORAGE_KEY) ?? '')
+    persisted.suppliers[0].name = 'Modified persisted supplier'
+
+    expect(storage.setItemCalls).toBe(1)
+    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Demo Supplier A' })
+    expect(gateway.read().invoices.map((invoice) => invoice.status)).toEqual(['pending', 'partially_paid', 'paid'])
+    expect(SEED_DATA.suppliers[0].name).toBe('Demo Supplier A')
+  })
+
+  it('restores an independent, deterministic seed copy after mutations', async () => {
+    const storage = new MemoryStorage()
+    const gateway = new LocalStateGateway(storage)
+    await gateway.loadSeed()
+    const changed = gateway.read() as ReturnType<LocalStateGateway['read']> & { suppliers: Array<{ name: string }> }
+    changed.suppliers[0].name = 'Changed state'
+    await gateway.write(changed)
+
+    await gateway.restore()
+    const firstRestore = gateway.read() as ReturnType<LocalStateGateway['read']> & { categories: Array<{ name: string }> }
+    firstRestore.categories[0].name = 'Changed returned copy'
+    await gateway.restore()
+
+    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Demo Supplier A' })
+    expect(gateway.read().categories[0]).toMatchObject({ name: 'Demo Category A' })
+    expect(storage.setItemCalls).toBe(4)
   })
 })

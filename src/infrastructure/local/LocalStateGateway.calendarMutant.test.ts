@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx'
 const gatewaySource = 'src/infrastructure/local/LocalStateGateway.ts'
 const schemaSource = 'src/infrastructure/local/LocalStateSchema.ts'
+const seedDataSource = 'src/infrastructure/local/SeedData.ts'
 const gatewayTest = 'src/infrastructure/local/LocalStateGateway.test.ts'
 const temporaryDirectories: string[] = []
 
@@ -13,6 +14,7 @@ function runPermissiveCalendarMutation() {
   const directory = mkdtempSync(join('src/infrastructure/local', '.calendar-mutant-'))
   temporaryDirectories.push(directory)
   copyFileSync(schemaSource, join(directory, 'LocalStateSchema.ts'))
+  copyFileSync(seedDataSource, join(directory, 'SeedData.ts'))
   copyFileSync(gatewayTest, join(directory, 'LocalStateGateway.test.ts'))
 
   const source = readFileSync(gatewaySource, 'utf8')

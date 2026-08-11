@@ -1,4 +1,5 @@
 import { createEmptyLocalState, SCHEMA_VERSION, STORAGE_KEY, type LocalState } from './LocalStateSchema'
+import { SEED_DATA } from './SeedData'
 
 export type LocalStateRecovery = 'ready' | 'needs_seed' | 'unavailable'
 
@@ -48,6 +49,9 @@ export class LocalStateGateway {
     this.recovery = 'ready'
   }
 
+  async loadSeed(): Promise<void> { await this.write(cloneState(SEED_DATA)) }
+  async restore(): Promise<void> { await this.loadSeed() }
+
   private recoverNeedsSeed(): LocalState {
     this.recovery = 'needs_seed'
     return createEmptyLocalState()
@@ -83,6 +87,15 @@ function isLocalState(value: unknown): value is LocalState {
     && validInvoices.every((invoice) => supplierIds.has(invoice.supplierId as string) && validLines.some((line) => line.invoiceId === invoice.id))
     && validLines.every((line) => invoiceIds.has(line.invoiceId as string) && categoryIds.has(line.categoryId as string))
     && validPayments.every((payment) => invoiceIds.has(payment.invoiceId as string))
+    && validInvoices.every((invoice) => hasConsistentPaymentBalance(invoice, validPayments.filter((payment) => payment.invoiceId === invoice.id)))
+}
+
+function hasConsistentPaymentBalance(invoice: Record<string, unknown>, payments: readonly Record<string, unknown>[]): boolean {
+  const paid = payments.filter((payment) => payment.isVoid === false).reduce((total, payment) => total + (payment.amountMinor as number), 0)
+  const totalMinor = invoice.totalMinor as number
+  const remaining = totalMinor - paid
+  const expectedStatus = paid === 0 ? 'pending' : remaining === 0 ? 'paid' : 'partially_paid'
+  return remaining >= 0 && invoice.status === expectedStatus
 }
 
 function isSettings(value: Record<string, unknown>): boolean {

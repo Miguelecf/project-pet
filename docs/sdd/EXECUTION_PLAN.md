@@ -1,12 +1,12 @@
 # Executable Delivery Plan
 
-**M0.3a local persistence core and catalog adapters is complete.** The next
-executable unit is **M0.3b: invoice/payment/daily-income adapters, seed data, and restore**.
+**M0.3b local persistence completion is complete.** The next executable unit is
+**M1.1: BrowserRouter, layout, and sidebar navigation**.
 
 ## Quick path
 
-1. Implement the remaining local adapters behind the completed persistence gateway.
-2. Add deterministic seed and restore behavior only in M0.3b.
+1. Add the local shell and route map behind the completed repositories.
+2. Keep deterministic seed and restore behavior inside the local gateway.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -47,11 +47,14 @@ and the adapter contract suite executes against completed M0.3a local adapters.
 
 **Exit criteria met:** catalog data survives refresh and recovery behavior is proven. Seed restore remains M0.3b.
 
-### Next — M0.3b persistence completion
+### Completed — M0.3b persistence completion
 
-- [ ] Implement invoice, payment, and daily-income local adapters.
-- [ ] Add deterministic seed loading and restore behavior.
-- [ ] Run the remaining local adapter contracts.
+- [x] Implement invoice, payment, and daily-income local adapters.
+- [x] Add deterministic seed loading and restore behavior.
+- [x] Run the remaining local adapter contracts.
+
+**Exit criteria met:** all six repository contracts have local adapters; seed and
+restore write validated deep copies through the atomic gateway.
 
 ### Then — M1 local shell and navigation
 

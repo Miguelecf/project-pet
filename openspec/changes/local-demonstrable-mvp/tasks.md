@@ -84,17 +84,17 @@ M0.3b remains pending; M0.3a is complete.
 **Specs**: `local-persistence` (seed loading, restore), `demo-seed` (seed constant, immutability), `repository-contracts` (remaining contract tests pass)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 0.3b.1 RED: Write `src/infrastructure/local/LocalInvoiceRepository.test.ts` — run `describeInvoiceRepositoryContract`.
-- [ ] 0.3b.2 GREEN: Create `src/infrastructure/local/LocalInvoiceRepository.ts` — implements `InvoiceRepository` via gateway.
-- [ ] 0.3b.3 RED: Write `src/infrastructure/local/LocalPaymentRepository.test.ts` — run `describePaymentRepositoryContract`.
-- [ ] 0.3b.4 GREEN: Create `src/infrastructure/local/LocalPaymentRepository.ts` — implements `PaymentRepository` via gateway.
-- [ ] 0.3b.5 RED: Write `src/infrastructure/local/LocalDailyIncomeRepository.test.ts` — run `describeDailyIncomeRepositoryContract`.
-- [ ] 0.3b.6 GREEN: Create `src/infrastructure/local/LocalDailyIncomeRepository.ts` — implements `DailyIncomeRepository` via gateway.
-- [ ] 0.3b.7 RED: Write `src/infrastructure/local/SeedData.test.ts` — verify structure (2 suppliers, 6 categories, 3 invoices, 2 daily incomes, 1 overdue), fake values, `SEED_DATA_VERSION`, immutability after restore.
-- [ ] 0.3b.8 GREEN: Create `src/infrastructure/local/SeedData.ts` — inline `SEED_DATA` constant with `SEED_DATA_VERSION`, deep-copy on restore.
-- [ ] 0.3b.9 RED: Extend `LocalStateGateway.test.ts` — `loadSeed()` writes seed envelope atomically, `restore()` produces independent deep-copy, subsequent mutations do not affect stored seed.
-- [ ] 0.3b.10 GREEN: Add `loadSeed()` and `restore()` to `LocalStateGateway` — deep-copy seed, atomic write.
-- [ ] 0.3b.11 REFACTOR: Verify contract tests all pass. Confirm seed immutability.
+- [x] 0.3b.1 RED: Write `src/infrastructure/local/LocalInvoiceRepository.test.ts` — run `describeInvoiceRepositoryContract`.
+- [x] 0.3b.2 GREEN: Create `src/infrastructure/local/LocalInvoiceRepository.ts` — implements `InvoiceRepository` via gateway.
+- [x] 0.3b.3 RED: Write `src/infrastructure/local/LocalPaymentRepository.test.ts` — run `describePaymentRepositoryContract`.
+- [x] 0.3b.4 GREEN: Create `src/infrastructure/local/LocalPaymentRepository.ts` — implements `PaymentRepository` via gateway.
+- [x] 0.3b.5 RED: Write `src/infrastructure/local/LocalDailyIncomeRepository.test.ts` — run `describeDailyIncomeRepositoryContract`.
+- [x] 0.3b.6 GREEN: Create `src/infrastructure/local/LocalDailyIncomeRepository.ts` — implements `DailyIncomeRepository` via gateway.
+- [x] 0.3b.7 RED: Write `src/infrastructure/local/SeedData.test.ts` — verify structure (2 suppliers, 6 categories, 3 invoices, 2 daily incomes, 1 overdue), fake values, `SEED_DATA_VERSION`, immutability after restore.
+- [x] 0.3b.8 GREEN: Create `src/infrastructure/local/SeedData.ts` — inline `SEED_DATA` constant with `SEED_DATA_VERSION`, deep-copy on restore.
+- [x] 0.3b.9 RED: Extend `LocalStateGateway.test.ts` — `loadSeed()` writes seed envelope atomically, `restore()` produces independent deep-copy, subsequent mutations do not affect stored seed.
+- [x] 0.3b.10 GREEN: Add `loadSeed()` and `restore()` to `LocalStateGateway` — deep-copy seed, atomic write.
+- [x] 0.3b.11 REFACTOR: Verify contract tests all pass. Confirm seed immutability.
 
 ## M1.1 — App Shell: Router + Layout + Sidebar (~260 lines)
 

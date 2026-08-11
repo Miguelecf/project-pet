@@ -11,7 +11,7 @@
 
 - [x] **M0.2** — Async per-module repository interfaces + executable contract/conformance suites (coverage gate complete; `size:exception` approved)
 - [x] **M0.3a** — Versioned LocalStateSchema + defensive/atomic gateway + settings/supplier/category local repos (~500 lines)
-- [ ] **M0.3b** — Invoice/payment/daily-income local repos + seed data + restore (~620 lines)
+- [x] **M0.3b** — Invoice/payment/daily-income local repos + deterministic seed data + restore
 
 ## App Shell
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 2 | 24 | 8% |
+| 3 | 24 | 13% |
 
 ## Preserved Boundaries (read-only)
 

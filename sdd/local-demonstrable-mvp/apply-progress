@@ -4,12 +4,13 @@
 
 - [x] M0.2 — Async repository contracts and executable conformance suites.
 - [x] M0.3a — LocalStateSchema, defensive atomic gateway, catalog local repositories, and persisted-envelope validation.
-- [ ] M0.3b — Invoice/payment/daily-income adapters, seed data, and restore.
+- [x] M0.3b — Invoice/payment/daily-income adapters, seed data, and restore.
 
 ## Completed tasks
 
 - [x] 0.2.1–0.2.13: Async module contracts, reusable suites, and corrective conformance harness.
 - [x] 0.3a.1–0.3a.10: Gateway coverage, complete state schema, supplier/category/settings adapters, shared local test fixtures, and persisted-envelope validation.
+- [x] 0.3b.1–0.3b.11: Invoice/payment/daily-income adapters, deterministic seed data, atomic seed load/restore, and local contract verification.
 
 ## TDD Cycle Evidence
 
@@ -20,23 +21,30 @@ Historical execution order is not claimed where no commit-pinned run exists. The
 | M0.3a envelope validation | Gateway 9/9 | 7 failed / 9 passed; malformed parseable records were `ready`. | 16/16 passed; invalid envelopes recover empty/`needs_seed`. | Focused predicates extracted. |
 | Strict calendar validation | Gateway 16/16 | 5 failed / 16 passed for impossible invoice issue/due, payment, sale, and entity-timestamp dates. | 21/21 passed; valid ISO values and future-date rules retained. | Shared calendar predicate replaces regex + `Date.parse`. |
 | M0.3a gateway/adapters | 23/23 prior focused suite | Historical order not claimed. | Current focused suite 28/28 passed. | Existing atomic write and fixture patterns retained. |
+| 0.3b.1–0.3b.2 invoice adapter | New local invoice contract | Missing `LocalInvoiceRepository` module (0 tests collected). | 2/2 contract tests passed. | Reused gateway state and blocked edits with active payments. |
+| 0.3b.3–0.3b.4 payment adapter | New local payment contract | Missing `LocalPaymentRepository` module (0 tests collected). | 4/4 contract tests passed. | Centralized persisted balance/status derivation. |
+| 0.3b.5–0.3b.6 daily-income adapter | New local daily-income contract | Missing `LocalDailyIncomeRepository` module (0 tests collected). | 2/2 contract tests passed. | Preserved currency snapshot and descending reads. |
+| 0.3b.7–0.3b.8 seed data | New seed unit tests | Missing `SeedData` module (0 tests collected). | 2/2 tests passed. | Inline fake seed covers all required statuses and overdue record. |
+| 0.3b.9–0.3b.10 seed gateway | Gateway 21/21 | 2 new tests failed: `loadSeed is not a function`. | Gateway 25/25 passed. | `loadSeed` and `restore` both clone then use one validated atomic write. |
+| 0.3b.11 contract/seed refactor | 35 focused tests | N/A — verification-only task. | 35/35 focused tests passed. | Calendar mutant copies `SeedData.ts` alongside its isolated gateway copy. |
 
 ## Validation contract
 
-`LocalStateGateway` validates settings, supplier/category, invoice/line, payment, and daily-income envelopes and their references. ISO calendar dates and UTC timestamps are checked strictly, so impossible values such as `2026-02-30` recover to empty state with `needs_seed`; valid ISO values remain `ready`. No seed/loadSeed/restore, M0.3b adapter, UI, domain type, Supabase, or auth behavior was added.
+`LocalStateGateway` validates settings, supplier/category, invoice/line, payment, and daily-income envelopes, their references, and invoice payment balance/status consistency. ISO calendar dates and UTC timestamps are checked strictly, so impossible values such as `2026-02-30` recover to empty state with `needs_seed`; valid ISO values remain `ready`. `loadSeed()` and `restore()` clone deterministic fake data and write it atomically. No UI/provider/router, domain type, Supabase, or auth behavior was added.
 
 ## Verification
 
 - Historical corrected evidence: gateway 16/16; focused gateway/adapters 23/23; full/coverage 63 passed, 1 skipped; statements 92.83%, branches 84.66%, functions 96.96%, lines 97.73%; build/lint/diff-check passed.
 - Current correction: gateway 21/21; focused gateway/adapters 28/28.
-- `npm run test:run`: 69 passed, 1 skipped.
-- `npm run test:coverage`: 69 passed, 1 skipped; statements 92.96%, branches 85.09%, functions 96.98%, lines 97.77%.
+- Focused M0.3b adapter/seed/restore tests: 35 passed.
+- `npm run test:run`: 83 passed, 1 skipped.
+- `npm run test:coverage`: 83 passed, 1 skipped; statements 91.17%, branches 81.86%, functions 93.64%, lines 98.27%.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 
 ## Scope and delivery
 
-- M0.2 and M0.3a are complete; M0.3b remains pending.
+- M0.2, M0.3a, and M0.3b are complete; M1.1 remains next.
 - Delivery is direct mainline per-milestone `size:exception`, hard ceiling 800 changed lines.
 - Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat cefedc1..HEAD` = 16 files, 679 insertions, 34 deletions, 713 changed lines, 87 remaining under 800.
 - Calendar conformance reproducer: at commit `38cbefa`, `npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts` → 1 file / 1 test passed (exit 0). It launches the committed gateway suite against an isolated test-only permissive-calendar mutation; the child suite exits non-zero and names `impossible invoice issue date`.
-- Current cumulative M0.3a: `git diff --shortstat cefedc1..HEAD` = 17 files, 734 insertions, 34 deletions, 768 changed lines; 32 remain under 800. No prior commit is amended or rewritten.
+- M0.3a remains pinned at `e278f21` and was not expanded except cohesive gateway seed/restore and its isolated mutant fixture. M0.3b has its own 800-line ceiling. No prior commit is amended or rewritten.
