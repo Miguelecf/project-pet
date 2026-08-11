@@ -32,6 +32,8 @@ next executable unit remains **M0.3a: local persistence core and catalog adapter
 - [x] Run focused contract tests plus tests, coverage, lint, and build; record the evidence in apply progress.
 - [x] Correct the M0.2 contract gate: real category invoice-line references,
   complete settings defaults, persisted payment balance/status, and observable CRUD lists.
+- [x] Prove representative broken test-only adapters fail the shared contracts
+  before retaining M0.2 completion.
 
 **Exit criteria:** UI-facing code depends only on module repositories/services, and
 the adapter contract suite can be executed against each implementation. M0.3 has

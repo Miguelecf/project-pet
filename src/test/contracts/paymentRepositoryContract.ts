@@ -11,7 +11,7 @@ export interface PaymentContractFixture {
 
 export function describePaymentRepositoryContract(createFixture: () => PaymentContractFixture): void {
   describe('PaymentRepository contract', () => {
-    it('persists partial, complete, and voided payment balance and status transitions', async () => {
+    it('derives remaining balance and invoice status across partial and complete payments', async () => {
       const { createInvoice, invoiceRepository, repository } = createFixture()
       const invoiceId = await createInvoice(1000 as never)
       const payment = await repository.register({ invoiceId, amountMinor: 600 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })
@@ -20,10 +20,24 @@ export function describePaymentRepositoryContract(createFixture: () => PaymentCo
       expect(await repository.findByInvoice(invoiceId)).toContainEqual(payment)
       expect(await repository.getBalance(invoiceId)).toEqual({ remainingMinor: 400, status: 'partially_paid' })
       expect(await invoiceRepository.findById(invoiceId)).toMatchObject({ invoice: { totalMinor: 1000, status: 'partially_paid' } })
-      await expect(repository.register({ invoiceId, amountMinor: 401 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })).rejects.toThrow('overpayment')
       const remainder = await repository.register({ invoiceId, amountMinor: 400 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })
       expect(await repository.getBalance(invoiceId)).toEqual({ remainingMinor: 0, status: 'paid' })
       expect(await invoiceRepository.findById(invoiceId)).toMatchObject({ invoice: { totalMinor: 1000, status: 'paid' } })
+      expect(remainder).toMatchObject({ invoiceId, amountMinor: 400, isVoid: false })
+    })
+
+    it('rejects payment amounts greater than the remaining balance', async () => {
+      const { createInvoice, repository } = createFixture()
+      const invoiceId = await createInvoice(1000 as never)
+      await repository.register({ invoiceId, amountMinor: 600 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })
+      await expect(repository.register({ invoiceId, amountMinor: 401 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })).rejects.toThrow('overpayment')
+    })
+
+    it('persists a voided payment and returns its balance and status transition', async () => {
+      const { createInvoice, invoiceRepository, repository } = createFixture()
+      const invoiceId = await createInvoice(1000 as never)
+      const payment = await repository.register({ invoiceId, amountMinor: 600 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })
+      const remainder = await repository.register({ invoiceId, amountMinor: 400 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })
       const voided = await repository.void(payment.id, 'Recorded in error')
       expect(voided).toMatchObject({ id: payment.id, isVoid: true, voidReason: 'Recorded in error', voidedAt: '2026-08-10T00:00:00.000Z' })
       expect(await repository.findByInvoice(invoiceId)).toContainEqual(expect.objectContaining({

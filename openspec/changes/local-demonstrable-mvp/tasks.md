@@ -55,7 +55,10 @@ Revert in this exact order: GMVP → Q5 → Q4 → Q3 → Q2 → M4.3 → M4.2 �
 **Corrective gate record:** all M0.2 contract tasks remain complete. The
 discoverable suites additionally prove real category invoice-line references,
 complete deterministic Settings defaults, persisted payment balance/status, and
-observable CRUD/list/delete/restore behavior. M0.3 remains pending.
+observable CRUD/list/delete/restore behavior. The discoverable conformance
+harness reproduces failures for persisted payment void, daily-income hard-delete
+lookup, category post-delete list, and payment balance/overpayment/status.
+M0.3 remains pending.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 

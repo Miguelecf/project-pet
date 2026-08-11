@@ -13,7 +13,13 @@ import type { SettingsContractFixture } from './settingsRepositoryContract'
 const now = '2026-08-10T00:00:00.000Z' as never
 const defaults = (): Settings => ({ currency: 'USD', dueAlertDays: 7 as never, createdAt: now, updatedAt: now })
 
-export function createInMemoryContractFixtures(): {
+export type ContractMutant =
+  | 'category-delete-retained'
+  | 'daily-income-delete-retained'
+  | 'payment-balance-untracked'
+  | 'payment-void-unpersisted'
+
+export function createInMemoryContractFixtures(options: { readonly mutant?: ContractMutant } = {}): {
   suppliers: SupplierRepository
   categories: CategoryContractFixture
   settings: SettingsContractFixture
@@ -21,6 +27,7 @@ export function createInMemoryContractFixtures(): {
   payments: PaymentContractFixture
   dailyIncome: DailyIncomeRepository
 } {
+  const { mutant } = options
   let sequence = 0
   let failNextInvoiceUpdate = false
   let currentSettings = defaults()
@@ -61,7 +68,7 @@ export function createInMemoryContractFixtures(): {
       categories.set(category.id, category); return category
     },
     async update(id, { name }) { const item = categories.get(id); if (!item) throw new Error('category not found'); const trimmed = name.trim(); const normalizedName = trimmed.toLowerCase(); if ([...categories.values()].some((other) => other.id !== id && other.normalizedName === normalizedName)) throw new Error('duplicate category'); const updated = { ...item, name: trimmed, normalizedName, updatedAt: now }; categories.set(id, updated); return updated },
-    async delete(id) { if (await categoryRepository.isReferenced(id)) throw new Error('category is referenced'); if (!categories.delete(id)) throw new Error('category not found') },
+    async delete(id) { if (await categoryRepository.isReferenced(id)) throw new Error('category is referenced'); if (!categories.has(id)) throw new Error('category not found'); if (mutant !== 'category-delete-retained') categories.delete(id) },
     async isReferenced(id) { return [...lines.values()].flat().some((line) => line.categoryId === id) ? 1 : 0 },
   }
 
@@ -99,11 +106,12 @@ export function createInMemoryContractFixtures(): {
       const payment = { id: next('payment'), ...input, isVoid: false, voidedAt: null, voidReason: null, createdAt: now } as ActivePayment
       payments.set(payment.id, payment); updateInvoicePaymentStatus(invoice.id); return payment
     },
-    async void(id, reason) { const payment = payments.get(id); if (!payment || payment.isVoid) throw new Error('payment not found'); const voided = { ...payment, isVoid: true, voidedAt: now, voidReason: reason as never } as VoidedPayment; payments.set(id, voided); updateInvoicePaymentStatus(payment.invoiceId); return voided },
+    async void(id, reason) { const payment = payments.get(id); if (!payment || payment.isVoid) throw new Error('payment not found'); const voided = { ...payment, isVoid: true, voidedAt: now, voidReason: reason as never } as VoidedPayment; if (mutant !== 'payment-void-unpersisted') payments.set(id, voided); updateInvoicePaymentStatus(payment.invoiceId); return voided },
   }
 
   function getPaymentBalance(invoiceId: InvoiceId): { readonly remainingMinor: MoneyMinor; readonly status: InvoiceStatus } {
     const invoice = invoices.get(invoiceId); if (!invoice) throw new Error('invoice not found')
+    if (mutant === 'payment-balance-untracked') return { remainingMinor: invoice.totalMinor, status: 'pending' }
     const paid = [...payments.values()].filter((payment) => payment.invoiceId === invoiceId && !payment.isVoid).reduce((sum, payment) => sum + (payment.amountMinor as number), 0)
     const remainingMinor = ((invoice.totalMinor as number) - paid) as never
     return { remainingMinor, status: paid === 0 ? 'pending' : remainingMinor === 0 ? 'paid' : 'partially_paid' }
@@ -120,7 +128,7 @@ export function createInMemoryContractFixtures(): {
     async findById(id) { return incomes.get(id) ?? null },
     async create(input) { if ([...incomes.values()].some((item) => item.saleDate === input.saleDate)) throw new Error('duplicate sale date'); const income = { id: next('income'), ...input, currency: currentSettings.currency, createdAt: now, updatedAt: now } as DailyIncome; incomes.set(income.id, income); return income },
     async update(id, input) { const previous = incomes.get(id); if (!previous) throw new Error('income not found'); if ([...incomes.values()].some((item) => item.id !== id && item.saleDate === input.saleDate)) throw new Error('duplicate sale date'); const updated = { ...previous, ...input, updatedAt: now }; incomes.set(id, updated); return updated },
-    async delete(id) { if (!incomes.delete(id)) throw new Error('income not found') },
+    async delete(id) { if (!incomes.has(id)) throw new Error('income not found'); if (mutant !== 'daily-income-delete-retained') incomes.delete(id) },
   }
 
   return {

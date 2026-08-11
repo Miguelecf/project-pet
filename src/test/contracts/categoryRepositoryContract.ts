@@ -8,7 +8,7 @@ export interface CategoryContractFixture {
 
 export function describeCategoryRepositoryContract(createFixture: () => CategoryContractFixture): void {
   describe('CategoryRepository contract', () => {
-    it('creates, reads, updates, and deletes unreferenced categories', async () => {
+    it('creates, reads, updates, and removes unreferenced categories by lookup', async () => {
       const { repository } = createFixture()
       const created = await repository.create({ name: '  Demo Category A  ' })
 
@@ -22,6 +22,12 @@ export function describeCategoryRepositoryContract(createFixture: () => Category
       expect(await repository.isReferenced(created.id)).toBe(0)
       await repository.delete(created.id)
       expect(await repository.findById(created.id)).toBeNull()
+    })
+
+    it('excludes an unreferenced category from the post-delete list', async () => {
+      const { repository } = createFixture()
+      const created = await repository.create({ name: 'Demo Category A' })
+      await repository.delete(created.id)
       expect(await repository.findAll()).not.toContainEqual(expect.objectContaining({ id: created.id }))
     })
 
