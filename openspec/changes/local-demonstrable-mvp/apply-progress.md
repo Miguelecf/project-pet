@@ -1,109 +1,39 @@
 # Apply Progress: Local Demonstrable MVP
 
-## M0.2 and M0.3a complete — corrective gates
+## Completed milestones
 
-Six discoverable, reusable repository contract suites and a conformance harness
-execute against test-only in-memory fixtures. The fixtures use repository maps
-as the single source of truth: category references come from stored invoice
-lines; deletes remove stored category/daily-income records; and void replaces
-the stored payment object. The conformance tests use a 30-second per-test
-  timeout because each deliberately launches a child Vitest process.
+- [x] M0.2 — Async repository contracts and executable conformance suites.
+- [x] M0.3a — LocalStateSchema, defensive atomic gateway, catalog local repositories, and persisted-envelope validation.
+- [x] M0.3b — Invoice/payment/daily-income adapters, deterministic seed data, and restore.
 
 ## Completed tasks
 
-- [x] 0.2.1–0.2.6: Runtime-executed supplier, category, settings, invoice,
-  payment, and daily-income contract suites.
-- [x] 0.2.7–0.2.12: Six async per-module interfaces. Task 0.2.11 now correctly
-  maps `PaymentRepository.getBalance()` with `findByInvoice`, `register`, and
-  `void`.
-- [x] 0.2.13: No `CrudRepository<T>` or `BaseRepository` exists.
-- [x] M0.2 corrective gate: persisted mutation observations strengthened;
-  reproducible conformance mutations now prove the four corrected behaviors;
-  M0.3b remains pending.
+- [x] 0.2.1–0.2.13: Async module contracts, reusable suites, and corrective conformance harness.
+- [x] 0.3a.1–0.3a.10: Gateway coverage, complete state schema, supplier/category/settings adapters, shared local test fixtures, and persisted-envelope validation.
+- [x] 0.3b.1–0.3b.11: Invoice/payment/daily-income adapters, deterministic seed data, atomic seed load/restore, and local contract verification.
 
 ## TDD cycle evidence
 
-All commands below ran from the repository root. Historical entries are
-explicitly reproduced conformance failures, not claims about an unavailable
-historical timestamp. “Not claimed” deliberately means no failing run was
-observed for that behavior; it is not represented as a RED cycle.
+| Task | Test file | Layer | RED | GREEN | REFACTOR |
+|---|---|---|---|---|---|
+| 0.3b.1–0.3b.2 | `LocalInvoiceRepository.test.ts` | Unit | Missing module; 0 tests collected. | 2/2 passed. | Reused gateway state and retained active-payment edit guard. |
+| 0.3b.3–0.3b.4 | `LocalPaymentRepository.test.ts` | Unit | Missing module; 0 tests collected. | 4/4 passed. | Centralized persisted balance/status derivation. |
+| 0.3b.5–0.3b.6 | `LocalDailyIncomeRepository.test.ts` | Unit | Missing module; 0 tests collected. | 2/2 passed. | Preserved currency snapshot and descending reads. |
+| 0.3b.7–0.3b.8 | `SeedData.test.ts` | Unit | Missing module; 0 tests collected. | 2/2 passed. | Inline deterministic fake data retained. |
+| 0.3b.9–0.3b.10 | `LocalStateGateway.test.ts` | Unit | 2 tests failed: `loadSeed is not a function`. | 25/25 passed. | `loadSeed()` and `restore()` clone then use one validated atomic write. |
+| 0.3b.11 | Focused local suite | Unit | N/A — verification-only task. | 35/35 passed. | Calendar mutant copies `SeedData.ts` with its isolated gateway copy. |
 
-| Behavior / task | Test layer and safety net | RED evidence | GREEN evidence | REFACTOR evidence |
-|---|---|---|---|---|
-| Conformance timeout correction | Unit harness; baseline focused contracts 15/15, harness 5/5 | `npm run test:coverage` → 2 failed: child-process tests exceeded Vitest's 5000ms default. | Focused 20/20 and coverage 40 passed / 1 skipped with the 30-second per-test timeout. | Per-test only; assertions and mutants unchanged. |
-| Category reference (0.2.2) | Unit contract; focused baseline 15/15 | Not claimed: no current or commit-pinned reproducer is retained for this historical category-reference claim. | Focused suite derives `isReferenced()` from stored invoice lines. | Fixture retains one `lines` map; no reference set. |
-| Category hard-delete lookup (0.2.2) | Unit contract; safety net 15/15 | `CONTRACT_MUTANT=category-delete-retained npx vitest run src/test/contracts/repositoryContracts.mutant.test.ts` → 2 failed / 1 passed; lookup expected `null`, received stored category. | `npx vitest run src/test/contracts/repositoryContracts.test.ts` → 15/15 passed. | Map remains the sole category store. |
-| Category post-delete list (0.2.2) | Unit contract; safety net 15/15 | Same command: `excludes an unreferenced category from the post-delete list` failed because the persisted category remained in `findAll()`. | Focused suite 15/15 and harness 5/5 pass. | Lookup and list are separate assertions, so both execute. |
-| Settings defaults (0.2.3) | Unit contract; focused baseline 15/15 | Not claimed: no failing defaults state was observed in this correction. | `npx vitest run src/test/contracts/repositoryContracts.test.ts` → 15/15 verifies the complete deterministic settings object. | Existing `defaults()` factory retained. |
-| Settings currency lock (0.2.3) | Unit contract; focused baseline 15/15 | Not claimed: no failing lock state was observed in this correction. | Same command → 15/15 verifies USD→ARS after invoice and ARS→USD after daily income reject. | Existing map-backed financial-record check retained. |
-| Invoice update (0.2.4) | Unit contract; focused baseline 15/15 | Not claimed: no failing update state was observed in this correction. | Same command → 15/15 verifies persisted invoice/line update and active/deleted/restore queries. | No refactor needed. |
-| Invoice errors (0.2.4) | Unit contract; focused baseline 15/15 | Not claimed: no current or commit-pinned reproducer is retained for the historical invoice-write failure. | Same command → 15/15 verifies unknown read is null and adapter update error rejects. | One-shot `failNextInvoiceUpdate` remains test-only. |
-| Payment remaining-balance, overpayment, status (0.2.5) | Unit contract; safety net 15/15 | `CONTRACT_MUTANT=payment-balance-untracked npx vitest run src/test/contracts/repositoryContracts.mutant.test.ts` → 3 failed / 1 passed: 600/1000 returned 1000/pending and 401 resolved instead of rejecting. | Focused suite 15/15 verifies partial 400/`partially_paid`, complete 0/`paid`, and overpayment rejection; harness 5/5 confirms rejection. | Split transition and overpayment assertions to make both observable. |
-| Payment persisted void (0.2.5) | Unit contract; safety net 15/15 | `CONTRACT_MUTANT=payment-void-unpersisted npx vitest run src/test/contracts/repositoryContracts.mutant.test.ts` → 1 failed / 3 passed; persisted lookup returned active payment. | Focused suite 15/15 verifies stored void fields, balance, and status; harness 5/5 passes. | Payment map is the sole payment store. |
-| Daily-income hard-delete lookup (0.2.6) | Unit contract; safety net 15/15 | `CONTRACT_MUTANT=daily-income-delete-retained npx vitest run src/test/contracts/repositoryContracts.mutant.test.ts` → 1 failed / 1 passed; `findById` returned stored income. | Focused suite 15/15 verifies `findById` is null; harness 5/5 passes. | Income map is the sole store. |
-| Positive list/create/update/restore (0.2.1–0.2.6) | Unit contract; focused baseline 15/15 | Not claimed: no failing positive CRUD state was observed in this correction. | Same command → 15/15 observes non-empty supplier/category/invoice/income lists, persisted updates, and invoice restore to active list. | No refactor needed. |
+## Current verification
 
-## Verification and size
+- Focused adapters/seed/gateway: 35/35 passed.
+- Calendar mutant: 1/1 passed.
+- `npm run test:run`: 83 passed, 1 skipped.
+- `npm run test:coverage`: 83 passed, 1 skipped; statements 91.17%, branches 81.86%, functions 93.64%, lines 98.27%.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed.
 
-- Focused six-suite harness (GREEN/REFACTOR): `npx vitest run
-  src/test/contracts/repositoryContracts.test.ts` — 1 file, 15/15 passed.
-- Conformance harness (GREEN/REFACTOR): `npx vitest run
-  src/test/contracts/repositoryContractConformance.test.ts` — 1 file, 5/5
-  passed; it runs each test-only mutation in a child Vitest process and requires
-  the relevant shared contract assertion to fail.
-- Required gates pass after this correction: `npm run test:run`, `npm run
-  test:coverage`, `npm run build`, `npm run lint`, and `git diff --check`.
-- Cumulative M0.2 size measured from `b55d1c3`: **724 additions / 33
-  deletions; 691 net lines; 757 changed lines (churn)**. The approved 400→800
-  `size:exception` remains required; cumulative M0.2 is 43 changed lines below
-   the 800-line cap.
+## Scope and delivery
 
-## M0.3a completion — persisted-domain validation correction
-
-- [x] 0.3a.1–0.3a.10: versioned schema, atomic gateway, and catalog adapters.
-- [x] Parseable malformed settings, supplier, category, invoice, invoice-line,
-  payment, and daily-income records recover to `needs_seed`; a valid full
-  envelope remains `ready`.
-- [ ] M0.3b: invoice/payment/daily-income adapters, seed data, and restore.
-
-### TDD cycle evidence
-
-This is reproduced current conformance evidence, not unavailable historical
-execution history. Safety net: `npx vitest run
-src/infrastructure/local/LocalStateGateway.test.ts` → 9/9 passed before the
-new cases.
-
-| Behavior | RED command/output | GREEN command/output | REFACTOR |
-|---|---|---|---|
-| Settings currency | Gateway command → 7 failed / 9 passed; malformed record was `ready`. | Gateway command → 16/16 passed; empty/`needs_seed`. | Predicate extracted. |
-| Supplier required field | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Predicate extracted. |
-| Category timestamp | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Predicate extracted. |
-| Invoice supplier ID | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Relationship predicate extracted. |
-| Invoice-line category ID | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Relationship predicate extracted. |
-| Payment union | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Union predicate extracted. |
-| Daily-income future date | Same RED → `ready`. | Same GREEN → empty/`needs_seed`. | Date predicate extracted. |
-| Existing M0.3a gateway guarantees | Safety net above → 9/9 passed. | Gateway command → 16/16 passed; missing/malformed/version mismatch, clone, one `setItem`, failed write, and invalid candidate remain covered. | Existing atomic write path retained. |
-| Strict calendar validation | Gateway 16/16 safety net. | Gateway command → 5 failed / 16 passed: impossible invoice issue/due, payment, sale, and entity-timestamp dates were `ready`. | Gateway command → 21/21 passed; impossible dates recover empty/`needs_seed`. | Shared strict calendar predicate replaces regex + `Date.parse`. |
-
-Historical corrected evidence: gateway 16/16; focused local gateway/adapters
-23/23; `npm run test:run` and `npm run test:coverage` 63 passed / 1 skipped;
-coverage 92.83% statements, 84.66% branches, 96.96% functions, 97.73% lines;
-build, lint, and `git diff --check` passed. Current correction: gateway 21/21;
-focused local gateway/adapters 28/28; full/coverage 69 passed / 1 skipped;
-coverage 92.96% statements, 85.09% branches, 96.98% functions, 97.77% lines.
-
-Pre-reproducer checkpoint (`HEAD` at `4b41e70`): `git diff --shortstat
-cefedc1..HEAD` = 16 files, 679 insertions, 34 deletions, 713 changed lines, 87
-remaining under 800. Calendar conformance reproducer: at commit `38cbefa`,
-`npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts`
-→ 1 file / 1 test passed (exit 0). It launches the committed gateway suite
-against an isolated test-only permissive-calendar mutation; the child suite exits
-non-zero and names `impossible invoice issue date`. Current cumulative M0.3a
-(`git diff --shortstat cefedc1..HEAD`): 17 files, 734 insertions, 34 deletions,
-768 changed lines; 32 remain under 800. No prior commit is amended or rewritten.
-
-## Delivery boundary
-
-- Strategy: one mainline corrective commit, approved 400→800 `size:exception`.
-- Scope: M0.2 and M0.3a only; M0.3b adapters/seed/restore and all UI remain pending.
-- Rollback: revert this corrective commit before any M0.3 consumer work.
+- M0.2, M0.3a, and M0.3b are complete; M1.1 is next.
+- M0.3b changed 431 additions and 28 deletions: 459 changed lines, within its 800-line ceiling.
+- No UI/provider/router, domain type, Supabase, or auth behavior was added by M0.3b.
+- Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.
