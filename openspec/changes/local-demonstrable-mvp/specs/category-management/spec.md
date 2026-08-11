@@ -42,7 +42,7 @@ The system SHALL display all categories. An empty-state prompt MUST appear when 
 
 - GIVEN no categories exist
 - WHEN the category list page loads
-- THEN an empty-state message and a "Create Category" action are shown
+- THEN an empty-state message and a "New Category" action are shown
 
 ### Requirement: Edit Category
 
