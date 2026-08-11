@@ -99,8 +99,8 @@ remaining under 800. Calendar conformance reproducer: at commit `38cbefa`,
 → 1 file / 1 test passed (exit 0). It launches the committed gateway suite
 against an isolated test-only permissive-calendar mutation; the child suite exits
 non-zero and names `impossible invoice issue date`. Current cumulative M0.3a
-(`cefedc1..45aa026`): 17 files, 734 insertions, 34 deletions, 768 changed lines;
-32 remain under 800. No prior commit is amended or rewritten.
+(`git diff --shortstat cefedc1..HEAD`): 17 files, 734 insertions, 34 deletions,
+768 changed lines; 32 remain under 800. No prior commit is amended or rewritten.
 
 ## Delivery boundary
 
