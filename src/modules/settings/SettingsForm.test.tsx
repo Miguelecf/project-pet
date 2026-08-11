@@ -36,4 +36,14 @@ describe('SettingsForm', () => {
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Cannot change currency: 3 invoice(s) exist with USD and 2 daily income(s) exist with USD'))
     expect(onSave).toHaveBeenCalledWith({ currency: 'ARS', dueAlertDays: 7 })
   })
+
+  it('uses a fallback error when save rejects with a non-Error value', async () => {
+    const onSave = vi.fn(async () => { throw 'offline' })
+    render(<SettingsForm onSave={onSave} settings={settings} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save settings'))
+    expect(onSave).toHaveBeenCalledWith({ currency: 'USD', dueAlertDays: 7 })
+  })
 })

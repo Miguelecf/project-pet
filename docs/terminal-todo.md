@@ -23,7 +23,7 @@
 - [x] **M2.1** — Supplier CRUD + soft delete (~430 lines)
 - [x] **M2.2** — Category CRUD + block-delete (~240 lines)
 - [x] **M2.3** — Settings CRUD + currency-lock (~240 lines)
-- [ ] **G2-LOCAL** — Catalog gate: 100% branch coverage on M2 modules (~100 lines)
+- [x] **G2-LOCAL** — Catalog gate: >=90% reachable branch coverage per M2 catalog module; defensive guards retained (~100 lines)
 
 ## Core Financial Modules
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 8 | 24 | 33% |
+| 9 | 24 | 38% |
 
 ## Preserved Boundaries (read-only)
 

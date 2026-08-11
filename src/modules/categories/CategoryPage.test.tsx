@@ -2,7 +2,7 @@
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
 import { LocalStateGateway } from '../../infrastructure/local/LocalStateGateway'
 import { MemoryStorage } from '../../infrastructure/local/LocalRepositoryTestFixtures'
@@ -11,6 +11,10 @@ import { CategoryPage } from './CategoryPage'
 
 const alpha = { id: 'alpha', name: 'Alpha', normalizedName: 'alpha', createdAt: '2026-08-10T00:00:00.000Z', updatedAt: '2026-08-10T00:00:00.000Z' } as unknown as Category
 const beta = { ...alpha, id: 'beta', name: 'Beta', normalizedName: 'beta' } as Category
+
+function Location() {
+  return <output aria-label="location">{useLocation().pathname}</output>
+}
 
 describe('CategoryPage', () => {
   afterEach(cleanup)
@@ -25,9 +29,11 @@ describe('CategoryPage', () => {
 
   it('shows the New Category action when no categories exist', async () => {
     const repositories = { categories: { findAll: async () => [] } }
-    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
+    render(<MemoryRouter><Location /><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
     await waitFor(() => expect(screen.getByRole('button', { name: 'New Category' }).textContent).toBe('New Category'))
+    fireEvent.click(screen.getByRole('button', { name: 'New Category' }))
+    expect(screen.getByRole('status', { name: 'location' }).textContent).toBe('/categories/new')
   })
 
   it('blocks deletion with the exact invoice-line reference count', async () => {
@@ -95,6 +101,34 @@ describe('CategoryPage', () => {
     await waitFor(() => expect(screen.getByText('Reference check failed', { selector: 'p' }).textContent).toBe('Reference check failed'))
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(screen.queryByText('Alpha')).toBeNull()
+  })
+
+  it('uses fallback reference errors and lets the user retry a failed category load', async () => {
+    const findAll = async () => { throw 'offline' }
+    const repositories = { categories: { findAll } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
+
+    await screen.findByText('Could not load categories')
+    expect(screen.getByRole('button', { name: 'Retry' }).textContent).toBe('Retry')
+  })
+
+  it('uses the fallback when category reference checking rejects with a non-Error value', async () => {
+    const repositories = { categories: { findAll: async () => [alpha], isReferenced: async () => { throw 'offline' } } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
+
+    await screen.findByText('Could not check category references')
+  })
+
+  it('uses the fallback when confirmed category deletion rejects with a non-Error value', async () => {
+    const repositories = { categories: { findAll: async () => [alpha], isReferenced: async () => 0, delete: async () => { throw 'offline' } } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }))
+
+    await screen.findByText('Could not delete category')
   })
 
   it('shows a confirmed-delete failure without removing the category', async () => {

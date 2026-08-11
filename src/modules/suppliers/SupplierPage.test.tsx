@@ -2,7 +2,7 @@
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { LocalStateGateway } from '../../infrastructure/local/LocalStateGateway'
 import { MemoryStorage } from '../../infrastructure/local/LocalRepositoryTestFixtures'
 import type { Supplier } from '../../types/domain'
@@ -11,6 +11,10 @@ import { SupplierPage } from './SupplierPage'
 
 const active = { id: 'active', name: 'Active supplier', normalizedName: 'active supplier', defaultDueDays: null, deletedAt: null, createdAt: '2026-08-10T00:00:00.000Z', updatedAt: '2026-08-10T00:00:00.000Z' } as unknown as Supplier
 const deleted = { ...active, id: 'deleted', name: 'Deleted supplier', deletedAt: '2026-08-11T00:00:00.000Z' as never }
+
+function Location() {
+  return <output aria-label="location">{useLocation().pathname}</output>
+}
 
 describe('SupplierPage', () => {
   afterEach(cleanup)
@@ -25,9 +29,11 @@ describe('SupplierPage', () => {
 
   it('shows a create action when no active suppliers exist', async () => {
     const repositories = { suppliers: { findAll: async () => [] } }
-    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
+    render(<MemoryRouter><Location /><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
     await waitFor(() => expect(screen.getByRole('button', { name: 'Create Supplier' }).textContent).toBe('Create Supplier'))
+    fireEvent.click(screen.getByRole('button', { name: 'Create Supplier' }))
+    expect(screen.getByRole('status', { name: 'location' }).textContent).toBe('/suppliers/new')
   })
 
   it('shows a truthful error when confirmed deletion fails', async () => {
@@ -41,6 +47,39 @@ describe('SupplierPage', () => {
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('Storage unavailable'))
     expect(softDelete).toHaveBeenCalledWith('active')
+  })
+
+  it('uses fallback errors and lets the user retry an unavailable supplier list', async () => {
+    const findAll = vi.fn().mockRejectedValueOnce('offline').mockResolvedValueOnce([active])
+    const repositories = { suppliers: { findAll } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
+
+    await screen.findByText('Could not load suppliers')
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+
+    await screen.findByRole('button', { name: 'Delete Active supplier' })
+    expect(findAll).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps the supplier visible when page deletion is cancelled', async () => {
+    const repositories = { suppliers: { findAll: async () => [active] } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete Active supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(screen.getByText('Active supplier').textContent).toBe('Active supplier')
+  })
+
+  it('uses the fallback error when supplier deletion rejects with a non-Error value', async () => {
+    const repositories = { suppliers: { findAll: async () => [active], softDelete: async () => { throw 'offline' } } }
+    render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete Active supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    await screen.findByText('Could not delete supplier')
   })
 
   it('removes a confirmed deletion from the active list after the provider publishes a revision', async () => {

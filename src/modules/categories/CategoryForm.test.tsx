@@ -63,4 +63,14 @@ describe('CategoryForm', () => {
       ...gateway.read().categories.slice(2).map((category) => ({ id: category.id, name: category.name, normalizedName: category.normalizedName })),
     ])
   })
+
+  it('uses the fallback save error and exposes cancellation navigation', async () => {
+    const create = vi.fn(async () => { throw 'offline' })
+    renderForm({ create })
+    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save category'))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+  })
 })

@@ -1,13 +1,13 @@
 # Executable Delivery Plan
 
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
-protection, and M2.3 settings CRUD with currency-lock enforcement are complete.**
-The next executable unit is **G2-LOCAL: catalog branch-coverage closure**.
+protection, M2.3 settings CRUD with currency-lock enforcement, and G2-LOCAL are
+complete.** The next executable unit is **M3.1: pure financial rules**.
 
 ## Quick path
 
-1. Review supplier, category, and settings branch coverage.
-2. Add only missing catalog edge-path tests.
+1. Begin M3.1 with table-driven RED tests for financial rules.
+2. Implement only the minimum pure functions required by those tests.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -97,6 +97,16 @@ explicit reference-count message.
 
 **M2.3 exit criteria met:** rejected saves preserve persisted settings, while
 successful saves publish a revision and reload the saved local values.
+
+### Completed — G2-LOCAL catalog coverage gate
+
+- [x] Add meaningful reachable error, retry, cancellation, navigation, and mutation-path tests for supplier, category, and settings modules.
+- [x] Reach >=90% branch coverage per catalog module: suppliers 94.44%, categories 96.87%, settings 95.45%.
+- [x] Retain unreachable defensive guards rather than changing product behavior to execute invalid internal states.
+- [x] Run catalog-focused tests, full tests, coverage, build, lint, and diff checks sequentially.
+
+**G2-LOCAL exit criteria met:** each catalog module satisfies the documented >=90%
+reachable branch-coverage threshold; M3.1 remains unstarted.
 
 ### Deferred — productization
 

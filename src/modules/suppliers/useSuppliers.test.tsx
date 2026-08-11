@@ -44,6 +44,13 @@ describe('useSuppliers', () => {
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
+  it('uses the catalog fallback message when a non-Error load failure occurs', async () => {
+    const repositories = { suppliers: { findAll: async () => { throw 'offline' } } }
+    render(<RepositoryProvider repositories={repositories as never}><SupplierState /></RepositoryProvider>)
+
+    await waitFor(() => expect(screen.getByText('Could not load suppliers')).toBeDefined())
+  })
+
   it('refetches supplier data after a provider revision is published', async () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     render(<RepositoryProvider gateway={gateway}><RevisionState /></RepositoryProvider>)

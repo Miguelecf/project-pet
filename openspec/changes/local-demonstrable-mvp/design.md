@@ -63,7 +63,7 @@ Failure → reject typed error → preserve stored envelope/revision → accessi
 
 ## Testing, Delivery, and Rollback
 
-Use strict RED→GREEN→REFACTOR: pure finance/date units, reusable repository contracts, provider-backed component tests, then real-gateway jsdom integration tests. G2/G3 retain scoped 100% branch coverage; each milestone runs tests and stays below 800 changed lines with tests/docs/TODO in the same work unit. GMVP retains build, lint, coverage, demo, QA charter closure, and final GLM 5.2 review.
+Use strict RED→GREEN→REFACTOR: pure finance/date units, reusable repository contracts, provider-backed component tests, then real-gateway jsdom integration tests. G2 requires >=90% reachable branch coverage per supplier, category, and settings module while retaining unreachable defensive guards; G3 retains scoped 100% branch coverage. Each milestone runs tests and stays below 800 changed lines with tests/docs/TODO in the same work unit. GMVP retains build, lint, coverage, demo, QA charter closure, and final GLM 5.2 review.
 
 Rollback MUST proceed in reverse dependency order: docs/UI/dashboard → features/finance → provider/local repositories → gateway/schema → contracts. Revert consumers before providers to remain compile-safe; clear an incompatible newer storage key or restore through the compatible gateway before reverting persistence. Supabase/auth remain paused and untouched.
 

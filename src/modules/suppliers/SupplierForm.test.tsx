@@ -81,4 +81,32 @@ describe('SupplierForm', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     expect(gateway.read().suppliers.find((supplier) => supplier.id === editable.id)?.deletedAt).toBeNull()
   })
+
+  it('uses fallback errors for non-Error save and delete failures', async () => {
+    const create = vi.fn(async () => { throw 'offline' })
+    renderForm({ create })
+    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save supplier'))
+    cleanup()
+
+    const softDelete = vi.fn(async () => { throw 'offline' })
+    renderForm({ softDelete }, alpha)
+    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not delete supplier'))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('surfaces an Error message when confirmed deletion fails', async () => {
+    const softDelete = vi.fn(async () => { throw new Error('Storage unavailable') })
+    renderForm({ softDelete }, alpha)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Storage unavailable'))
+    expect(softDelete).toHaveBeenCalledWith('alpha')
+  })
 })

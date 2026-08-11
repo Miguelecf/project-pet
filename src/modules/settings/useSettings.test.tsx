@@ -49,4 +49,20 @@ describe('useSettings', () => {
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Cannot change currency: 3 invoice(s) exist with USD and 2 daily income(s) exist with USD'))
     expect(screen.getByRole('status', { name: 'settings' }).textContent).toBe('USD:7')
   })
+
+  it('uses fallback messages for non-Error load and save failures', async () => {
+    const failedGet = { settings: { get: async () => { throw 'offline' } } }
+    render(<RepositoryProvider repositories={failedGet as never}><SettingsConsumer /></RepositoryProvider>)
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not load settings'))
+    cleanup()
+
+    const failedSave = { settings: { get: async () => defaults, save: async () => { throw 'offline' } } }
+    render(<RepositoryProvider repositories={failedSave as never}><SettingsConsumer /></RepositoryProvider>)
+    await screen.findByRole('status', { name: 'settings' })
+    fireEvent.click(screen.getByRole('button', { name: 'Save ARS' }))
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save settings'))
+    expect(screen.getByRole('status', { name: 'settings' }).textContent).toBe('USD:7')
+  })
 })

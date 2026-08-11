@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
 import { LocalStateGateway } from '../../infrastructure/local/LocalStateGateway'
@@ -69,5 +69,18 @@ describe('SettingsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
     await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Settings saved.'))
     expect(gateway.read().settings).toMatchObject({ currency: 'USD', dueAlertDays: 10 })
+  })
+
+  it('shows the loading failure overlay and retries the settings read', async () => {
+    const get = vi.fn().mockRejectedValueOnce(new Error('Storage unavailable')).mockResolvedValueOnce({
+      currency: 'USD', dueAlertDays: 7, createdAt: '2026-08-10T00:00:00.000Z', updatedAt: '2026-08-10T00:00:00.000Z',
+    })
+    render(<MemoryRouter><RepositoryProvider repositories={{ settings: { get } } as never}><SettingsPage /></RepositoryProvider></MemoryRouter>)
+
+    await screen.findByText('Storage unavailable')
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+
+    await screen.findByLabelText('Currency')
+    expect(get).toHaveBeenCalledTimes(2)
   })
 })

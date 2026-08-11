@@ -10,6 +10,7 @@
 - [x] M2.1 — Repository provider, supplier CRUD routes/forms, and soft delete.
 - [x] M2.2 — Category CRUD routes/forms and block-delete protection.
 - [x] M2.3 — Settings CRUD routes/forms and currency-lock enforcement.
+- [x] G2-LOCAL — Catalog reachable branch-coverage gate.
 
 ## Completed tasks
 
@@ -21,6 +22,7 @@
 - [x] 2.1.1–2.1.10: Revision-aware local repositories, supplier loading states, accessible list/form routes, normalized validation, and confirmed soft delete.
 - [x] 2.2.1–2.2.7: Revision-aware category loading states, accessible list/form routes, trimmed normalized validation, and invoice-line reference protection.
 - [x] 2.3.1–2.3.7: Revision-aware settings loading, validated ARS/USD and due-alert saves, currency-lock errors, accessible form controls, and persistence reload.
+- [x] G2.1–G2.3: Catalog coverage review, meaningful reachable-path tests, documented per-module threshold, and sequential gate verification.
 
 ## TDD cycle evidence
 
@@ -136,7 +138,7 @@
 | 2.3.5–2.3.6 | `src/modules/settings/SettingsForm.test.tsx` | Component | N/A (new file). | Missing `SettingsForm` module; suite failed to collect. | 2/2 form scenarios passed. | Invalid non-negative-whole input and combined invoice/daily-income error cover local and repository validation paths. | Native `min` validation was removed so the accessible application error is consistently displayed. |
 | 2.3.7 | Focused settings/local/router suite | Component + Unit | 23/23 sequential focused settings/local/router test executions passed. | N/A — verification-only task. | 23/23 focused scenarios passed. | Hook, page, form, real local repository, and routed form semantics cover both financial record types. | Local repository produces type-specific lock messages without mutating persisted settings. |
 ## Scope and delivery
-- M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, and M2.3 are complete; G2-LOCAL is next.
+- M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, and G2-LOCAL are complete; M3.1 is next and unstarted.
 - M2.3 adds only settings catalog behavior over RepositoryProvider and LocalSettingsRepository; real invoices and daily incomes appear only as existing local records and test fixtures for currency-lock enforcement. Invoice, payment, daily-income, and dashboard production UI, domain types, Supabase, and auth remain deferred.
 - Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.
 - The first parallel coverage invocation raced the calendar-mutant test's temporary directory and produced five false mutant-suite failures; a sequential rerun passed 135/135 executable tests and cleaned the temporary directory.
@@ -146,3 +148,21 @@
 - `npm run test:run`: 150 passed, 1 skipped.
 - `npm run test:coverage`: 150 passed, 1 skipped; coverage 92.25% statements, 83.52% branches, 94.31% functions, 97.78% lines.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.
+
+## G2-LOCAL verification — complete
+
+- [x] G2.1 reviewed supplier, category, and settings coverage and documented the reachable >=90% per-module threshold.
+- [x] G2.2 preserved meaningful supplier, category, and settings error/retry/cancel/navigation/mutation tests only; no product behavior changed.
+- [x] G2.3 passed catalog-focused tests, full tests, coverage, build, lint, and diff checks sequentially.
+- Catalog branch coverage: suppliers **94.44%**, categories **96.87%**, settings **95.45%**.
+- Retained unreachable defensive guards: `SupplierPage.tsx:15` and `CategoryPage.tsx:28` require confirmations that public behavior can invoke only after selecting an entity; `SupplierForm.tsx:35` guards a dialog whose Delete control exists only with a supplier; `SettingsPage.tsx:17` requires `settings === null` without an error although the contract returns defaults or the error overlay handles failed reads.
+
+### G2-LOCAL TDD cycle evidence
+
+| Task | Test files | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| G2.1 | Existing nine catalog test files | Component | 48/48 catalog-focused tests passed before documentation updates | N/A — coverage-policy review | N/A — no production code changed | Three modules and distinct reachable error/retry/cancel/navigation/mutation paths | Documentation only; defensive production guards retained |
+| G2.2 | Existing nine catalog test files | Component | 48/48 catalog-focused tests passed | Tests were already uncommitted from the blocked attempt and were reviewed before preservation | 48/48 catalog-focused tests passed | Supplier/category/settings paths exercise distinct reachable branches | No product-code refactor; retained valid tests |
+| G2.3 | Catalog suite and full gate commands | Component | 48/48 catalog-focused tests passed | N/A — verification-only | All required commands exited 0 | Focused plus full-suite and per-module coverage evidence | No code changes |
+
+**Next:** M3.1 is next and remains unstarted.

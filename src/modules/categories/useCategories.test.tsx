@@ -44,6 +44,13 @@ describe('useCategories', () => {
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
+  it('uses the catalog fallback message when a non-Error load failure occurs', async () => {
+    const repositories = { categories: { findAll: async () => { throw 'offline' } } }
+    render(<RepositoryProvider repositories={repositories as never}><CategoryState /></RepositoryProvider>)
+
+    await waitFor(() => expect(screen.getByText('Could not load categories').textContent).toBe('Could not load categories'))
+  })
+
   it('refetches category data after a provider restore publishes a revision', async () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     render(<RepositoryProvider gateway={gateway}><RevisionState /></RepositoryProvider>)

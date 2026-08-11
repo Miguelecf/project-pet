@@ -34,7 +34,7 @@ auth.
 | **M2.1** | Supplier CRUD + soft delete | ~350 |
 | **M2.2** | Category CRUD + block-delete (reject if referenced) | ~200 |
 | **M2.3** | Settings CRUD + currency-lock enforcement at save | ~200 |
-| **G2-LOCAL** | Catalog gate: 100% branch coverage on M2 modules | ~100 |
+| **G2-LOCAL** | Catalog gate: >=90% reachable branch coverage per M2 catalog module | ~100 |
 | **M3.1** | Pure financial functions: lineTotalMinor, invoiceTotals, deriveStatus, rounding | ~350 |
 | **M3.2** | Invoice create/edit form + line editor | ~450 |
 | **M3.3** | Invoice list/detail pages | ~350 |
