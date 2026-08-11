@@ -29,8 +29,8 @@ describe('useCategories', () => {
     const repositories = { categories: { findAll: async () => [alpha] } }
     render(<RepositoryProvider repositories={repositories as never}><CategoryState /></RepositoryProvider>)
 
-    expect(screen.getByText('loading')).toBeDefined()
-    await waitFor(() => expect(screen.getByText('Alpha')).toBeDefined())
+    expect(screen.getByText('loading').textContent).toBe('loading')
+    await waitFor(() => expect(screen.getByText('Alpha').textContent).toBe('Alpha'))
   })
 
   it('exposes a truthful repository error and recovers through retry', async () => {
@@ -38,9 +38,9 @@ describe('useCategories', () => {
     const repositories = { categories: { findAll } }
     render(<RepositoryProvider repositories={repositories as never}><CategoryState /></RepositoryProvider>)
 
-    await waitFor(() => expect(screen.getByText('Storage unavailable')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('Storage unavailable').textContent).toBe('Storage unavailable'))
     fireEvent.click(screen.getByRole('button', { name: 'Retry category load' }))
-    await waitFor(() => expect(screen.getByText('Alpha')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('Alpha').textContent).toBe('Alpha'))
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
@@ -50,6 +50,6 @@ describe('useCategories', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Restore categories' }))
 
-    await waitFor(() => expect(screen.getByText('Demo Category A,Demo Category B,Demo Category C,Demo Category D,Demo Category E,Demo Category F')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('Demo Category A,Demo Category B,Demo Category C,Demo Category D,Demo Category E,Demo Category F').textContent).toBe('Demo Category A,Demo Category B,Demo Category C,Demo Category D,Demo Category E,Demo Category F'))
   })
 })

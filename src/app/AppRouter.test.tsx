@@ -73,4 +73,27 @@ describe('AppRouter', () => {
     expect((await screen.findByRole('heading', { level: 1, name: 'Edit category' })).textContent).toBe('Edit category')
     expect((screen.getByLabelText('Category name') as HTMLInputElement).value).toBe('Demo Category A')
   })
+
+  it('navigates from the category list New Category action to the create form', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/categories')
+
+    render(<AppRouter />)
+    fireEvent.click(await screen.findByRole('link', { name: 'New Category' }))
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Create category' })).textContent).toBe('Create category')
+    expect(window.location.pathname).toBe('/categories/new')
+  })
+
+  it('navigates from the empty category New Category action to the create form', async () => {
+    const gateway = new LocalStateGateway(window.localStorage)
+    await gateway.write({ ...gateway.read(), categories: [] })
+    window.history.replaceState({}, '', '/categories')
+
+    render(<AppRouter />)
+    fireEvent.click(await screen.findByRole('button', { name: 'New Category' }))
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Create category' })).textContent).toBe('Create category')
+    expect(window.location.pathname).toBe('/categories/new')
+  })
 })

@@ -38,13 +38,13 @@ export function CategoryPage() {
   if (loading) return <StateOverlay state="loading"><section aria-label="Category list" /></StateOverlay>
   const error = mutationError ?? loadError
   if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Category list" /></StateOverlay>
-  if (categories.length === 0) return <StateOverlay emptyActionLabel="Create Category" emptyMessage="No categories yet." onEmptyAction={() => navigate('/categories/new')} state="empty"><section aria-label="Category list" /></StateOverlay>
+  if (categories.length === 0) return <StateOverlay emptyActionLabel="New Category" emptyMessage="No categories yet." onEmptyAction={() => navigate('/categories/new')} state="empty"><section aria-label="Category list" /></StateOverlay>
 
   return (
     <section aria-labelledby="categories-title" className="category-page">
       <p className="eyebrow">Catalog</p>
       <h1 id="categories-title">Categories</h1>
-      <Link className="primary-action" to="/categories/new">Create Category</Link>
+      <Link className="primary-action" to="/categories/new">New Category</Link>
       <ul aria-label="Categories" className="category-list">
         {categories.map((category) => (
           <li key={category.id}>

@@ -110,9 +110,20 @@
 | 2.2.3–2.2.4 | `src/modules/categories/CategoryPage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | 12/12 AppRouter/local-category tests passed. | Missing `CategoryPage` module; suite failed to collect. | 4/4 page scenarios passed. | Multiple-item list/edit link, empty action, two-line reference block, and real-provider confirmed unreferenced deletion/refetch. | Reference check precedes confirmation; repository remains the enforcement boundary. |
 | 2.2.5–2.2.6 | `src/modules/categories/CategoryForm.test.tsx` | Component | N/A (new file). | Missing `CategoryForm` module; suite failed to collect. | 4/4 form scenarios passed. | Trimmed create, empty/duplicate validation, unique update, and duplicate normalized edit with real local-state immutability. | Shared save failure handling keeps validation and repository errors accessible. |
 | 2.2.7 | Focused category/local suite | Component + Unit | 24/24 focused scenarios passed. | N/A — verification-only task. | 24/24 focused scenarios passed. | Hook, page, form, router, and local contract paths run together. | No further refactor required. |
+
+### M2.2 corrective gate TDD evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| Category create-action routing | `src/app/AppRouter.test.tsx` | Component | 10/10 router scenarios passed. | List and empty actions lacked the required `New Category` accessible name; 2 new click-through scenarios failed. | 12/12 router scenarios passed after both actions used `New Category`. | Seeded list link and empty-state button each navigate client-side to `/categories/new` and render the create form. | Kept the existing link/button interaction patterns. |
+| Category deletion failure semantics | `src/modules/categories/CategoryPage.test.tsx` | Component | 4/4 category page scenarios passed. | New one-line reference, cancel, and error-path assertions exposed missing semantic evidence; reference-count assertions were scoped to the visible message instead of overlay action text. | 8/8 category page scenarios passed. | One real seed invoice line, two references, cancelled unreferenced deletion, rejected reference check, and rejected confirmed deletion exercise separate branches. | Replaced touched weak existence assertions with exact semantic text or state assertions. |
+| Category hook assertion quality | `src/modules/categories/useCategories.test.tsx` | Component | 3/3 hook scenarios passed. | N/A — assertion-quality correction only. | 3/3 hook scenarios passed with exact visible state text. | Loading/data, error/retry, and restore revision remain distinct paths. | Removed all touched `toBeDefined()` assertions. |
+
 ## M2.2 verification
-- Focused category/provider/router and local-category contract suite: 24/24 passed.
-- `npm run test:run` and `npm run test:coverage`: 135 passed, 1 skipped; coverage 91.68% statements, 83.00% branches, 93.45% functions, 97.50% lines. Build, lint, and `git diff --check`: passed.
+- Focused category/form/hook/router and local-category contract suites: 30/30 passed sequentially.
+- `npm run test:run`: 141 passed, 1 skipped.
+- `npm run test:coverage`: 141 passed, 1 skipped; coverage 92.18% statements, 83.36% branches, 94.08% functions, 97.89% lines.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.
 ## Scope and delivery
 - M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, and M2.2 are complete; M2.3 is next.
 - M2.2 adds only category catalog behavior over RepositoryProvider and LocalCategoryRepository; settings, invoices, payments, daily income, dashboard, domain types, Supabase, and auth remain deferred.
