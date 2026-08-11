@@ -31,8 +31,12 @@ describe('lineTotalMinor', () => {
 })
 
 describe('roundHalfUp', () => {
-  it.each([[0.005, 1], [1.234, 123], [1.235, 124]])('rounds major-unit values half-up to minor units', (value, expected) => {
+  it.each([[0.005, 1], [1.005, 101], [1.234, 123], [1.235, 124]])('rounds major-unit values half-up to minor units', (value, expected) => {
     expect(roundHalfUp(value)).toBe(expected)
+  })
+
+  it('rejects a rounded result outside the safe-integer range', () => {
+    expect(() => roundHalfUp(Number.MAX_SAFE_INTEGER)).toThrow('Rounded amount exceeds safe integer range')
   })
 })
 

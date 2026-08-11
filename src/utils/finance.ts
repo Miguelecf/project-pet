@@ -2,6 +2,7 @@ import type { InvoiceStatus, MoneyMinor } from '../types/domain'
 import { validateMoneyMinor, validateQuantity } from './validation'
 
 const THOUSANDTHS_PER_UNIT = 1_000
+const DECIMAL_NOTATION = /^(-?)(\d+)(?:\.(\d+))?(?:e([+-]?\d+))?$/i
 
 export interface InvoiceTotals {
   readonly subtotalMinor: MoneyMinor
@@ -14,12 +15,41 @@ export function roundHalfUp(value: number, scale = 100): MoneyMinor {
     throw new RangeError('Value and scale must be finite safe values')
   }
 
-  const scaled = value * scale
-  if (!Number.isSafeInteger(Math.floor(scaled))) {
+  const { numerator, denominator } = decimalRational(value)
+  const rounded = floorDivide(numerator * BigInt(scale) * 2n + denominator, denominator * 2n)
+  const result = Number(rounded)
+  if (!Number.isSafeInteger(result)) {
     throw new RangeError('Rounded amount exceeds safe integer range')
   }
 
-  return Math.floor(scaled + 0.5) as MoneyMinor
+  return result as MoneyMinor
+}
+
+function decimalRational(value: number): { numerator: bigint; denominator: bigint } {
+  const match = DECIMAL_NOTATION.exec(value.toString())
+  if (!match) {
+    throw new RangeError('Value must use decimal notation')
+  }
+
+  const [, sign, whole, fraction = '', exponentText] = match
+  const exponent = exponentText === undefined ? 0 : Number(exponentText)
+  const digits = BigInt(`${whole}${fraction}`)
+  const signedDigits = sign === '-' ? -digits : digits
+  const decimalPlaces = fraction.length - exponent
+
+  if (decimalPlaces <= 0) {
+    return { numerator: signedDigits * 10n ** BigInt(-decimalPlaces), denominator: 1n }
+  }
+
+  return { numerator: signedDigits, denominator: 10n ** BigInt(decimalPlaces) }
+}
+
+function floorDivide(numerator: bigint, denominator: bigint): bigint {
+  if (numerator >= 0n) {
+    return numerator / denominator
+  }
+
+  return -((-numerator + denominator - 1n) / denominator)
 }
 
 export function lineTotalMinor(quantity: number, unitCostMinor: number): MoneyMinor {

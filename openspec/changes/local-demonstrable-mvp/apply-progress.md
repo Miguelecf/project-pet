@@ -186,4 +186,18 @@
 | 3.1.7–3.1.8 | `src/utils/validation.test.ts` | Unit | N/A (new files) | Missing `validation` module; focused suite collected 0 tests and failed. | 14/14 validation tests passed. | Valid and invalid finite/precision/safe-integer/blank inputs exercise each validator boundary. | Shared branded validation functions avoid duplicated numeric constraints. |
 | 3.1.9 | Focused utility suite | Unit | 59/59 focused tests passed. | N/A — verification-only. | 59/59 focused tests passed. | Financial, date, and validation behavior run together without I/O dependencies. | No further refactor required. |
 
+### M3.1 corrective rounding evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.1.1–3.1.2 corrective rounding | `src/utils/finance.test.ts` | Unit | 27/27 finance tests passed before the correction. | Added `roundHalfUp(1.005) === 101` and unsafe-final-result assertions; focused run failed 1/29 because `Math.floor(1.005 * 100 + 0.5)` returned 100. | 29/29 finance tests passed after decimal-rational half-up rounding and final `Number.isSafeInteger` validation. | Existing 0.005, 1.234, 1.235, large valid quantity, standard line totals, and deterministic-repeat cases cover distinct decimal and integer paths. | Replaced floating multiplication with pure decimal-notation rational arithmetic and a named bigint floor division helper; focused tests stayed 29/29. |
+
+## M3.1 corrective verification — complete
+
+- Corrected `roundHalfUp` without changing domain types, UI, adapters, or I/O boundaries.
+- Focused finance tests: 29/29 passed.
+- `npm run test:run`: 225 passed, 1 skipped.
+- `npm run test:coverage`: 225 passed, 1 skipped; coverage 93.43% statements, 86.24% branches, 95.97% functions, 98.10% lines.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.
+
 **Next:** M3.2 is next and remains unstarted.
