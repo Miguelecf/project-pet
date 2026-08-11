@@ -162,13 +162,13 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, and M2.2 are complete; M2.3 is next.
 **Specs**: `settings-management` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 2.3.1 RED: Write `src/modules/settings/useSettings.test.ts` — loads settings, saves changes, exposes currency-lock check against invoices and daily incomes.
-- [ ] 2.3.2 GREEN: Create `src/modules/settings/useSettings.ts` — hook.
-- [ ] 2.3.3 RED: Write `src/modules/settings/SettingsPage.test.tsx` — read defaults, save with no records, reject currency change with invoices, reject with daily incomes, allow dueAlertDays change.
-- [ ] 2.3.4 GREEN: Create `src/modules/settings/SettingsPage.tsx` — settings form with currency/dueAlertDays.
-- [ ] 2.3.5 RED: Write `src/modules/settings/SettingsForm.test.tsx` — currency-lock error message references both record types.
-- [ ] 2.3.6 GREEN: Create `src/modules/settings/SettingsForm.tsx` — form with validation and error display.
-- [ ] 2.3.7 REFACTOR: Verify currency-lock checks both invoices and daily incomes.
+- [x] 2.3.1 RED: Write `src/modules/settings/useSettings.test.ts` — loads settings, saves changes, exposes currency-lock check against invoices and daily incomes.
+- [x] 2.3.2 GREEN: Create `src/modules/settings/useSettings.ts` — hook.
+- [x] 2.3.3 RED: Write `src/modules/settings/SettingsPage.test.tsx` — read defaults, save with no records, reject currency change with invoices, reject with daily incomes, allow dueAlertDays change.
+- [x] 2.3.4 GREEN: Create `src/modules/settings/SettingsPage.tsx` — settings form with currency/dueAlertDays.
+- [x] 2.3.5 RED: Write `src/modules/settings/SettingsForm.test.tsx` — currency-lock error message references both record types.
+- [x] 2.3.6 GREEN: Create `src/modules/settings/SettingsForm.tsx` — form with validation and error display.
+- [x] 2.3.7 REFACTOR: Verify currency-lock checks both invoices and daily incomes.
 
 ## G2-LOCAL — Catalog Gate (~100 lines)
 

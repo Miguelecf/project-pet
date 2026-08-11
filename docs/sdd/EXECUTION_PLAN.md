@@ -1,13 +1,13 @@
 # Executable Delivery Plan
 
-**M2.1 supplier CRUD and soft delete and M2.2 category CRUD with block-delete
-protection are complete.** The next executable unit is **M2.3: Settings CRUD
-and currency-lock enforcement**.
+**M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
+protection, and M2.3 settings CRUD with currency-lock enforcement are complete.**
+The next executable unit is **G2-LOCAL: catalog branch-coverage closure**.
 
 ## Quick path
 
-1. Add settings CRUD over the completed local repository contracts.
-2. Keep deterministic seed and restore behavior inside the local gateway.
+1. Review supplier, category, and settings branch coverage.
+2. Add only missing catalog edge-path tests.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -87,6 +87,16 @@ successful local write, and restore publishes a refetch revision.
 **M2.2 exit criteria met:** category mutations publish a provider revision only
 after successful local writes, while referenced categories remain intact with an
 explicit reference-count message.
+
+### Completed — M2.3 settings
+
+- [x] Load the complete local settings singleton through RepositoryProvider.
+- [x] Save validated ARS/USD currency and non-negative whole due-alert days.
+- [x] Reject currency changes before persistence when invoice or daily-income records use another currency; identify both record types when both apply.
+- [x] Confirm successful persistence and reload through accessible form controls and status feedback.
+
+**M2.3 exit criteria met:** rejected saves preserve persisted settings, while
+successful saves publish a revision and reload the saved local values.
 
 ### Deferred — productization
 

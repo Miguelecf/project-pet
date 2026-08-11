@@ -9,6 +9,7 @@
 - [x] M1.2 — StateOverlay, ConfirmDialog, skip-link, and route-heading focus management.
 - [x] M2.1 — Repository provider, supplier CRUD routes/forms, and soft delete.
 - [x] M2.2 — Category CRUD routes/forms and block-delete protection.
+- [x] M2.3 — Settings CRUD routes/forms and currency-lock enforcement.
 
 ## Completed tasks
 
@@ -19,6 +20,7 @@
 - [x] 1.2.1–1.2.7: Async state overlays, keyboard-safe confirmation dialog, route-heading focus, and skip-link focus jump.
 - [x] 2.1.1–2.1.10: Revision-aware local repositories, supplier loading states, accessible list/form routes, normalized validation, and confirmed soft delete.
 - [x] 2.2.1–2.2.7: Revision-aware category loading states, accessible list/form routes, trimmed normalized validation, and invoice-line reference protection.
+- [x] 2.3.1–2.3.7: Revision-aware settings loading, validated ARS/USD and due-alert saves, currency-lock errors, accessible form controls, and persistence reload.
 
 ## TDD cycle evidence
 
@@ -124,8 +126,23 @@
 - `npm run test:run`: 141 passed, 1 skipped.
 - `npm run test:coverage`: 141 passed, 1 skipped; coverage 92.18% statements, 83.36% branches, 94.08% functions, 97.89% lines.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.
+
+### M2.3 TDD Cycle Evidence
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 2.3.1–2.3.2 | `src/modules/settings/useSettings.test.tsx` | Component | 2/2 local-settings contract tests passed. | Missing `useSettings` module; suite failed to collect. | 2/2 hook scenarios passed. | Complete defaults/successful save and rejected combined lock preserve loaded settings. | Shared refresh supports initial load and provider revision refetch. |
+| 2.3.3–2.3.4 | `src/modules/settings/SettingsPage.test.tsx` | Component | 12/12 router tests passed. | Missing `SettingsPage` module; suite failed to collect. | 3/3 page scenarios passed. | No-record save/reload, invoice-only rejection, daily-income-only rejection, and matching-currency due-alert update use real local state. | Page delegates validation and errors to the form while retaining semantic status feedback. |
+| 2.3.5–2.3.6 | `src/modules/settings/SettingsForm.test.tsx` | Component | N/A (new file). | Missing `SettingsForm` module; suite failed to collect. | 2/2 form scenarios passed. | Invalid non-negative-whole input and combined invoice/daily-income error cover local and repository validation paths. | Native `min` validation was removed so the accessible application error is consistently displayed. |
+| 2.3.7 | Focused settings/local/router suite | Component + Unit | 23/23 sequential focused settings/local/router test executions passed. | N/A — verification-only task. | 23/23 focused scenarios passed. | Hook, page, form, real local repository, and routed form semantics cover both financial record types. | Local repository produces type-specific lock messages without mutating persisted settings. |
 ## Scope and delivery
-- M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, and M2.2 are complete; M2.3 is next.
-- M2.2 adds only category catalog behavior over RepositoryProvider and LocalCategoryRepository; settings, invoices, payments, daily income, dashboard, domain types, Supabase, and auth remain deferred.
+- M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, and M2.3 are complete; G2-LOCAL is next.
+- M2.3 adds only settings catalog behavior over RepositoryProvider and LocalSettingsRepository; real invoices and daily incomes appear only as existing local records and test fixtures for currency-lock enforcement. Invoice, payment, daily-income, and dashboard production UI, domain types, Supabase, and auth remain deferred.
 - Delivery remains direct mainline milestone commits; no prior commit was amended or rewritten.
 - The first parallel coverage invocation raced the calendar-mutant test's temporary directory and produced five false mutant-suite failures; a sequential rerun passed 135/135 executable tests and cleaned the temporary directory.
+
+## M2.3 verification
+- Focused settings hook/page/form, local-settings contract, and router suites: 23/23 passed sequentially.
+- `npm run test:run`: 150 passed, 1 skipped.
+- `npm run test:coverage`: 150 passed, 1 skipped; coverage 92.25% statements, 83.52% branches, 94.31% functions, 97.78% lines.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed sequentially.

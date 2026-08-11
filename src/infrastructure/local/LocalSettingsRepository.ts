@@ -22,10 +22,17 @@ export class LocalSettingsRepository implements SettingsRepository {
 
   async save(input: SaveSettingsInput): Promise<Settings> {
     const state = this.gateway.read()
+    if (input.currency !== 'ARS' && input.currency !== 'USD') throw new Error('Currency must be ARS or USD')
+    if (!Number.isInteger(input.dueAlertDays) || input.dueAlertDays < 0) throw new Error('Due alert days must be a non-negative whole number')
     const mismatchedInvoices = state.invoices.filter((invoice) => invoice.currency !== input.currency)
     const mismatchedIncomes = state.dailyIncomes.filter((income) => income.currency !== input.currency)
     if (mismatchedInvoices.length || mismatchedIncomes.length) {
-      throw new Error(`Cannot change currency: ${mismatchedInvoices.length} invoice(s) and ${mismatchedIncomes.length} daily income(s) use a different currency`)
+      const currency = mismatchedInvoices[0]?.currency ?? mismatchedIncomes[0]?.currency
+      const recordTypes = [
+        mismatchedInvoices.length > 0 && `${mismatchedInvoices.length} invoice(s) exist with ${currency}`,
+        mismatchedIncomes.length > 0 && `${mismatchedIncomes.length} daily income(s) exist with ${currency}`,
+      ].filter(Boolean).join(' and ')
+      throw new Error(`Cannot change currency: ${recordTypes}`)
     }
     const previous = state.settings ?? this.defaults()
     const settings: Settings = { ...previous, ...input, updatedAt: this.now() }

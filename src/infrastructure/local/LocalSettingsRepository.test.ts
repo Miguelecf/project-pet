@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { describeSettingsRepositoryContract } from '../../test/contracts/settingsRepositoryContract'
 import { LocalStateGateway } from './LocalStateGateway'
 import { LocalSettingsRepository } from './LocalSettingsRepository'
@@ -21,4 +22,15 @@ describeSettingsRepositoryContract(() => {
       await gateway.write(state)
     },
   }
+})
+
+describe('LocalSettingsRepository validation', () => {
+  it('rejects invalid runtime currency and due-alert values before persisting', async () => {
+    const gateway = new LocalStateGateway(new MemoryStorage())
+    const repository = new LocalSettingsRepository(gateway, { now: fixedNow })
+
+    await expect(repository.save({ currency: 'EUR' as never, dueAlertDays: 7 as never })).rejects.toThrow('Currency must be ARS or USD')
+    await expect(repository.save({ currency: 'USD', dueAlertDays: -1 as never })).rejects.toThrow('Due alert days must be a non-negative whole number')
+    expect(gateway.read().settings).toBeNull()
+  })
 })

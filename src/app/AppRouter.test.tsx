@@ -33,6 +33,16 @@ describe('AppRouter', () => {
     expect((await screen.findByRole('button', { name: 'Create Supplier' })).textContent).toBe('Create Supplier')
   })
 
+  it('renders the settings form with accessible current-value controls at /settings', async () => {
+    window.history.replaceState({}, '', '/settings')
+
+    render(<AppRouter />)
+
+    expect((await screen.findByLabelText('Currency') as HTMLSelectElement).value).toBe('USD')
+    expect((screen.getByLabelText('Due alert days') as HTMLInputElement).value).toBe('7')
+    expect(screen.getByRole('button', { name: 'Save settings' }).textContent).toBe('Save settings')
+  })
+
   it('redirects an unknown route to the dashboard', () => {
     window.history.replaceState({}, '', '/nonexistent')
 

@@ -4,6 +4,7 @@ import { StateOverlay } from '../components/StateOverlay'
 import { CategoryForm } from '../modules/categories/CategoryForm'
 import { CategoryPage } from '../modules/categories/CategoryPage'
 import { useCategories } from '../modules/categories/useCategories'
+import { SettingsPage } from '../modules/settings/SettingsPage'
 import { SupplierForm } from '../modules/suppliers/SupplierForm'
 import { SupplierPage } from '../modules/suppliers/SupplierPage'
 import { useSuppliers } from '../modules/suppliers/useSuppliers'
@@ -46,7 +47,7 @@ export function AppRouter() {
         <Route element={<Layout><CategoryEditRoute /></Layout>} path="/categories/:id/edit" />
         <Route element={pageRoute(placeholderPages.invoices)} path="/invoices/*" />
         <Route element={pageRoute(placeholderPages.dailyIncome)} path="/daily-income/*" />
-        <Route element={pageRoute(placeholderPages.settings)} path="/settings" />
+        <Route element={<Layout><SettingsPage /></Layout>} path="/settings" />
         <Route element={<Navigate replace to="/" />} path="*" />
       </Routes>
       </BrowserRouter>
