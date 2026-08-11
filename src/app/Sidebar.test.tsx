@@ -36,6 +36,20 @@ describe('Sidebar', () => {
     expect(screen.queryByRole('button', { name: 'Open navigation' })).toBeNull()
   })
 
+  it('marks the current route as the active navigation link', () => {
+    render(
+      <MemoryRouter initialEntries={['/suppliers']}>
+        <Sidebar />
+      </MemoryRouter>,
+    )
+
+    const suppliersLink = screen.getByRole('link', { name: 'Suppliers' })
+
+    expect(suppliersLink.getAttribute('aria-current')).toBe('page')
+    expect(suppliersLink.classList.contains('active')).toBe(true)
+    expect(screen.getByRole('link', { name: 'Dashboard' }).getAttribute('aria-current')).toBeNull()
+  })
+
   it('collapses on mobile and toggles its navigation open', () => {
     setViewport(320)
     render(
@@ -50,7 +64,12 @@ describe('Sidebar', () => {
     fireEvent.click(toggle)
 
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeDefined()
-    expect(screen.getByRole('button', { name: 'Close navigation' })).toBeDefined()
+    const closeButton = screen.getByRole('button', { name: 'Close navigation' })
+
+    fireEvent.click(closeButton)
+
+    expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Open navigation' }).getAttribute('aria-expanded')).toBe('false')
   })
 
   it('returns to desktop navigation when the viewport grows', () => {

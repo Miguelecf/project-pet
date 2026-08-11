@@ -19,9 +19,9 @@ function App() {
             <h2 id="foundation-title">Your operations dashboard is taking shape.</h2>
           </div>
           <p>
-            This local demo is an honest starting point. Financial records, calculations, and
-            navigation are not available yet; they will appear as each MVP module is completed
-            and verified.
+            This local demo is an honest starting point. Navigation is available now; financial
+            records and calculations remain placeholders until each MVP module is completed and
+            verified.
           </p>
         </section>
 

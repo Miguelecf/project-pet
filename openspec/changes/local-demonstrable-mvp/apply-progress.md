@@ -28,10 +28,10 @@
 | 1.1.2 | `AppRouter.test.tsx` | Component | Missing `AppRouter` module; suite failed to collect. | 7/7 route scenarios passed. | Route map uses module wildcards and a replacement catch-all redirect. |
 | 1.1.3 | `Layout.test.tsx` | Component | Missing `Layout` module; suite failed to collect. | Header, module link, skip target passed. | Shared demo header and footer live in Layout. |
 | 1.1.4 | `Layout.test.tsx` | Component | Missing `Layout` module; suite failed to collect. | Layout scenario passed. | Main target remains focusable without adding M1.2 focus management. |
-| 1.1.5 | `Sidebar.test.tsx` | Component | Missing `Sidebar` module; suite failed to collect. | Desktop, mobile toggle, and resize scenarios passed. | One breakpoint constant aligns responsive behavior at 768px. |
-| 1.1.6 | `Sidebar.test.tsx` | Component | Missing `Sidebar` module; suite failed to collect. | 3/3 sidebar scenarios passed. | NavLink supplies semantic module navigation and active state. |
-| 1.1.7 | `App.test.tsx` | Component | Existing App semantics: 3/3 safety net passed. | App semantic and shell suite 14/14 passed. | App retains its dashboard foundation content inside Layout. |
-| 1.1.8 | Focused shell suite | Component | N/A — verification-only task. | 14/14 focused; 94 passed, 1 skipped full. | CSS breakpoint corrected to match the 768px behavior contract. |
+| 1.1.5 | `Sidebar.test.tsx` | Component | Missing `Sidebar` module; suite failed to collect. | Desktop, mobile toggle/close, active-link, and resize scenarios passed. | One breakpoint constant aligns responsive behavior at 768px. |
+| 1.1.6 | `Sidebar.test.tsx` | Component | Missing `Sidebar` module; suite failed to collect. | 4/4 sidebar scenarios passed. | NavLink supplies semantic active state; mobile close returns to the collapsed toggle. |
+| 1.1.7 | `App.test.tsx` | Component | Existing App semantics: 3/3 safety net passed. | App semantic and shell suite 15/15 passed. | App retains its dashboard foundation content inside Layout. |
+| 1.1.8 | Focused shell suite | Component | N/A — verification-only task. | 15/15 focused; 95 passed, 1 skipped full. | CSS breakpoint corrected to match the 768px behavior contract. |
 
 ### M1.1 TDD Cycle Evidence
 
@@ -41,16 +41,23 @@
 | 1.1.2 | `AppRouter.test.tsx` | Component | N/A (new) | Same route-suite RED. | 7/7 route scenarios passed. | Wildcard child paths plus redirect cover distinct matching branches. | Declarative route map retained. |
 | 1.1.3 | `Layout.test.tsx` | Component | N/A (new) | Missing `Layout` module; 0 tests collected. | Layout scenario passed. | Header, local-demo badge, NavLink, and skip target assertions. | Common shell extracted. |
 | 1.1.4 | `Layout.test.tsx` | Component | N/A (new) | Same layout-suite RED. | Layout scenario passed. | Navigation and main-region semantics both exercised. | No further change needed. |
-| 1.1.5 | `Sidebar.test.tsx` | Component | N/A (new) | Missing `Sidebar` module; 0 tests collected. | Sidebar scenarios passed. | Desktop links, mobile closed/open, and resize path. | Shared breakpoint constant extracted. |
-| 1.1.6 | `Sidebar.test.tsx` | Component | N/A (new) | Same sidebar-suite RED. | 3/3 sidebar scenarios passed. | Two viewport modes and toggle state. | NavLink active semantics retained. |
-| 1.1.7 | `App.test.tsx` | Component | 3/3 existing App tests passed. | N/A — pure wiring. | 14/14 focused shell and App semantics passed. | Existing dashboard + new router paths. | App delegates common shell to Layout. |
-| 1.1.8 | Focused shell suite | Component | 14/14 focused tests passed. | N/A — verification-only. | 14/14 focused; 94 passed, 1 skipped full. | All M1.1 route/layout/sidebar behaviors. | CSS breakpoint matches 768px contract. |
+| 1.1.5 | `Sidebar.test.tsx` | Component | N/A (new) | Missing `Sidebar` module; 0 tests collected. | Sidebar scenarios passed. | Desktop links, mobile closed/open/close, and resize path. | Shared breakpoint constant extracted. |
+| 1.1.6 | `Sidebar.test.tsx` | Component | N/A (new) | Same sidebar-suite RED. | 4/4 sidebar scenarios passed. | Two viewport modes, close handler, and active semantics. | NavLink active semantics retained. |
+| 1.1.7 | `App.test.tsx` | Component | 3/3 existing App tests passed. | N/A — pure wiring. | 15/15 focused shell and App semantics passed. | Existing dashboard + new router paths. | App delegates common shell to Layout. |
+| 1.1.8 | Focused shell suite | Component | 15/15 focused tests passed. | N/A — verification-only. | 15/15 focused; 95 passed, 1 skipped full. | All M1.1 route/layout/sidebar behaviors. | CSS breakpoint matches 768px contract. |
+
+### M1.1 corrective gate evidence
+
+| Correction | Test file | Safety net | RED | GREEN | REFACTOR |
+|---|---|---|---|---|---|
+| Honest dashboard disclosure | `App.test.tsx` | 6/6 affected App/Sidebar tests passed. | The revised disclosure assertion failed against the stale claim that navigation was unavailable. | 7/7 affected tests passed after copy correction. | Kept the existing local-only/no-account/no-cloud disclosure. |
+| Sidebar interaction semantics | `Sidebar.test.tsx` | Same affected-test baseline. | New active-link and close-handler assertions were added to the existing behavior. | Active `/suppliers` link exposes `aria-current="page"` and `active`; open → close returns to collapsed navigation. | No production change was needed; the tests exercise the existing `NavLink` and state handler. |
 
 ## Current verification
 
-- Focused M1.1 shell suite: 14/14 passed.
-- `npm run test:run`: 94 passed, 1 skipped.
-- `npm run test:coverage`: 94 passed, 1 skipped; statements 91.35%, branches 82.05%, functions 93.54%, lines 98.16%.
+- Focused M1.1 shell suite: 15/15 passed.
+- `npm run test:run`: 95 passed, 1 skipped.
+- `npm run test:coverage`: 95 passed, 1 skipped; statements 91.48%, branches 82.05%, functions 93.95%, lines 98.34%.
 - `npm run build` and `npm run lint`: passed.
 - `git diff --check`: passed.
 

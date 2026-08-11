@@ -42,10 +42,12 @@ describe('App', () => {
     }
   })
 
-  it('discloses unavailable features and only exposes the skip link', () => {
+  it('discloses that navigation is available while feature workflows remain placeholders', () => {
     render(<MemoryRouter><App /></MemoryRouter>)
 
-    expect(screen.getByText(/Financial records, calculations, and navigation are not available yet/)).toBeDefined()
+    expect(
+      screen.getByText(/Navigation is available now; financial records and calculations remain placeholders/),
+    ).toBeDefined()
     expect(screen.getByText('Local-only MVP. No account, cloud sync, or client data is connected.')).toBeDefined()
     const main = screen.getByRole('main')
     const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
