@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Layout } from './Layout'
 
@@ -22,5 +22,34 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Suppliers' }).getAttribute('href')).toBe('/suppliers')
     expect(screen.getByRole('main').id).toBe('main-content')
     expect(screen.getByRole('link', { name: 'Skip to main content' }).getAttribute('href')).toBe('#main-content')
+  })
+
+  it('moves focus to the new page heading after route navigation', () => {
+    render(
+      <MemoryRouter initialEntries={['/suppliers']}>
+        <Routes>
+          <Route element={<Layout><h1>Suppliers</h1></Layout>} path="/suppliers" />
+          <Route element={<Layout><h1>Categories</h1></Layout>} path="/categories" />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('link', { name: 'Categories' }))
+
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Categories' }))
+  })
+
+  it('moves focus to main content when the skip link is activated', () => {
+    render(
+      <MemoryRouter>
+        <Layout><h1>Example page</h1></Layout>
+      </MemoryRouter>,
+    )
+
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    skipLink.focus()
+    fireEvent.click(skipLink)
+
+    expect(document.activeElement).toBe(screen.getByRole('main'))
   })
 })

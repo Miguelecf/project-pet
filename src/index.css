@@ -44,6 +44,16 @@ body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--canvas)
 .sidebar a:hover, .sidebar a:focus-visible, .sidebar a.active { background: var(--surface-elevated); color: var(--text-primary); outline: none; }
 .navigation-toggle { align-self: start; margin-top: 16px; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--surface-elevated); color: var(--text-primary); font: inherit; font-weight: 700; }
 .workspace { padding: clamp(56px, 10vw, 116px) 0 64px; }
+.state-overlay-container { position: relative; }
+.state-overlay { display: grid; gap: 16px; place-items: center; min-height: 180px; padding: 24px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); text-align: center; }
+.state-overlay p { margin: 0; color: var(--text-secondary); line-height: 1.5; }
+.state-overlay__spinner { width: 28px; height: 28px; border: 3px solid var(--border-subtle); border-top-color: var(--violet-light); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.state-overlay__actions, .confirm-dialog__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.state-overlay button, .confirm-dialog button { padding: 9px 14px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--surface-elevated); color: var(--text-primary); font: inherit; font-weight: 700; }
+.confirm-dialog-backdrop { position: fixed; z-index: 2; inset: 0; display: grid; place-items: center; padding: 24px; background: rgb(0 0 0 / 60%); }
+.confirm-dialog { width: min(100%, 440px); padding: 24px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); box-shadow: 0 20px 48px rgb(0 0 0 / 35%); }
+.confirm-dialog h2 { margin-bottom: 12px; }
+.confirm-dialog p { color: var(--text-secondary); line-height: 1.5; }
 .placeholder-page { max-width: 720px; }
 .placeholder-page h1 { margin-bottom: 20px; }
 .placeholder-page p:last-child { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.6; }
@@ -81,3 +91,5 @@ h1 { max-width: 720px; margin: 12px 0 20px; font-size: clamp(2.45rem, 6vw, 4.5re
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }

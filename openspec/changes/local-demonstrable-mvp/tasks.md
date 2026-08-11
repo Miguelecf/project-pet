@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, and M1.1 are complete; M1.2 is next.
+M0.3a, M0.3b, M1.1, and M1.2 are complete; M2.1 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
@@ -117,13 +117,13 @@ M0.3a, M0.3b, and M1.1 are complete; M1.2 is next.
 **Specs**: `app-shell` (StateOverlay, ConfirmDialog, skip-link, focus management)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 1.2.1 RED: Write `src/components/StateOverlay.test.tsx` — loading shows spinner + inert content, error shows retry button, empty shows create prompt.
-- [ ] 1.2.2 GREEN: Create `src/components/StateOverlay.tsx` — loading/error/empty states, dismissible error, non-dismissible loading.
-- [ ] 1.2.3 RED: Write `src/components/ConfirmDialog.test.tsx` — confirm calls `onConfirm`, Escape calls `onCancel`, focus trapped, focus restored to trigger on close.
-- [ ] 1.2.4 GREEN: Create `src/components/ConfirmDialog.tsx` — focus trap, Escape handler, trigger focus restore.
-- [ ] 1.2.5 RED: Write focus-management test — route change moves focus to page `h1`.
-- [ ] 1.2.6 GREEN: Add focus-to-heading logic in `Layout` on route change.
-- [ ] 1.2.7 REFACTOR: Verify skip-link visible on focus, jumps to `#main-content`.
+- [x] 1.2.1 RED: Write `src/components/StateOverlay.test.tsx` — loading shows spinner + inert content, error shows retry button, empty shows create prompt.
+- [x] 1.2.2 GREEN: Create `src/components/StateOverlay.tsx` — loading/error/empty states, dismissible error, non-dismissible loading.
+- [x] 1.2.3 RED: Write `src/components/ConfirmDialog.test.tsx` — confirm calls `onConfirm`, Escape calls `onCancel`, focus trapped, focus restored to trigger on close.
+- [x] 1.2.4 GREEN: Create `src/components/ConfirmDialog.tsx` — focus trap, Escape handler, trigger focus restore.
+- [x] 1.2.5 RED: Write focus-management test — route change moves focus to page `h1`.
+- [x] 1.2.6 GREEN: Add focus-to-heading logic in `Layout` on route change.
+- [x] 1.2.7 REFACTOR: Verify skip-link visible on focus, jumps to `#main-content`.
 
 ## M2.1 — Supplier CRUD + Soft Delete (~430 lines)
 

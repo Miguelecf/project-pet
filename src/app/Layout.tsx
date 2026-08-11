@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 
 interface LayoutProps {
@@ -6,9 +7,29 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const location = useLocation()
+  const mainContentRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const heading = mainContentRef.current?.querySelector<HTMLHeadingElement>('h1')
+
+    if (heading) {
+      heading.tabIndex = -1
+      heading.focus()
+    }
+  }, [location.pathname])
+
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault()
+          window.location.hash = 'main-content'
+          mainContentRef.current?.focus()
+        }}
+      >
         Skip to main content
       </a>
       <header className="app-header">
@@ -28,7 +49,7 @@ export function Layout({ children }: LayoutProps) {
       </header>
       <div className="app-body">
         <Sidebar />
-        <main className="workspace" id="main-content" tabIndex={-1}>
+        <main className="workspace" id="main-content" ref={mainContentRef} tabIndex={-1}>
           {children}
         </main>
       </div>
