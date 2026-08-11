@@ -67,11 +67,18 @@
 | 1.2.6 | `Layout.test.tsx` | Component | 1/1 pre-existing Layout scenario passed. | Same route-focus RED. | 2/2 Layout scenarios passed. | Route focus executes on pathname changes only. | Main-region ref avoids global page queries. |
 | 1.2.7 | `Layout.test.tsx` | Component | 2/2 route/layout scenarios passed. | Activating skip link left focus on the link. | Skip link focuses `#main-content`; 3/3 Layout scenarios passed. | Keyboard focus and activation use the real anchor target. | Existing focus-visible CSS remains the visual disclosure mechanism. |
 
+### M1.2 corrective gate TDD evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Skip-link keyboard correction | `src/app/Layout.test.tsx` | Component | 5/5 focused Layout/Dialog tests passed. | 2/5 Layout tests failed: initial mount focused `h1`, and Space kept focus on the link. | 5/5 Layout tests passed. | Initial keyboard starting point, native Enter activation (explicit click because jsdom does not run anchor defaults), Space keydown, and post-navigation `h1` focus cover distinct paths. | Route focus runs only after a pathname change; Enter keeps native anchor semantics while Space uses the smallest explicit activation handler. |
+| ConfirmDialog restoration correction | `src/components/ConfirmDialog.test.tsx` | Component | Same 5/5 focused baseline. | 3/5 dialog tests failed: cancel and Escape did not restore focus, and an open dialog unmount was not covered. | 5/5 dialog tests passed. | Confirm, cancel, Escape, unmount with a connected trigger, disconnected-trigger safety, and forward/reverse Tab boundaries cover controlled closure paths. | One effect owns capture, focus, and cleanup restoration; restoration checks connected and focusable targets before focusing. |
+
 ## Current verification
 
-- Focused M1.2 suite: 8/8 passed.
-- `npm run test:run`: 102 passed, 1 skipped.
-- `npm run test:coverage`: 102 passed, 1 skipped; statements 91.71%, branches 82.64%, functions 94.14%, lines 98.13%.
+- Focused M1.2 suite: 10/10 passed.
+- `npm run test:run`: 107 passed, 1 skipped.
+- `npm run test:coverage`: 107 passed, 1 skipped; statements 91.84%, branches 83.36%, functions 94.23%, lines 98.17%.
 - `npm run build` and `npm run lint`: passed.
 - `git diff --check`: passed.
 

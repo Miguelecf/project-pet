@@ -24,6 +24,22 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Skip to main content' }).getAttribute('href')).toBe('#main-content')
   })
 
+  it('leaves initial focus at the document so the skip link remains first in keyboard traversal', () => {
+    render(
+      <MemoryRouter>
+        <Layout><h1>Example page</h1></Layout>
+      </MemoryRouter>,
+    )
+
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+
+    expect(document.activeElement).toBe(document.body)
+    skipLink.focus()
+    expect(document.activeElement).toBe(skipLink)
+    expect(skipLink.matches(':focus')).toBe(true)
+    expect(skipLink.matches(':focus-visible')).toBe(true)
+  })
+
   it('moves focus to the new page heading after route navigation', () => {
     render(
       <MemoryRouter initialEntries={['/suppliers']}>
@@ -39,7 +55,7 @@ describe('Layout', () => {
     expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Categories' }))
   })
 
-  it('moves focus to main content when the skip link is activated', () => {
+  it('moves focus to main content when the skip link is activated with Enter', () => {
     render(
       <MemoryRouter>
         <Layout><h1>Example page</h1></Layout>
@@ -48,7 +64,23 @@ describe('Layout', () => {
 
     const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
     skipLink.focus()
+    fireEvent.keyDown(skipLink, { key: 'Enter' })
+    // jsdom does not perform an anchor's native Enter-to-click default action.
     fireEvent.click(skipLink)
+
+    expect(document.activeElement).toBe(screen.getByRole('main'))
+  })
+
+  it('moves focus to main content when the focused skip link is activated with Space', () => {
+    render(
+      <MemoryRouter>
+        <Layout><h1>Example page</h1></Layout>
+      </MemoryRouter>,
+    )
+
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    skipLink.focus()
+    fireEvent.keyDown(skipLink, { key: ' ' })
 
     expect(document.activeElement).toBe(screen.getByRole('main'))
   })

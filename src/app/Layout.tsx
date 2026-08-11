@@ -9,8 +9,14 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const mainContentRef = useRef<HTMLElement>(null)
+  const previousPathname = useRef(location.pathname)
 
   useEffect(() => {
+    if (previousPathname.current === location.pathname) {
+      return
+    }
+
+    previousPathname.current = location.pathname
     const heading = mainContentRef.current?.querySelector<HTMLHeadingElement>('h1')
 
     if (heading) {
@@ -19,6 +25,11 @@ export function Layout({ children }: LayoutProps) {
     }
   }, [location.pathname])
 
+  function focusMainContent() {
+    window.location.hash = 'main-content'
+    mainContentRef.current?.focus()
+  }
+
   return (
     <div className="app-shell">
       <a
@@ -26,8 +37,13 @@ export function Layout({ children }: LayoutProps) {
         href="#main-content"
         onClick={(event) => {
           event.preventDefault()
-          window.location.hash = 'main-content'
-          mainContentRef.current?.focus()
+          focusMainContent()
+        }}
+        onKeyDown={(event) => {
+          if (event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault()
+            focusMainContent()
+          }
         }}
       >
         Skip to main content

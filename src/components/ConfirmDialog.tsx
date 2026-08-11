@@ -1,5 +1,12 @@
 import { useEffect, useRef } from 'react'
 
+function isRestorableFocusTarget(element: HTMLElement): boolean {
+  return element.isConnected
+    && !element.matches(':disabled')
+    && !element.hasAttribute('inert')
+    && element.tabIndex >= 0
+}
+
 interface ConfirmDialogProps {
   cancelLabel: string
   confirmLabel: string
@@ -23,16 +30,24 @@ export function ConfirmDialog({
   const previouslyFocusedElement = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    if (open) {
-      previouslyFocusedElement.current = document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null
-      confirmButtonRef.current?.focus()
+    if (!open) {
       return
     }
 
-    previouslyFocusedElement.current?.focus()
-    previouslyFocusedElement.current = null
+    previouslyFocusedElement.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null
+    confirmButtonRef.current?.focus()
+
+    return () => {
+      const focusTarget = previouslyFocusedElement.current
+
+      if (focusTarget && isRestorableFocusTarget(focusTarget)) {
+        focusTarget.focus()
+      }
+
+      previouslyFocusedElement.current = null
+    }
   }, [open])
 
   if (!open) {
