@@ -43,6 +43,12 @@ describe('useInvoices', () => {
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
+  it('uses the safe load message when a repository rejects with a non-Error value', async () => {
+    render(<RepositoryProvider repositories={{ invoices: { findAll: async () => { throw 'offline' } } } as never}><InvoiceState /></RepositoryProvider>)
+
+    await waitFor(() => expect(screen.getByText('Could not load invoices').textContent).toBe('Could not load invoices'))
+  })
+
   it('refetches invoices after the provider publishes a revision', async () => {
     const findAll = vi.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([pendingInvoice])
     const restore = vi.fn(async () => undefined)

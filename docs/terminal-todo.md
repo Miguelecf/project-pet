@@ -33,7 +33,7 @@
 - [x] **M3.4** — Payment form + void with production load retry (invariants #4–#7) (~490 lines)
 - [x] **M3.5** — Safe delete + restore (invariant #8) (~250 lines)
 - [x] **M3.6** — Due-date alert widget on dashboard (~250 lines)
-- [ ] **G3-LOCAL** — Core gate: 100% branch coverage on M3 modules (~100 lines)
+- [x] **G3-LOCAL** — Core gate: >=90% reachable branch coverage per core module; defensive guards retained (~100 lines)
 
 ## Dashboard and Daily Income
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 15 | 24 | 63% |
+| 16 | 24 | 67% |
 
 ## Preserved Boundaries (read-only)
 

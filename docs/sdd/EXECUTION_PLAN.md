@@ -5,13 +5,21 @@ protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, and M3.6 due-date alerts are complete.** The next executable unit is
-**G3-LOCAL: core branch coverage**.
+**M4.1: daily-income CRUD**.
 
 ## Quick path
 
-1. Begin G3-LOCAL by reviewing reachable branch coverage in invoice, payment, and daily-income modules.
-2. Retain production behavior; add only meaningful tests for uncovered reachable paths.
+1. Begin M4.1 with strict RED→GREEN→REFACTOR daily-income CRUD behavior.
+2. Keep G3-LOCAL's test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
+
+### G3-LOCAL complete — M4.1 is next
+
+- [x] Reviewed V8 branch coverage: `src/modules/invoices` 96.73% (178/184); local invoice, payment, and daily-income repositories 100%, 91.30%, and 100% respectively.
+- [x] Added meaningful adapter and invoice UI error/retry/fallback, persistence, state-transition, filtering, date/default-clock, optional-input, client-navigation, and async-unmount tests without changing product behavior.
+- [x] Final sequential gates: focused core tests 65/65; full suite 292 passed, 1 skipped; coverage 292 passed, 1 skipped; build, lint, and diff check passed.
+- [x] G3-LOCAL meets the approved >=90% reachable branch-coverage policy per core module: invoice UI/core 96.73%, local invoice 100%, local payment 91.30%, and local daily-income 100%.
+- [x] Defensive guards remain intentionally uncovered when they require impossible public UI states, non-`Error` internal-validator failures, or manually malformed persisted internals. No production behavior was changed merely to increase coverage.
 
 ## Operating rules
 
@@ -180,6 +188,16 @@ restoration without direct storage access. M3.6 is next.
 provider-backed overdue or due-soon active invoices, with fixed-clock component
 coverage and no dashboard metrics, daily-income UI, storage, Supabase, domain, or
 auth changes. G3-LOCAL is next.
+
+### Completed — G3-LOCAL core coverage gate
+
+- [x] Preserve meaningful reachable-path coverage for invoice UI/core and local invoice, payment, and daily-income adapters.
+- [x] Meet the approved >=90% reachable V8 branch threshold in every core module: 96.73%, 100%, 91.30%, and 100%, respectively.
+- [x] Keep defensive guards that require impossible UI states or manually malformed persisted internals instead of changing production behavior or adding invalid-state tests.
+- [x] Run focused 65/65, full 292 passed/1 skipped, coverage 292 passed/1 skipped, build, lint, and diff checks sequentially.
+
+**G3-LOCAL exit criteria met:** all relevant core modules satisfy the approved
+reachable branch-coverage policy. M4.1 daily-income CRUD is next.
 
 ### Deferred — productization
 

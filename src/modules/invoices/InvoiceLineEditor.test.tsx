@@ -40,4 +40,12 @@ describe('InvoiceLineEditor', () => {
     fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '-1' } })
     expect(screen.getByText('Money minor amount must be a non-negative safe integer').textContent).toBe('Money minor amount must be a non-negative safe integer')
   })
+
+  it('preserves sibling lines while updating an external SKU', () => {
+    render(<EditorState initialLines={[line, { ...line, productRef: 'NUT' }]} />)
+    fireEvent.change(screen.getAllByLabelText('External SKU')[0], { target: { value: 'SKU-1' } })
+
+    expect((screen.getAllByLabelText('External SKU')[0] as HTMLInputElement).value).toBe('SKU-1')
+    expect((screen.getAllByLabelText('Product reference')[1] as HTMLInputElement).value).toBe('NUT')
+  })
 })

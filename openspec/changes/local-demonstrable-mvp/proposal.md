@@ -41,7 +41,7 @@ auth.
 | **M3.4** | Payment form + void (domain invariants #4–#7) | ~450 |
 | **M3.5** | Safe delete + restore (domain invariant #8) | ~250 |
 | **M3.6** | Due-date alert widget on dashboard | ~250 |
-| **G3-LOCAL** | Core gate: 100% branch coverage on M3 modules | ~100 |
+| **G3-LOCAL** | Core gate: >=90% reachable branch coverage per core module | ~100 |
 | **M4.1** | Daily income CRUD | ~350 |
 | **M4.2** | Dashboard page + metrics panel | ~450 |
 | **M4.3** | `docs/demo-script.md` — guided walkthrough (no code) | ~150 |

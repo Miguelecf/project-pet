@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
@@ -17,6 +17,10 @@ const existing = {
 
 function renderForm(repositories: Record<string, unknown>, invoice?: InvoiceWithLines) {
   return render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} invoice={invoice} /></RepositoryProvider></MemoryRouter>)
+}
+
+function formRepositories(create = vi.fn()) {
+  return { suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create }, payments: { findByInvoice: async () => [] } }
 }
 
 async function fillValidLine() {
@@ -95,5 +99,89 @@ describe('InvoiceForm', () => {
     expect((await screen.findByRole('alert')).textContent).toBe('Void all payments before editing')
     expect((screen.getByRole('button', { name: 'Save invoice' }) as HTMLButtonElement).disabled).toBe(true)
     expect((screen.getByLabelText('Product reference') as HTMLInputElement).disabled).toBe(true)
+  })
+
+  it('reports catalog-load and active-payment lookup failures without saving', async () => {
+    const create = vi.fn()
+    renderForm({ suppliers: { findAll: async () => { throw new Error('Catalog unavailable') } }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create }, payments: { findByInvoice: async () => [] } })
+    expect((await screen.findByRole('alert')).textContent).toBe('Catalog unavailable')
+    expect(create).not.toHaveBeenCalled()
+    cleanup()
+
+    renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create }, payments: { findByInvoice: async () => { throw new Error('Payment lookup unavailable') } } }, existing)
+    expect((await screen.findByRole('alert')).textContent).toBe('Payment lookup unavailable')
+  })
+
+  it('submits optional invoice inputs as trimmed values or null and cancels through client navigation', async () => {
+    const create = vi.fn(async () => existing)
+    const { rerender } = render(<MemoryRouter><RepositoryProvider repositories={formRepositories(create) as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} /></RepositoryProvider></MemoryRouter>)
+    await fillValidLine()
+    fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-09-01' } })
+    fireEvent.change(screen.getByLabelText('Document reference'), { target: { value: ' INV-9 ' } })
+    fireEvent.change(screen.getByLabelText('Notes'), { target: { value: ' note ' } })
+    fireEvent.change(screen.getByLabelText('External SKU'), { target: { value: ' SKU-9 ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({ docRef: 'INV-9', dueDate: '2026-09-01', notes: 'note', lines: [expect.objectContaining({ externalSku: 'SKU-9' })] })))
+
+    rerender(<MemoryRouter initialEntries={['/invoices/new']}><RepositoryProvider repositories={formRepositories() as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} /></RepositoryProvider></MemoryRouter>)
+    fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }))
+  })
+
+  it('uses the default clock deterministically when no clock is supplied', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-10T12:00:00.000Z'))
+    try {
+      render(<MemoryRouter><RepositoryProvider repositories={formRepositories() as never}><InvoiceForm /></RepositoryProvider></MemoryRouter>)
+      await vi.runAllTimersAsync()
+      fireEvent.click(screen.getByRole('button', { name: 'Add line' }))
+      fireEvent.change(screen.getByLabelText('Supplier'), { target: { value: 'supplier-1' } })
+      fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'category-1' } })
+      fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: 'BOLT' } })
+      fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Steel bolt' } })
+      fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '2' } })
+      fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '150' } })
+      fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-11' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+      expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Date must not be in the future')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('ignores catalog and payment-check completions after unmount without leaking state', async () => {
+    let resolveCatalog!: (value: readonly Supplier[]) => void
+    let resolvePayments!: (value: readonly unknown[]) => void
+    const catalog = new Promise<readonly Supplier[]>((resolve) => { resolveCatalog = resolve })
+    const payments = new Promise<readonly unknown[]>((resolve) => { resolvePayments = resolve })
+    const { unmount } = renderForm({ suppliers: { findAll: () => catalog }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [] }, payments: { findByInvoice: () => payments } }, existing)
+
+    unmount()
+    await act(async () => { resolveCatalog([supplier]); resolvePayments([{ isVoid: false }]) })
+  })
+
+  it('ignores catalog and payment-check rejections after unmount without leaking state', async () => {
+    let rejectCatalog!: (reason: unknown) => void
+    let rejectPayments!: (reason: unknown) => void
+    const catalog = new Promise<readonly Supplier[]>((_, reject) => { rejectCatalog = reject })
+    const payments = new Promise<readonly unknown[]>((_, reject) => { rejectPayments = reject })
+    const { unmount } = renderForm({ suppliers: { findAll: () => catalog }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [] }, payments: { findByInvoice: () => payments } }, existing)
+
+    unmount()
+    await act(async () => { rejectCatalog(new Error('offline')); rejectPayments(new Error('offline')) })
+  })
+
+  it('uses safe fallbacks for non-Error catalog, payment-check, and save failures', async () => {
+    renderForm({ suppliers: { findAll: async () => { throw 'offline' } }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [] }, payments: { findByInvoice: async () => [] } })
+    expect((await screen.findByRole('alert')).textContent).toBe('Could not load invoice form')
+    cleanup()
+
+    renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create: async () => { throw 'offline' } }, payments: { findByInvoice: async () => { throw 'offline' } } }, existing)
+    expect((await screen.findByRole('alert')).textContent).toBe('Could not check invoice payments')
+    cleanup()
+
+    renderForm({ ...formRepositories(vi.fn(async () => { throw 'offline' })) })
+    await fillValidLine()
+    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('Could not save invoice')
   })
 })

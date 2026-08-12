@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
@@ -95,5 +95,50 @@ describe('InvoiceDetailPage', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
     await waitFor(() => expect(softDelete).toHaveBeenCalledWith('invoice-1'))
+  })
+
+  it('uses safe display fallbacks and reports a repository delete failure', async () => {
+    const softDelete = vi.fn(async () => { throw new Error('Delete unavailable') })
+    render(<MemoryRouter><RepositoryProvider repositories={{
+      invoices: { findById: async () => ({ invoice: { id: 'invoice-1', supplierId: 'supplier-1', docRef: null, issueDate: '2026-08-01', dueDate: null, currency: 'USD', totalMinor: 1000, status: 'pending', notes: null, deletedAt: null }, lines: [{ id: 'line-1', categoryId: 'unknown', productRef: 'BOLT', externalSku: null, description: 'Steel bolt', quantity: 2, unitCostMinor: 500, lineTotalMinor: 1000, position: 1 }] }) as never, softDelete },
+      payments: { findByInvoice: async () => [], getBalance: async () => ({ remainingMinor: 1000, status: 'pending' }) },
+      suppliers: { findAll: async () => [] },
+      categories: { findAll: async () => [] },
+    } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'Invoice invoice-1' })).textContent).toBe('Invoice invoice-1')
+    expect(screen.getByText('Supplier: Unknown supplier').textContent).toBe('Supplier: Unknown supplier')
+    expect(screen.getByText('Category: Unknown category').textContent).toBe('Category: Unknown category')
+    expect(screen.getByText('No payments recorded.').textContent).toBe('No payments recorded.')
+    expect(screen.queryByText('Due date: 2026-08-15')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('Delete unavailable')
+  })
+
+  it('uses safe load and delete error fallbacks for non-Error repository failures', async () => {
+    const { rerender } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
+    expect((await screen.findByRole('alert')).textContent).toContain('Could not load invoice')
+
+    rerender(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: async () => ({ invoice, lines }), softDelete: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [], getBalance: async () => ({ remainingMinor: 1000, status: 'pending' }) }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('Could not delete invoice')
+  })
+
+  it('ignores an asynchronous detail completion after unmount', async () => {
+    let resolveDetail!: (value: unknown) => void
+    const detailLoad = new Promise((resolve) => { resolveDetail = resolve })
+    const { unmount } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: () => detailLoad }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
+    unmount()
+    await act(async () => { resolveDetail({ invoice, lines }) })
+  })
+
+  it('ignores an asynchronous detail rejection after unmount', async () => {
+    let rejectDetail!: (reason: unknown) => void
+    const detailLoad = new Promise((_, reject) => { rejectDetail = reject })
+    const { unmount } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: () => detailLoad }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
+    unmount()
+    await act(async () => { rejectDetail(new Error('offline')) })
   })
 })

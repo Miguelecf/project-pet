@@ -15,11 +15,12 @@ function createRepository() {
     invoices: [], invoiceLines: [], payments: [], dailyIncomes: [],
   })
   let sequence = 0
-  return new LocalInvoiceRepository(gateway, {
+  const repository = new LocalInvoiceRepository(gateway, {
     now: fixedNow,
     nextInvoiceId: () => `invoice-${++sequence}` as never,
     nextLineId: () => `line-${sequence}` as never,
   })
+  return { gateway, repository }
 }
 
 const fractionalInput = {
@@ -65,7 +66,7 @@ describeInvoiceRepositoryContract(() => {
 
 describe('LocalInvoiceRepository financial persistence', () => {
   it('persists and reloads half-up line totals for fractional create input', async () => {
-    const repository = createRepository()
+    const { repository } = createRepository()
 
     const created = await repository.create(fractionalInput)
     const reloaded = await repository.findById(created.invoice.id)
@@ -76,7 +77,7 @@ describe('LocalInvoiceRepository financial persistence', () => {
   })
 
   it('recomputes and round-trips half-up line totals when editing', async () => {
-    const repository = createRepository()
+    const { repository } = createRepository()
     const created = await repository.create({ ...fractionalInput, lines: [{ ...fractionalInput.lines[0], quantity: 1 as never }] })
 
     const updated = await repository.update(created.invoice.id, fractionalInput)
@@ -85,5 +86,26 @@ describe('LocalInvoiceRepository financial persistence', () => {
     expect(updated.invoice.totalMinor).toBe(126)
     expect(updated.lines[0]?.lineTotalMinor).toBe(126)
     expect(reloaded).toEqual(updated)
+  })
+
+  it('rejects missing invoices, active-payment mutations, and unknown catalog references', async () => {
+    const { gateway, repository } = createRepository()
+    const missingId = 'missing' as never
+
+    await expect(repository.update(missingId, fractionalInput)).rejects.toThrow('invoice not found')
+    await expect(repository.softDelete(missingId)).rejects.toThrow('invoice not found')
+    await expect(repository.restore(missingId)).rejects.toThrow('invoice not found')
+    await expect(repository.create({ ...fractionalInput, supplierId: 'unknown' as never })).rejects.toThrow('supplier not found')
+    await expect(repository.create({ ...fractionalInput, lines: [] })).rejects.toThrow('invoice requires at least one line')
+    await expect(repository.create({ ...fractionalInput, lines: [{ ...fractionalInput.lines[0], categoryId: 'unknown' as never }] })).rejects.toThrow('category not found')
+
+    const created = await repository.create(fractionalInput)
+    const state = gateway.read()
+    state.payments.push({ id: 'payment-1' as never, invoiceId: created.invoice.id, amountMinor: 1 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null, isVoid: false, voidedAt: null, voidReason: null, createdAt: fixedNow() } as never)
+    state.invoices[0] = { ...state.invoices[0], status: 'partially_paid', updatedAt: fixedNow() }
+    await gateway.write(state)
+
+    await expect(repository.update(created.invoice.id, fractionalInput)).rejects.toThrow('Void all payments before editing')
+    await expect(repository.softDelete(created.invoice.id)).rejects.toThrow('Cannot delete: void all payments first')
   })
 })

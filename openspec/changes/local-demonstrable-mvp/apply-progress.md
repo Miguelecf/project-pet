@@ -366,3 +366,35 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 - M3.6 is restricted to the due-date widget and current dashboard placeholder. M3.4/3.5 behavior, metrics/full dashboard, daily-income UI, direct storage, Supabase, domain, and auth are unchanged.
 - Focused suite: **6 passed**. Full suite: **263 passed, 1 skipped**. Coverage: **93.36% statements, 84.79% branches, 95.80% functions, 97.36% lines**. Build, lint, and diff check passed sequentially; the first all-gates shell exceeded the tool timeout during build, then standalone build/lint/diff passed.
 - **Next:** G3-LOCAL core branch-coverage gate.
+
+## G3-LOCAL verification — complete
+
+- [x] G3.1 reviewed the V8 coverage report for core invoice/payment/daily-income paths.
+- [x] G3.2 added behavior-driven adapter and invoice UI coverage for mutation/load failures and retries, error fallbacks, generated adapter defaults, state-derived statuses/balances, deleted/active filtering, restore cancellation/failure, persistence invariants, optional inputs, client navigation, deterministic default-clock validation, and async unmount completion/rejection guards. Production code is unchanged.
+- [x] G3.3 command gates passed; final sequential rerun is recorded below. G3 is complete under the approved >=90% reachable branch-coverage policy per core module.
+
+| Core path | V8 branch coverage | Status |
+|---|---:|---|
+| `src/modules/invoices` | 96.73% (178/184) | Complete |
+| `src/infrastructure/local/LocalInvoiceRepository.ts` | 100% (39/39) | Complete |
+| `src/infrastructure/local/LocalPaymentRepository.ts` | 91.30% (21/23) | Complete |
+| `src/infrastructure/local/LocalDailyIncomeRepository.ts` | 100% (17/17) | Complete |
+
+Remaining invoice branches are internally guarded, not reachable from the public UI: `InvoiceForm.tsx:70` requires calling `save()` despite its disabled control when `blocked`; `InvoiceLineEditor.tsx:27` requires `lineTotalMinor` to throw a non-`Error`, although its validators throw `Error`; `InvoiceListPage.tsx:42` requires confirming restore without a restore target; and `PaymentForm.tsx:37`, `:54`, `:59` require submitting without a balance, a non-`Error` validation failure, or confirming void without a dialog target. `LocalPaymentRepository.ts` retains 91.30% because lines 53 and 59 protect malformed persisted state (an active payment total above invoice total, or a payment whose invoice vanished); valid public repository workflows prevent both states. These defensive guards are retained and not force-tested through impossible public UI states or manually malformed persisted internals. The daily-income UI remains deferred to M4.1, which is now next.
+
+### G3-LOCAL TDD cycle evidence
+
+| Task | Test files | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| G3.1 | Coverage report | Unit + Component | 36/36 existing focused core tests passed | N/A — coverage-review task | N/A | Four core paths reviewed | No product code changed |
+| G3.2 | Invoice/payment/daily-income adapter tests and invoice component/hook tests | Unit + Component | 13/13 adapter tests passed before continuation | Test-only behavior gaps were added before each focused run; default-clock cases initially stalled under fake timers, then were made deterministic by flushing repository microtasks inside `act`; no production changes | Focused core suite passed | Error/retry/fallback, state transition, filtering, date/balance, generated-default, cancellation, client navigation, optional inputs, and unmount completion/rejection scenarios exercise distinct outcomes | Test-only cleanup; retained guards are not public behavior |
+| G3.3 | Focused core suite and full gates | Unit + Component | Focused core suite passed | N/A — verification task | Full suite and coverage passed; final sequential gate evidence follows | Focused and full commands both run | No code refactor |
+
+### G3-LOCAL continuation verification
+
+- Focused core suite: **65/65 passed**.
+- Full suite: **292 passed, 1 skipped**.
+- Coverage: **292 passed, 1 skipped**; `src/modules/invoices` **96.73% (178/184)** branches, `LocalInvoiceRepository` **100%**, `LocalDailyIncomeRepository` **100%**, and `LocalPaymentRepository` **91.30% (21/23)**.
+- `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- G3-LOCAL is complete: all core modules meet the approved >=90% reachable branch threshold. The six invoice-module branches and two payment-adapter branches require impossible guarded calls, non-`Error` failures from internal validators, or malformed persistence rather than a valid public workflow. No invalid persisted state was injected only to inflate coverage.
+- **Next:** M4.1 daily-income CRUD.

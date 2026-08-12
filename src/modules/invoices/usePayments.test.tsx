@@ -58,4 +58,10 @@ describe('usePayments', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Restore payments' }))
     await waitFor(() => expect(screen.getByText('payment-2').textContent).toBe('payment-2'))
   })
+
+  it('uses the safe load message when either payment read rejects with a non-Error value', async () => {
+    render(<RepositoryProvider repositories={{ payments: { findByInvoice: async () => { throw 'offline' }, getBalance: async () => ({ remainingMinor: 600, status: 'partially_paid' }) } } as never}><PaymentState /></RepositoryProvider>)
+
+    await waitFor(() => expect(screen.getByText('Could not load payments').textContent).toBe('Could not load payments'))
+  })
 })

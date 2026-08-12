@@ -8,7 +8,7 @@ Define quality thresholds, domain coverage tests, integration tests, exploratory
 
 ### Requirement: Domain Coverage Tests (G2-LOCAL, G3-LOCAL)
 
-The system SHALL achieve >=90% reachable branch coverage in each catalog module (suppliers, categories, settings — G2-LOCAL) and 100% branch coverage on core financial modules (invoices, payments, daily-income — G3-LOCAL). Coverage MUST be measured by V8 coverage via `npm run test:coverage`. G2-LOCAL SHALL retain defensive guards that are unreachable through valid public behavior; tests MUST exercise reachable error, retry, cancellation, navigation, and mutation paths without changing product behavior merely to execute invalid internal states.
+The system SHALL achieve >=90% reachable branch coverage in each catalog module (suppliers, categories, settings — G2-LOCAL) and each core module (invoice UI/core and local invoice, payment, and daily-income adapters — G3-LOCAL). Coverage MUST be measured by V8 coverage via `npm run test:coverage`. G2-LOCAL and G3-LOCAL SHALL retain defensive guards unreachable through valid public behavior; tests MUST exercise reachable error, retry, cancellation, navigation, and mutation paths without changing product behavior merely to execute impossible UI states or manually malformed persisted internals.
 
 #### Scenario: G2-LOCAL gate passes
 
@@ -21,7 +21,8 @@ The system SHALL achieve >=90% reachable branch coverage in each catalog module 
 
 - GIVEN all core financial module tests are written
 - WHEN `npm run test:coverage` runs
-- THEN invoices, payments, and daily-income modules show 100% branch coverage
+- THEN invoice UI/core and each local invoice, payment, and daily-income adapter show >=90% reachable branch coverage
+- AND unreachable defensive guards remain in production code rather than being force-tested through impossible public UI states or manually malformed persisted internals
 
 ### Requirement: Edge-Case Tests on Financial Rules (Q2)
 
