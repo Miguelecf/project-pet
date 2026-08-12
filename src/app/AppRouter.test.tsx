@@ -15,7 +15,7 @@ describe('AppRouter', () => {
     ['/', 'A clear view of daily operations, starting here.'],
     ['/categories/new', 'Create category'],
     ['/invoices/example-id', 'Invoice not found.'],
-    ['/daily-income/new', 'Daily income'],
+    ['/daily-income/new', 'Create daily income'],
     ['/settings', 'Settings'],
   ])('renders the expected page for %s', async (path, heading) => {
     window.history.replaceState({}, '', path)
@@ -229,5 +229,28 @@ describe('AppRouter', () => {
     fireEvent.click(within(restoreDialog).getByRole('button', { name: 'Restore invoice' }))
     await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.deletedAt).toBeNull())
     expect(await screen.findByRole('link', { name: 'DEMO-100' })).not.toBeNull()
+  })
+
+  it('persists a daily income through create and edit routes, then refreshes the provider-backed list', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/daily-income/new')
+    const { unmount } = render(<AppRouter />)
+
+    fireEvent.change(await screen.findByLabelText('Sale date'), { target: { value: '2026-08-10' } })
+    fireEvent.change(screen.getByLabelText('Amount (minor units)'), { target: { value: '25000' } })
+    fireEvent.change(screen.getByLabelText('Note (optional)'), { target: { value: 'Counter sale' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save daily income' }))
+    const gateway = new LocalStateGateway(window.localStorage)
+    await waitFor(() => expect(gateway.read().dailyIncomes.find((income) => income.saleDate === '2026-08-10')).toEqual(expect.objectContaining({ amountMinor: 25000, currency: 'USD', note: 'Counter sale' })))
+    const created = gateway.read().dailyIncomes.find((income) => income.saleDate === '2026-08-10')
+    expect(await screen.findByText('2026-08-10 — 25000 USD — Counter sale')).not.toBeNull()
+
+    unmount()
+    window.history.replaceState({}, '', `/daily-income/${created?.id}/edit`)
+    render(<AppRouter />)
+    fireEvent.change(await screen.findByLabelText('Amount (minor units)'), { target: { value: '30000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save daily income' }))
+    await waitFor(() => expect(gateway.read().dailyIncomes.find((income) => income.id === created?.id)?.amountMinor).toBe(30000))
+    expect(await screen.findByText('2026-08-10 — 30000 USD — Counter sale')).not.toBeNull()
   })
 })

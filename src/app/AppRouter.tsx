@@ -14,6 +14,9 @@ import { SettingsPage } from '../modules/settings/SettingsPage'
 import { SupplierForm } from '../modules/suppliers/SupplierForm'
 import { SupplierPage } from '../modules/suppliers/SupplierPage'
 import { useSuppliers } from '../modules/suppliers/useSuppliers'
+import { DailyIncomeForm } from '../modules/daily-income/DailyIncomeForm'
+import { DailyIncomePage } from '../modules/daily-income/DailyIncomePage'
+import { useDailyIncomes } from '../modules/daily-income/useDailyIncomes'
 import { Layout } from './Layout'
 import { RepositoryProvider } from './RepositoryProvider'
 
@@ -21,7 +24,6 @@ const placeholderPages = {
   suppliers: { title: 'Suppliers', description: 'Supplier management will be available in the next catalog milestone.' },
   categories: { title: 'Categories', description: 'Category management will be available in the next catalog milestone.' },
   invoices: { title: 'Invoices', description: 'Invoice management will be available after the financial rules milestone.' },
-  dailyIncome: { title: 'Daily income', description: 'Daily income management will be available in a later MVP milestone.' },
   settings: { title: 'Settings', description: 'Settings management will be available in the next catalog milestone.' },
 }
 
@@ -56,7 +58,9 @@ export function AppRouter() {
         <Route element={<Layout><InvoiceDetailRoute /></Layout>} path="/invoices/:id" />
         <Route element={<Layout><InvoiceListPage /></Layout>} path="/invoices" />
         <Route element={pageRoute(placeholderPages.invoices)} path="/invoices/*" />
-        <Route element={pageRoute(placeholderPages.dailyIncome)} path="/daily-income/*" />
+        <Route element={<Layout><DailyIncomePage /></Layout>} path="/daily-income" />
+        <Route element={<Layout><DailyIncomeForm /></Layout>} path="/daily-income/new" />
+        <Route element={<Layout><DailyIncomeEditRoute /></Layout>} path="/daily-income/:id/edit" />
         <Route element={<Layout><SettingsPage /></Layout>} path="/settings" />
         <Route element={<Navigate replace to="/" />} path="*" />
       </Routes>
@@ -98,4 +102,12 @@ function InvoiceEditRoute() {
 function InvoiceDetailRoute() {
   const { id } = useParams()
   return id ? <InvoiceDetailPage invoiceId={id} /> : <Navigate replace to="/invoices" />
+}
+
+function DailyIncomeEditRoute() {
+  const { id } = useParams()
+  const { incomes, loading } = useDailyIncomes()
+  if (loading) return <StateOverlay state="loading"><section aria-label="Daily income form" /></StateOverlay>
+  const income = incomes.find((candidate) => candidate.id === id)
+  return income ? <DailyIncomeForm income={income} /> : <Navigate replace to="/daily-income" />
 }

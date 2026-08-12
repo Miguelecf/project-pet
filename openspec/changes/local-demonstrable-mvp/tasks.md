@@ -280,13 +280,13 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 **Specs**: `daily-income-management` (all requirements)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 4.1.1 RED: Write `src/modules/daily-income/useDailyIncomes.test.ts` — CRUD operations via `DailyIncomeRepository`, loading/error states, triggers dashboard-relevant revision after mutation.
-- [ ] 4.1.2 GREEN: Create `src/modules/daily-income/useDailyIncomes.ts` — hook.
-- [ ] 4.1.3 RED: Write `src/modules/daily-income/DailyIncomePage.test.tsx` — list descending, empty state, create valid, reject zero/future/duplicate date, edit updates dashboard, confirm/cancel delete.
-- [ ] 4.1.4 GREEN: Create `src/modules/daily-income/DailyIncomePage.tsx` — list page with create/edit/delete actions.
-- [ ] 4.1.5 RED: Write `src/modules/daily-income/DailyIncomeForm.test.tsx` — form validation, currency snapshot display, note field.
-- [ ] 4.1.6 GREEN: Create `src/modules/daily-income/DailyIncomeForm.tsx` — create/edit form.
-- [ ] 4.1.7 REFACTOR: Verify dashboard totals refresh after every mutation.
+- [x] 4.1.1 RED: Write `src/modules/daily-income/useDailyIncomes.test.ts` — CRUD operations via `DailyIncomeRepository`, loading/error states, triggers dashboard-relevant revision after mutation.
+- [x] 4.1.2 GREEN: Create `src/modules/daily-income/useDailyIncomes.ts` — hook.
+- [x] 4.1.3 RED: Write `src/modules/daily-income/DailyIncomePage.test.tsx` — list descending, empty state, create valid, reject zero/future/duplicate date, edit updates dashboard, confirm/cancel delete.
+- [x] 4.1.4 GREEN: Create `src/modules/daily-income/DailyIncomePage.tsx` — list page with create/edit/delete actions.
+- [x] 4.1.5 RED: Write `src/modules/daily-income/DailyIncomeForm.test.tsx` — form validation, currency snapshot display, note field.
+- [x] 4.1.6 GREEN: Create `src/modules/daily-income/DailyIncomeForm.tsx` — create/edit form.
+- [x] 4.1.7 REFACTOR: Verify dashboard totals refresh after every mutation.
 
 ## M4.2 — Dashboard Page + Metrics (~450 lines)
 

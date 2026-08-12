@@ -37,7 +37,7 @@
 
 ## Dashboard and Daily Income
 
-- [ ] **M4.1** — Daily income CRUD (~390 lines)
+- [x] **M4.1** — Daily income CRUD with provider revision refresh (~390 lines)
 - [ ] **M4.2** — Dashboard page + metrics panel (~450 lines)
 - [ ] **M4.3** — `docs/demo-script.md` guided walkthrough (~150 lines, no code)
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 16 | 24 | 67% |
+| 17 | 24 | 71% |
 
 ## Preserved Boundaries (read-only)
 

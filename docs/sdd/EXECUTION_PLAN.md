@@ -4,22 +4,33 @@
 protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
- restore, and M3.6 due-date alerts are complete.** The next executable unit is
-**M4.1: daily-income CRUD**.
+ restore, M3.6 due-date alerts, and M4.1 daily-income CRUD are complete.** The
+next executable unit is **M4.2: dashboard metrics and daily-income summary**.
 
 ## Quick path
 
-1. Begin M4.1 with strict RED→GREEN→REFACTOR daily-income CRUD behavior.
+1. Begin M4.2 with strict RED→GREEN→REFACTOR dashboard aggregate behavior.
 2. Keep G3-LOCAL's test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
-### G3-LOCAL complete — M4.1 is next
+### M4.1 complete — M4.2 is next
 
 - [x] Reviewed V8 branch coverage: `src/modules/invoices` 96.73% (178/184); local invoice, payment, and daily-income repositories 100%, 91.30%, and 100% respectively.
 - [x] Added meaningful adapter and invoice UI error/retry/fallback, persistence, state-transition, filtering, date/default-clock, optional-input, client-navigation, and async-unmount tests without changing product behavior.
 - [x] Final sequential gates: focused core tests 65/65; full suite 292 passed, 1 skipped; coverage 292 passed, 1 skipped; build, lint, and diff check passed.
 - [x] G3-LOCAL meets the approved >=90% reachable branch-coverage policy per core module: invoice UI/core 96.73%, local invoice 100%, local payment 91.30%, and local daily-income 100%.
 - [x] Defensive guards remain intentionally uncovered when they require impossible public UI states, non-`Error` internal-validator failures, or manually malformed persisted internals. No production behavior was changed merely to increase coverage.
+
+### Completed — M4.1 daily-income CRUD
+
+- [x] Load daily incomes through a revision-aware repository hook and sort persisted records by descending sale date.
+- [x] Create and edit through routed, accessible forms with positive-integer amount, non-future ISO sale-date, unique-date, optional-note, and currency-snapshot feedback.
+- [x] Confirm hard deletion; cancellation retains the persisted record while successful local mutations publish the provider revision and refresh consumers.
+- [x] Keep dashboard metrics and weekly-summary implementation deferred to M4.2.
+
+**M4.1 exit criteria met:** daily-income list/create/edit/delete uses only
+`RepositoryProvider` and existing local adapters, provides loading/error/retry/empty
+states, and persists/reloads form changes without direct storage access.
 
 ## Operating rules
 
@@ -197,7 +208,8 @@ auth changes. G3-LOCAL is next.
 - [x] Run focused 65/65, full 292 passed/1 skipped, coverage 292 passed/1 skipped, build, lint, and diff checks sequentially.
 
 **G3-LOCAL exit criteria met:** all relevant core modules satisfy the approved
-reachable branch-coverage policy. M4.1 daily-income CRUD is next.
+reachable branch-coverage policy. At this historical checkpoint, M4.1 daily-income
+CRUD was next.
 
 ### Deferred — productization
 

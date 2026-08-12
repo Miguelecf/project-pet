@@ -17,6 +17,7 @@
 - [x] M3.4 — Payment registration and void with production load retry.
 - [x] M3.5 — Safe invoice deletion and retained-invoice restore.
 - [x] M3.6 — Provider-backed due-date alerts in the dashboard placeholder.
+- [x] M4.1 — Daily-income CRUD pages, routes, and provider revision refresh.
 
 ## Completed tasks
 
@@ -35,6 +36,7 @@
 - [x] 3.4.1–3.4.6: Revision-aware payment hook, accessible load-error retry, registration and void confirmation, local-provider persistence, refreshed detail balances, and payment invariant coverage.
 - [x] 3.5.1–3.5.5: Confirmed delete/restore controls, active-payment blocking, retained-invoice filter, and real local-provider persistence coverage.
 - [x] 3.6.1–3.6.4: Fixed-clock overdue/due-soon alerts, settings boundary, active-balance filtering, semantic badges/list, and detail navigation.
+- [x] 4.1.1–4.1.7: Revision-aware daily-income hook; accessible list, form, routes, validation, currency snapshots, confirmation, and persisted refresh behavior.
 
 ## TDD cycle evidence
 
@@ -380,7 +382,7 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 | `src/infrastructure/local/LocalPaymentRepository.ts` | 91.30% (21/23) | Complete |
 | `src/infrastructure/local/LocalDailyIncomeRepository.ts` | 100% (17/17) | Complete |
 
-Remaining invoice branches are internally guarded, not reachable from the public UI: `InvoiceForm.tsx:70` requires calling `save()` despite its disabled control when `blocked`; `InvoiceLineEditor.tsx:27` requires `lineTotalMinor` to throw a non-`Error`, although its validators throw `Error`; `InvoiceListPage.tsx:42` requires confirming restore without a restore target; and `PaymentForm.tsx:37`, `:54`, `:59` require submitting without a balance, a non-`Error` validation failure, or confirming void without a dialog target. `LocalPaymentRepository.ts` retains 91.30% because lines 53 and 59 protect malformed persisted state (an active payment total above invoice total, or a payment whose invoice vanished); valid public repository workflows prevent both states. These defensive guards are retained and not force-tested through impossible public UI states or manually malformed persisted internals. The daily-income UI remains deferred to M4.1, which is now next.
+Remaining invoice branches are internally guarded, not reachable from the public UI: `InvoiceForm.tsx:70` requires calling `save()` despite its disabled control when `blocked`; `InvoiceLineEditor.tsx:27` requires `lineTotalMinor` to throw a non-`Error`, although its validators throw `Error`; `InvoiceListPage.tsx:42` requires confirming restore without a restore target; and `PaymentForm.tsx:37`, `:54`, `:59` require submitting without a balance, a non-`Error` validation failure, or confirming void without a dialog target. `LocalPaymentRepository.ts` retains 91.30% because lines 53 and 59 protect malformed persisted state (an active payment total above invoice total, or a payment whose invoice vanished); valid public repository workflows prevent both states. These defensive guards are retained and not force-tested through impossible public UI states or manually malformed persisted internals. At this historical G3 checkpoint, daily-income UI was deferred to M4.1.
 
 ### G3-LOCAL TDD cycle evidence
 
@@ -397,4 +399,26 @@ Remaining invoice branches are internally guarded, not reachable from the public
 - Coverage: **292 passed, 1 skipped**; `src/modules/invoices` **96.73% (178/184)** branches, `LocalInvoiceRepository` **100%**, `LocalDailyIncomeRepository` **100%**, and `LocalPaymentRepository` **91.30% (21/23)**.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
 - G3-LOCAL is complete: all core modules meet the approved >=90% reachable branch threshold. The six invoice-module branches and two payment-adapter branches require impossible guarded calls, non-`Error` failures from internal validators, or malformed persistence rather than a valid public workflow. No invalid persisted state was injected only to inflate coverage.
-- **Next:** M4.1 daily-income CRUD.
+- **Historical next:** M4.1 daily-income CRUD.
+
+## M4.1 verification — complete
+
+- [x] Daily-income loading uses `DailyIncomeRepository` through `RepositoryProvider`, sorts newest sale dates first, and exposes accessible loading, error/retry, and empty states.
+- [x] Create/edit routes validate a positive safe-integer minor amount and a non-future ISO sale date before persistence; duplicate sale dates remain rejected by the existing repository invariant.
+- [x] Forms disclose the current settings currency for new records and retain the historical currency snapshot for edits. Notes are trimmed or persisted as `null`.
+- [x] Delete is hard-delete only after `ConfirmDialog` confirmation; cancellation preserves the persisted record. Successful local mutations publish the provider revision and refresh the provider-backed list.
+- [x] Dashboard metrics and weekly-summary implementation remain deferred to M4.2.
+
+### M4.1 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 4.1.1–4.1.2 | `src/modules/daily-income/useDailyIncomes.test.tsx` | Component | N/A (new) | Hook test written before hook implementation. | CRUD delegation plus load/retry scenarios passed. | Successful records, load failure/retry, and repository revision refresh cover distinct outcomes. | Reused the established revision-aware hook shape and named `refresh` callback. |
+| 4.1.3–4.1.4 | `src/modules/daily-income/DailyIncomePage.test.tsx`, `src/app/AppRouter.test.tsx` | Component | N/A (new page) | Page/route expectations written before page and route implementation. | Descending list, accessible empty action, route persistence, and confirm/cancel delete scenarios passed. | Mocked order/empty state and real local-provider create/edit/delete persistence exercise distinct paths. | Removed the obsolete daily-income placeholder route entry. |
+| 4.1.5–4.1.6 | `src/modules/daily-income/DailyIncomeForm.test.tsx` | Component | N/A (new form) | Form expectations written before form implementation. | Valid create, validation/repository rejection, and snapshot-preserving edit scenarios passed. | Positive/zero/future/duplicate inputs plus trimmed and absent notes cover distinct validation paths. | Kept presentation validation local while the repository preserves the uniqueness invariant. |
+| 4.1.7 | Focused daily-income/router suite | Component | 28/28 focused tests passed. | N/A — verification task. | Focused suite passed. | Real provider routes persist create/edit and page confirmation persists delete; revision triggers consumer refetch. | No dashboard metric code introduced; M4.2 remains the aggregate consumer. |
+
+## M4.1 scope and next
+
+- M4.1 changes only daily-income hooks/pages/forms/routes and synchronized SDD progress. No dashboard metrics, direct storage/Supabase access, domain contracts, or auth behavior changed.
+- **Next:** M4.2 dashboard metrics panel and daily-income weekly summary.
