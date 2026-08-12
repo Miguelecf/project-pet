@@ -4,9 +4,9 @@
 
 | Field | Value |
 |-------|-------|
-| Estimated changed lines | ~5500–6100 across ~24 milestone commits |
-| Largest milestone | M0.3b ~620 lines |
-| 800-line budget risk | Low — all milestones pre-estimated under 800; M0.3 pre-split into a/b |
+| Estimated changed lines | ~5800–6400 across ~24 milestone commits |
+| Largest milestone | M4.2 ~750 lines |
+| 800-line budget risk | Medium — M4.2 is near the guard and must split if it grows |
 | Chained PRs recommended | No — single mainline delivery, no PRs |
 | Delivery strategy | single mainline delivery (no PR); milestone commits |
 | Chain strategy | none |
@@ -14,7 +14,7 @@
 Decision needed before apply: No
 Chained PRs recommended: No
 Chain strategy: none
-800-line budget risk: Low
+800-line budget risk: Medium
 
 ## Conventions
 
@@ -288,18 +288,20 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 - [x] 4.1.6 GREEN: Create `src/modules/daily-income/DailyIncomeForm.tsx` — create/edit form.
 - [x] 4.1.7 REFACTOR: Verify dashboard totals refresh after every mutation.
 
-## M4.2 — Dashboard Page + Metrics (~450 lines)
+## M4.2 — Full Dashboard (~750 lines)
 
-**Commit**: `feat(dashboard): metrics panel, daily income summary, full dashboard page — M4.2`
-**Specs**: `dashboard` (metrics panel, daily income summary, dashboard routing, dashboard accessibility)
+**Commit**: `feat(dashboard): complete local operational dashboard — M4.2`
+**Specs**: `dashboard` (all requirements; existing DueAlerts remains complete)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 4.2.1 RED: Write `src/modules/dashboard/dashboardAggregates.test.ts` — total outstanding, monthly income, status counts, weekly summary, exclude soft-deleted.
-- [ ] 4.2.2 GREEN: Create `src/modules/dashboard/dashboardAggregates.ts` — pure aggregate functions.
-- [ ] 4.2.3 RED: Write `src/modules/dashboard/DashboardPage.test.tsx` — metrics with seed data, zero-value empty state, metrics recalculate on data change, weekly summary, accessible labels.
-- [ ] 4.2.4 GREEN: Create `src/modules/dashboard/DashboardPage.tsx` — metrics panel, `DueAlerts`, daily income weekly summary.
-- [ ] 4.2.5 GREEN: Wire `DashboardPage` as `/` route in `AppRouter`. _(Wiring — route tested in M1.1; replaces placeholder with real component.)_
-- [ ] 4.2.6 REFACTOR: Verify screen reader announces metric labels.
+- [ ] 4.2.1 RED: Add `dashboardAggregates.test.ts` for local day/week/month inclusive boundaries, four formulas, active status counts, current-week summary, deleted/void exclusions, and safe integers.
+- [ ] 4.2.2 GREEN: Add `dashboardAggregates.ts` pure date ranges and aggregate functions; outstanding/status remain all-time while income/payment/result use the selected period.
+- [ ] 4.2.3 RED: Cover proportional paid-expense category allocation, deterministic remainder/tie sorting, zero-total invoices, latest-10 tie order, and seven-date inactivity threshold.
+- [ ] 4.2.4 GREEN: Complete pure category/latest/inactivity selectors without changing domain or repository contracts.
+- [ ] 4.2.5 RED: Add `DashboardPage.test.tsx` for provider loading/error/retry, period interaction, reconciliation/disclosure, weekly zeros, latest links, categories, inactivity, empty/seed prompt, revision refresh, DueAlerts, and semantic labels.
+- [ ] 4.2.6 GREEN: Create `DashboardPage.tsx`; read only existing repositories, inject local clock, and render all dashboard sections/accessibility states.
+- [ ] 4.2.7 GREEN: Replace root placeholder in `src/App.tsx`/`src/app/AppRouter.tsx` with the full `/` dashboard and retain shell focus behavior.
+- [ ] 4.2.8 REFACTOR: Run focused/full/coverage/build/lint/diff gates; update progress/TODO/plan. Split before commit if the milestone exceeds 800 changed lines.
 
 ## M4.3 — Demo Script Document (~150 lines)
 

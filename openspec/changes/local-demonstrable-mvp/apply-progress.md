@@ -421,4 +421,16 @@ Remaining invoice branches are internally guarded, not reachable from the public
 ## M4.1 scope and next
 
 - M4.1 changes only daily-income hooks/pages/forms/routes and synchronized SDD progress. No dashboard metrics, direct storage/Supabase access, domain contracts, or auth behavior changed.
-- **Next:** M4.2 dashboard metrics panel and daily-income weekly summary.
+- **Next:** M4.2 full approved dashboard scope.
+
+## M4.2 approved plan — not implemented
+
+- [ ] Day/week/month period filter with inclusive local-calendar boundaries.
+- [ ] Period income, non-voided paid expenses, estimated cash result with explicit
+  “not net profit” disclosure, and all-time active outstanding/status counts.
+- [ ] Current Monday–Sunday income summary, latest 10 active invoices, deterministic
+  seven-date inactivity alert, and exact numeric paid-expense category allocation.
+- [ ] Existing provider-backed `DueAlerts`, `/` landing route, revision refresh,
+  empty/error/retry states, keyboard behavior, and screen-reader labels retained.
+- M4.1 remains complete. M4.2 is next; M4.3 and Q2+ remain pending. No product,
+  domain, persistence, Supabase, or auth implementation changed during this design update.

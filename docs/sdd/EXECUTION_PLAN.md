@@ -5,11 +5,11 @@ protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, M3.6 due-date alerts, and M4.1 daily-income CRUD are complete.** The
-next executable unit is **M4.2: dashboard metrics and daily-income summary**.
+next executable unit is **M4.2: the full approved operational dashboard**.
 
 ## Quick path
 
-1. Begin M4.2 with strict RED→GREEN→REFACTOR dashboard aggregate behavior.
+1. Begin M4.2 with strict RED→GREEN→REFACTOR calendar and aggregate behavior.
 2. Keep G3-LOCAL's test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
@@ -31,6 +31,23 @@ next executable unit is **M4.2: dashboard metrics and daily-income summary**.
 **M4.1 exit criteria met:** daily-income list/create/edit/delete uses only
 `RepositoryProvider` and existing local adapters, provides loading/error/retry/empty
 states, and persists/reloads form changes without direct storage access.
+
+### Approved — M4.2 full scope is next
+
+- [ ] Filter period-dependent values by inclusive local day, Monday–Sunday week,
+  or calendar month; default to month and avoid UTC conversion of ISO dates.
+- [ ] Calculate period income, non-voided paid expenses, and estimated cash result
+  (`income - paid expenses`) with an explicit “not net profit” disclosure.
+- [ ] Keep outstanding debt, active status counts, latest 10 active invoices, and
+  `DueAlerts` as all-time snapshots; keep the weekly summary on the current week.
+- [ ] Alert after seven inclusive local dates without daily income and allocate
+  period payments numerically across categories with deterministic integer remainders.
+- [ ] Preserve `/` as the accessible landing route and provide labeled zero,
+  empty, loading, error/retry, and seed-prompt states.
+
+**M4.2 acceptance boundary:** soft-deleted invoices and their payments are excluded;
+voided payments are excluded; latest ties use issue date descending, creation instant
+descending, then ID ascending. M4.1 stays complete; M4.3 and Q2+ stay pending.
 
 ## Operating rules
 

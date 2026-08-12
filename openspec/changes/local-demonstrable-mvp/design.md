@@ -2,7 +2,8 @@
 
 ## Technical Approach
 
-**Current fact:** the repository contains React 19/TypeScript/Vite/Vitest scaffolding, baseline contracts in `src/types/domain.ts`, type tests, empty feature directories, and an isolated Supabase boundary. **Planned work:** build a local-first modular monolith where pages call hooks, hooks call async module repositories, and only `LocalStateGateway` accesses `localStorage`. `RepositoryProvider` owns repositories and a revision counter; successful atomic mutations increment revision so consumers refetch.
+Preserve completed M0–M4.1. M4.2 adds pure fixed-clock aggregation and a
+provider-backed dashboard; only `LocalStateGateway` accesses storage.
 
 ```text
 BrowserRouter → page → hook → RepositoryProvider → repository → LocalStateGateway
@@ -13,13 +14,11 @@ Dashboard    ←──────────── revision after successful f
 
 | Topic | Decision and rationale |
 |---|---|
-| Contracts | Use separate supplier, category, settings, invoice, payment, and daily-income async interfaces plus adapter contract suites; interface segregation avoids a generic CRUD abstraction. |
-| Determinism | Inject `Clock.now()`, `Clock.today()`, and `IdGenerator.next(kind)`. Production uses ISO instants, local calendar dates, and `crypto.randomUUID`; tests use fixed values. Issue, payment, and sale dates reject future ISO dates; due dates may be future. |
-| Money/quantity | Preserve baseline fields: `MoneyMinor` integers and persisted `InvoiceLine.quantity`. Validate positive finite quantity with ≤3 decimals, normalize internally to thousandths, then half-up round `quantity × unitCostMinor` once per line with safe-integer guards. Sum rounded lines. Never persist `quantityMillis`. |
-| Status/currency | Use only `pending | partially_paid | paid` and `ARS | USD`. Reject overpayment before status derivation. Preserve `Settings { currency, dueAlertDays, timestamps }`; do not add locale or mutate M0.1 contracts. |
-| Persistence/recovery | Validate and clone a complete `project-pet-v1` envelope, then perform one `setItem`. Publish neither candidate state nor revision on serialization/write failure. Missing, malformed, or mismatched data yields empty initialized state plus seed prompt; immutable seed restore deep-copies deterministic data. |
-| Invariants | Repositories validate normalized uniqueness, references, dates, currency lock, payments, and deletion. Soft-deleted invoices remain stored with `deletedAt`, disappear from active queries/UI, appear under a deleted filter, and can be restored. Daily-income create/edit/delete refreshes dashboard totals. |
-| Accessibility | Semantic queries drive TDD. Shell provides skip link, route-heading focus, responsive navigation, inert loading state, retry/empty states, and a focus-trapped confirm dialog that restores trigger focus. |
+| Dashboard reads | Add no aggregate repository or persistence shape. `DashboardPage` loads active invoices, each invoice’s lines/payments, daily incomes, categories, and settings through existing contracts, then recomputes on provider revision. This preserves future adapter compatibility at acceptable local-demo scale. |
+| Periods | A pure calendar helper derives inclusive local day, Monday–Sunday week, and month boundaries from injected `Clock.today()`. Compare strict ISO dates lexically; never parse them as UTC instants. |
+| Metric scope | Period applies only to income, paid expenses, cash result, and paid-expense category allocation. Outstanding/status/latest/DueAlerts are active all-time snapshots; weekly summary is always the current local week. This keeps debt and operational alerts visible. |
+| Expense allocation | Allocate each qualifying non-voided payment over rounded line totals using integer `floor(payment × line / invoiceTotal)` shares; assign residual units by line position then ID. Aggregate by category and sort amount descending then category name/ID. |
+| Exclusions/inactivity | Exclude soft-deleted invoices and every payment attached to them; exclude voided payments. Inactivity means no daily income in `[today-6,today]`, inclusive. Latest 10 sort by issue date desc, created instant desc, ID asc. |
 
 ## Contracts and Sequences
 
@@ -28,6 +27,8 @@ type Recovery = 'ready' | 'needs_seed' | 'unavailable'
 interface RepositoryProviderValue { repositories: Repositories; revision: number; restore(): Promise<void> }
 interface Clock { now(): ISODateTime; today(): ISODate }
 interface IdGenerator { next(kind: 'supplier'|'category'|'invoice'|'line'|'payment'|'dailyIncome'): string }
+type DashboardPeriod = 'day' | 'week' | 'month'
+interface DateRange { start: ISODate; end: ISODate }
 ```
 
 ```text
@@ -42,28 +43,27 @@ Failure → reject typed error → preserve stored envelope/revision → accessi
 
 | File | Planned change |
 |---|---|
-| `src/main.tsx` | Mount router/provider composition. |
-| `src/App.tsx`, `src/App.test.tsx`, `src/index.css` | Replace foundation screen with shell and verified styles. |
-| `vitest.config.ts`, `openspec/config.yaml` | Keep test/coverage gates synchronized. |
-| `docs/sdd/EXECUTION_PLAN.md` | Synchronize completed milestones without changing paused auth scope. |
+| `src/App.tsx`, `src/app/AppRouter.tsx`, tests, `src/index.css` | Replace the root placeholder with the full accessible `DashboardPage` at `/`. |
+| SDD/TODO/plan artifacts | Record M4.2 scope and progress without changing M4.1 or later status. |
 
 `src/types/domain.ts`, `src/types/domain.test.ts`, and `src/lib/supabase/` are existing read-only boundaries.
 
 ### Planned files to create
 
-| Capability | Concrete files / symbols |
+| File | Purpose |
 |---|---|
-| repository-contracts | `src/modules/suppliers/SupplierRepository.ts`, `src/modules/categories/CategoryRepository.ts`, `src/modules/settings/SettingsRepository.ts`, `src/modules/invoices/InvoiceRepository.ts`, `src/modules/invoices/PaymentRepository.ts`, `src/modules/daily-income/DailyIncomeRepository.ts`; `src/test/contracts/supplierRepositoryContract.ts`, `src/test/contracts/categoryRepositoryContract.ts`, `src/test/contracts/settingsRepositoryContract.ts`, `src/test/contracts/invoiceRepositoryContract.ts`, `src/test/contracts/paymentRepositoryContract.ts`, `src/test/contracts/dailyIncomeRepositoryContract.ts`. |
-| local-persistence, demo-seed | Concrete files under `src/infrastructure/local/`: `LocalStateSchema.ts`, `LocalStateGateway.ts`, `SeedData.ts`, `LocalSupplierRepository.ts`, `LocalCategoryRepository.ts`, `LocalSettingsRepository.ts`, `LocalInvoiceRepository.ts`, `LocalPaymentRepository.ts`, `LocalDailyIncomeRepository.ts`. |
-| provider/hooks | `src/app/RepositoryProvider.tsx`, `src/app/useRepositories.ts`, `src/modules/suppliers/useSuppliers.ts`, `src/modules/categories/useCategories.ts`, `src/modules/settings/useSettings.ts`, `src/modules/invoices/useInvoices.ts`, `src/modules/invoices/usePayments.ts`, `src/modules/daily-income/useDailyIncomes.ts`. |
-| shell/catalogs | `src/app/AppRouter.tsx`, `src/app/Layout.tsx`, `src/app/Sidebar.tsx`; `src/components/StateOverlay.tsx`, `src/components/ConfirmDialog.tsx`; `src/modules/suppliers/SupplierPage.tsx`, `src/modules/suppliers/SupplierForm.tsx`; `src/modules/categories/CategoryPage.tsx`, `src/modules/categories/CategoryForm.tsx`; `src/modules/settings/SettingsPage.tsx`, `src/modules/settings/SettingsForm.tsx`. |
-| finance/invoices | `src/utils/finance.ts`, `dates.ts`, `validation.ts`; `src/modules/invoices/InvoiceListPage.tsx`, `InvoiceDetailPage.tsx`, `InvoiceForm.tsx`, `InvoiceLineEditor.tsx`, `PaymentForm.tsx`. |
-| daily-income/dashboard | `src/modules/daily-income/DailyIncomePage.tsx`, `DailyIncomeForm.tsx`; `src/modules/dashboard/DashboardPage.tsx`, `dashboardAggregates.ts`, `DueAlerts.tsx`. |
-| quality/docs | `src/integration/invoiceLifecycle.test.tsx`, `src/integration/persistenceRecovery.test.tsx`, `src/integration/dailyIncomeDashboard.test.tsx`; `docs/terminal-todo.md`, `docs/demo-script.md`, `docs/qa-exploratory/refresh-persistence.md`, `docs/qa-exploratory/corrupt-recovery.md`, `docs/qa-exploratory/responsive-layout.md`, `docs/qa-exploratory/keyboard-navigation.md`. |
+| `src/modules/dashboard/dashboardAggregates.ts` | Pure periods, formulas, allocation, latest, inactivity, and weekly selectors. |
+| `src/modules/dashboard/dashboardAggregates.test.ts` | Deterministic unit acceptance coverage. |
+| `src/modules/dashboard/DashboardPage.tsx` | Repository consumer and semantic dashboard UI. |
+| `src/modules/dashboard/DashboardPage.test.tsx` | Provider, routing, state, refresh, and accessibility coverage. |
 
 ## Testing, Delivery, and Rollback
 
-Use strict RED→GREEN→REFACTOR: pure finance/date units, reusable repository contracts, provider-backed component tests, then real-gateway jsdom integration tests. G2 requires >=90% reachable branch coverage per supplier, category, and settings module; G3 applies the same >=90% reachable branch-coverage policy to invoice UI/core and local invoice/payment/daily-income adapters. Defensive guards unreachable through valid public UI states or requiring manually malformed persisted internals remain in production and are not force-tested. Each milestone runs tests and stays below 800 changed lines with tests/docs/TODO in the same work unit. GMVP retains build, lint, coverage, demo, QA charter closure, and final GLM 5.2 review.
+M4.2 uses strict RED→GREEN→REFACTOR: pure table-driven tests cover boundaries,
+formula reconciliation, exclusions, allocation remainders, ties, and empty data;
+provider-backed component tests cover loading/error/retry, revision refresh, route,
+filter, disclosure, links, and semantics. Run focused/full/coverage/build/lint/diff
+gates. Split M4.2 before commit if it exceeds 800 changed lines.
 
 Rollback MUST proceed in reverse dependency order: docs/UI/dashboard → features/finance → provider/local repositories → gateway/schema → contracts. Revert consumers before providers to remain compile-safe; clear an incompatible newer storage key or restore through the compatible gateway before reverting persistence. Supabase/auth remain paused and untouched.
 

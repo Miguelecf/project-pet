@@ -43,7 +43,7 @@ auth.
 | **M3.6** | Due-date alert widget on dashboard | ~250 |
 | **G3-LOCAL** | Core gate: >=90% reachable branch coverage per core module | ~100 |
 | **M4.1** | Daily income CRUD | ~350 |
-| **M4.2** | Dashboard page + metrics panel | ~450 |
+| **M4.2** | Full dashboard: day/week/month filter, cash metrics, latest invoices, inactivity, category breakdown, DueAlerts, routing, accessibility | ~750 |
 | **M4.3** | `docs/demo-script.md` — guided walkthrough (no code) | ~150 |
 | **Q2** | Domain coverage: edge-case tests on financial rules + domain types | ~300 |
 | **Q3** | Integration tests: multi-step flows, state conservation, corrupt-data recovery | ~400 |
@@ -51,8 +51,10 @@ auth.
 | **Q5** | `docs/qa-exploratory/` — charters with severity tracking | 0 code |
 | **GMVP** | GLM 5.2 final review, gate closure, full verification | 0 |
 
-**Projected final codebase**: ~5874–6474 lines (674 baseline + ~5200–5800 new).
-**All milestones under 800 changed-line guard**. Largest commit: M0.3b ~600 lines.
+**Projected final codebase**: ~6174–6774 lines (674 baseline + ~5500–6100 new).
+**All milestones target the 800 changed-line guard**. M4.2 is the largest remaining
+milestone and MUST be split before implementation if tests plus production changes
+would exceed the guard.
 **~24 conventional commits on `main`**.
 
 ### Out of Scope
@@ -93,6 +95,11 @@ interface. Financial rules are pure functions with zero dependencies.
 | Financial precision | Integer minor units (`amountMinor: number`). Rounding validated in M3.1 with 0.005 and large-quantity edge cases before any UI touches amounts. |
 | Deletion/payment invariants | Invariant #8: invoice with non-voided payments cannot be soft- or hard-deleted. Payments must be voided first. Categories: block-delete if referenced by any invoice line. |
 | Manual QA boundaries | Q5 charters under `docs/qa-exploratory/` with session sheets, severity tracking, coverage maps. No automated E2E. Manual coverage: refresh persistence, corrupt recovery, 320px/1920px layout, keyboard-only nav. |
+| M4.2 period semantics | The injected local calendar date controls inclusive day, Monday–Sunday week, and calendar-month boundaries. ISO record dates are compared lexically; browser/UTC conversion is forbidden. |
+| M4.2 cash semantics | Period income is daily income by `saleDate`; paid expenses are non-voided payments by `paymentDate`; estimated cash result is income minus paid expenses and is explicitly not net profit. Outstanding is an all-time active-invoice snapshot. |
+| M4.2 attribution | Each period payment is allocated across its active invoice lines in proportion to rounded line totals. Floor shares first; distribute residual minor units by line position then line ID so category totals reconcile exactly. |
+| M4.2 exclusions | Soft-deleted invoices and all of their payments are excluded. Voided payments are excluded. Deleted daily incomes are absent by definition. Latest invoices and status counts use active invoices only. |
+| M4.2 inactivity | Show an alert when no daily income exists in the inclusive seven-date window ending on local today; dismiss automatically when any income enters that window. |
 
 ## Mainline Commit Strategy
 
@@ -194,7 +201,10 @@ All 12 capabilities are new (`openspec/specs/` is empty at proposal time):
 - `financial-rules`: pure functions for `lineTotalMinor`, `invoiceTotals`, `deriveStatus`, rounding.
 - `invoice-management`: CRUD with lines, payment/void (invariants #4–#7), safe-delete/restore (invariant #8).
 - `daily-income-management`: persistent CRUD for dated positive income records, including dashboard refresh.
-- `dashboard`: metrics panel, due-date alerts, daily income summary.
+- `dashboard`: day/week/month dashboard; outstanding, period income, paid expenses,
+  estimated cash result disclosure, active status counts, weekly income summary,
+  latest 10 invoices, inactivity alert, numeric paid-expense category breakdown,
+  due-date alerts, root routing, and accessibility.
 - `demo-seed`: deterministic inline seed data with restore/reset, demo walkthrough guide.
 - `quality-gates`: domain coverage tests, integration tests, exploratory QA charters, gate automation.
 

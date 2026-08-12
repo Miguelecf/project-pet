@@ -38,7 +38,7 @@
 ## Dashboard and Daily Income
 
 - [x] **M4.1** — Daily income CRUD with provider revision refresh (~390 lines)
-- [ ] **M4.2** — Dashboard page + metrics panel (~450 lines)
+- [ ] **M4.2** — Full dashboard: day/week/month, cash metrics/disclosure, latest 10, inactivity, category breakdown, weekly summary, DueAlerts, `/`, accessibility (~750 lines)
 - [ ] **M4.3** — `docs/demo-script.md` guided walkthrough (~150 lines, no code)
 
 ## Quality Gates
