@@ -5,11 +5,12 @@ import type { Category, Payment, Supplier } from '../../types/domain'
 import { statusLabel, derivedInvoiceStatus } from './invoicePresentation'
 import type { InvoiceWithLines } from './InvoiceRepository'
 import { useRepositories } from '../../app/useRepositories'
+import { PaymentForm } from './PaymentForm'
 
 interface InvoiceDetailPageProps { readonly invoiceId: string }
 
 export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
-  const { repositories } = useRepositories()
+  const { repositories, revision } = useRepositories()
   const [detail, setDetail] = useState<InvoiceWithLines | null | undefined>(undefined)
   const [payments, setPayments] = useState<readonly Payment[]>([])
   const [suppliers, setSuppliers] = useState<readonly Supplier[]>([])
@@ -31,7 +32,7 @@ export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
       })
       .catch((reason) => { if (active) { setDetail(null); setError(reason instanceof Error ? reason.message : 'Could not load invoice') } })
     return () => { active = false }
-  }, [attempt, invoiceId, repositories])
+  }, [attempt, invoiceId, repositories, revision])
 
   if (detail === undefined) return <StateOverlay state="loading"><section aria-label="Invoice detail" /></StateOverlay>
   if (error) return <StateOverlay error={error} onRetry={() => setAttempt((current) => current + 1)} state="error"><section aria-label="Invoice detail" /></StateOverlay>
@@ -52,5 +53,6 @@ export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
     <h2>Lines</h2><ul aria-label="Invoice lines">{lines.map((line) => <li key={line.id}><strong>{line.description}</strong><span>Category: {categories.find((category) => category.id === line.categoryId)?.name ?? 'Unknown category'}</span><span>Product: {line.productRef}</span><span>Quantity: {line.quantity}</span><span>Line total: {line.lineTotalMinor}</span></li>)}</ul>
     <h2>Payments</h2>{payments.length === 0 ? <p>No payments recorded.</p> : <ul aria-label="Payment history">{payments.map((payment) => <li key={payment.id}>{payment.method.replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())}: {payment.amountMinor}{payment.isVoid ? ' (voided)' : ''}</li>)}</ul>}
     <p>Total: {invoice.totalMinor}</p><p>Paid: {paidMinor}</p><p>Balance: {invoice.totalMinor - paidMinor}</p>
+    <PaymentForm invoiceId={invoice.id} onChanged={() => setAttempt((current) => current + 1)} />
   </section>
 }

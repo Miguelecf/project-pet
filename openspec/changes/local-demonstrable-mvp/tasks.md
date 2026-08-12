@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, and M3.3 are complete; M3.4 is next.
+M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4 are complete; M3.5 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
@@ -231,12 +231,12 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, and M3.3 are c
 **Specs**: `invoice-management` (register payment, void payment)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.4.1 RED: Write `src/modules/invoices/usePayments.test.ts` — register payment calls repository, void calls repository, balance recalculation, loading/error states, refetches on revision change.
-- [ ] 3.4.2 GREEN: Create `src/modules/invoices/usePayments.ts` — hook.
-- [ ] 3.4.3 RED: Write `src/modules/invoices/PaymentForm.test.tsx` — full payment → paid, partial → partially_paid, reject future date, reject overpayment with remaining balance message, reject zero, void with confirm, void restores balance, cancel void preserves.
-- [ ] 3.4.4 GREEN: Create `src/modules/invoices/PaymentForm.tsx` — payment form with amount/date/method, void button with `ConfirmDialog`.
-- [ ] 3.4.5 GREEN: Integrate `PaymentForm` into `InvoiceDetailPage`. _(Wiring — behavior tested via PaymentForm and InvoiceDetailPage tests.)_
-- [ ] 3.4.6 REFACTOR: Verify all payment invariant scenarios pass.
+- [x] 3.4.1 RED: Write `src/modules/invoices/usePayments.test.ts` — register payment calls repository, void calls repository, balance recalculation, loading/error states, refetches on revision change.
+- [x] 3.4.2 GREEN: Create `src/modules/invoices/usePayments.ts` — hook.
+- [x] 3.4.3 RED: Write `src/modules/invoices/PaymentForm.test.tsx` — full payment → paid, partial → partially_paid, reject future date, reject overpayment with remaining balance message, reject zero, void with confirm, void restores balance, cancel void preserves.
+- [x] 3.4.4 GREEN: Create `src/modules/invoices/PaymentForm.tsx` — payment form with amount/date/method, void button with `ConfirmDialog`.
+- [x] 3.4.5 GREEN: Integrate `PaymentForm` into `InvoiceDetailPage`. _(Wiring — behavior tested via PaymentForm and InvoiceDetailPage tests.)_
+- [x] 3.4.6 REFACTOR: Verify all payment invariant scenarios pass.
 
 ## M3.5 — Safe Delete + Restore (~250 lines)
 

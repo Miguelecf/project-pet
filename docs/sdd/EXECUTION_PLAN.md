@@ -3,13 +3,13 @@
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
 protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
-detail pages are complete.** The next executable unit is **M3.4: payment form
-and voiding**.
+detail pages, and M3.4 payment registration and voiding are complete.** The next
+executable unit is **M3.5: safe delete and restore**.
 
 ## Quick path
 
-1. Begin M3.4 with RED tests for payment registration and void invariants.
-2. Reuse M3.1 finance rules and M3.3 detail state; do not duplicate financial rules.
+1. Begin M3.5 with RED tests for deletion and restore invariants.
+2. Reuse payment-derived invoice state; do not duplicate financial rules.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -142,6 +142,17 @@ payments prevent editing.
 **M3.3 exit criteria met:** invoice browsing is fully provider/repository-backed,
 with no direct storage access or manual status state; payment registration,
 voiding, deletion, restore, and due-date alerts remain deferred.
+
+### Completed — M3.4 payment registration and voiding
+
+- [x] Load payment history and balance through a revision-aware provider hook.
+- [x] Register only positive integer-minor payments dated no later than today and never above the current remaining balance.
+- [x] Require a non-empty void reason and confirmation; cancellation does not mutate the payment.
+- [x] Refresh provider-backed invoice detail payment history, balance, and derived status after registration or voiding.
+
+**M3.4 exit criteria met:** the payment UI uses `PaymentRepository` through
+`RepositoryProvider`; local persistence records registration and one-way voids,
+and the detail page derives its refreshed status and balance from those records.
 
 ### Deferred — productization
 

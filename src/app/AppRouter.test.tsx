@@ -184,4 +184,29 @@ describe('AppRouter', () => {
     expect((screen.getByLabelText('Quantity') as HTMLInputElement).value).toBe('1.255')
     expect(screen.getByText('Line total: 126').textContent).toBe('Line total: 126')
   })
+
+  it('persists payment registration and voiding through the real provider and refreshes invoice detail balances', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/invoices/demo-invoice-pending')
+    render(<AppRouter />)
+
+    await screen.findByRole('heading', { level: 1, name: 'DEMO-100' })
+    await screen.findByLabelText('Payment amount (minor units)')
+    fireEvent.change(screen.getByLabelText('Payment amount (minor units)'), { target: { value: '4000' } })
+    fireEvent.change(screen.getByLabelText('Payment date'), { target: { value: '2026-08-10' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Register payment' }))
+
+    const gateway = new LocalStateGateway(window.localStorage)
+    await waitFor(() => expect(gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')).toEqual(expect.objectContaining({ amountMinor: 4000, isVoid: false })))
+    expect((await screen.findByText('Balance: 6000')).textContent).toBe('Balance: 6000')
+    expect(screen.getByLabelText('Status: Partially paid').textContent).toBe('Partially paid')
+
+    const registeredPayment = gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')
+    fireEvent.change(screen.getByLabelText(`Void reason for ${registeredPayment?.id}`), { target: { value: 'Recorded twice' } })
+    fireEvent.click(screen.getByRole('button', { name: `Void payment ${registeredPayment?.id}` }))
+    fireEvent.click(screen.getByRole('button', { name: 'Void payment' }))
+    await waitFor(() => expect(gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')).toEqual(expect.objectContaining({ isVoid: true, voidReason: 'Recorded twice' })))
+    expect((await screen.findByText('Balance: 10000')).textContent).toBe('Balance: 10000')
+    expect(screen.getByLabelText('Status: Pending').textContent).toBe('Pending')
+  })
 })

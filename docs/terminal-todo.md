@@ -30,7 +30,7 @@
 - [x] **M3.1** — Pure financial functions: lineTotalMinor, invoiceTotals, deriveStatus, rounding (~350 lines)
 - [x] **M3.2** — Invoice create/edit form + line editor (~500 lines)
 - [x] **M3.3** — Invoice list/detail pages (~350 lines)
-- [ ] **M3.4** — Payment form + void (invariants #4–#7) (~490 lines)
+- [x] **M3.4** — Payment form + void (invariants #4–#7) (~490 lines)
 - [ ] **M3.5** — Safe delete + restore (invariant #8) (~250 lines)
 - [ ] **M3.6** — Due-date alert widget on dashboard (~250 lines)
 - [ ] **G3-LOCAL** — Core gate: 100% branch coverage on M3 modules (~100 lines)
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 12 | 24 | 50% |
+| 13 | 24 | 54% |
 
 ## Preserved Boundaries (read-only)
 
