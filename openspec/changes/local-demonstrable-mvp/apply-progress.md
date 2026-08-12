@@ -250,3 +250,26 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 - Invoice list/detail pages and payment UI remain deferred to M3.3/M3.4; `/invoices/*` retains its placeholder except for `/invoices/new` and `/invoices/:id/edit`.
 - Focused invoice/router suite: 23/23 passed. Full suite: 236 passed, 1 skipped. Coverage: 92.97% statements, 85.52% branches, 94.41% functions, and 97.66% lines. Build, lint, and diff check passed sequentially.
 - **Next:** M3.3 invoice list and detail pages.
+
+## M3.2 corrective persistence and semantic-evidence verification — complete
+
+- Replaced the local adapter's floating `Math.round(quantity * unitCostMinor)` with the shared pure `lineTotalMinor` rule. Persisted create and update totals now use the same thousandths-based half-up calculation as the line editor: `1.255 × 100 = 126`.
+- Added real `LocalStateGateway` + `RepositoryProvider` route tests for create and edit. They assert persisted invoice and line fields, then unmount/navigate/refetch to verify the form displays the unchanged stored values.
+- Added isolated required supplier ID, category ID, and product-reference submission scenarios. Each exposes the visible validation error and proves neither create nor update is called.
+- Strengthened touched invoice test assertions from existence-only checks to exact visible text or concrete persisted object fields.
+
+### M3.2 corrective TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| Persist shared half-up line total | `src/infrastructure/local/LocalInvoiceRepository.test.ts` | Unit | 25/25 focused invoice/local/form/editor/router tests passed. | New create and update round-trip assertions failed: persisted `1.255 × 100` was `125`, not `126`. | 13/13 local repository/form/editor tests passed after importing and calling `lineTotalMinor`. | Create and update each reload their stored invoice and line; both assert total `126`. | Named the local computed value `totalMinor` to avoid shadowing the shared rule. |
+| Semantic required identifiers | `src/modules/invoices/InvoiceForm.test.tsx` | Component | 13/13 local repository/form/editor tests passed. | Added supplier, category, and product-reference absent submissions before changing production code; existing validation already made them green. | 16/16 focused local repository/form/editor tests passed. | Each required field is cleared independently and asserts visible error plus zero create/update calls. | Replaced touched line-editor existence assertions with exact text assertions. |
+| Provider/gateway create-edit round trip | `src/app/AppRouter.test.tsx` | Component | 14/14 router tests passed. | Added real provider/gateway create and edit/refetch scenarios before production correction; create observed total `125`. | 16/16 router tests passed after adapter correction. | Create and edit use distinct invoices, fields, routes, unmounts, and refetches; both persist/display `126`. | Strengthened touched hook assertions to exact rendered content. |
+
+### M3.2 corrective verification
+
+- Focused local invoice, form, line-editor, hook, and router suite: **32/32 passed**.
+- `npm run test:run`: **243 passed, 1 skipped**.
+- `npm run test:coverage`: **243 passed, 1 skipped**; **93.37% statements, 86.05% branches, 95.68% functions, 97.66% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check`: passed.
+- M3.2 remains complete. M3.3 invoice list and detail pages remains the sole next milestone; no list/detail/payment UI, domain, Supabase, or auth work was introduced.

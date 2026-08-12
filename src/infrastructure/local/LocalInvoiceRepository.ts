@@ -1,5 +1,6 @@
 import type { ISODateTime, Invoice, InvoiceId, InvoiceLine, InvoiceLineId, InvoiceStatus, MoneyMinor } from '../../types/domain'
 import type { CreateInvoiceInput, InvoiceRepository, InvoiceWithLines, UpdateInvoiceInput } from '../../modules/invoices/InvoiceRepository'
+import { lineTotalMinor } from '../../utils/finance'
 import { LocalStateGateway } from './LocalStateGateway'
 
 interface LocalInvoiceRepositoryOptions {
@@ -62,8 +63,8 @@ export class LocalInvoiceRepository implements InvoiceRepository {
     const timestamp = this.now()
     const lines: InvoiceLine[] = input.lines.map((line, index) => {
       if (!state.categories.some((category) => category.id === line.categoryId)) throw new Error('category not found')
-      const lineTotalMinor = Math.round((line.quantity as number) * (line.unitCostMinor as number)) as MoneyMinor
-      return { ...line, id: this.nextLineId(), invoiceId: id, lineTotalMinor, position: (index + 1) as never, createdAt: existing?.createdAt ?? timestamp, updatedAt: timestamp }
+      const totalMinor = lineTotalMinor(line.quantity, line.unitCostMinor)
+      return { ...line, id: this.nextLineId(), invoiceId: id, lineTotalMinor: totalMinor, position: (index + 1) as never, createdAt: existing?.createdAt ?? timestamp, updatedAt: timestamp }
     })
     const totalMinor = lines.reduce((total, line) => total + (line.lineTotalMinor as number), 0) as MoneyMinor
     const invoice: Invoice = { id, ...input, totalMinor, status: existing?.status ?? 'pending', deletedAt: existing?.deletedAt ?? null, createdAt: existing?.createdAt ?? timestamp, updatedAt: timestamp }

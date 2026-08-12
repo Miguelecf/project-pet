@@ -28,8 +28,8 @@ describe('useInvoices', () => {
     const create = vi.fn()
     render(<RepositoryProvider repositories={{ invoices: { findAll, create } } as never}><InvoiceState /></RepositoryProvider>)
 
-    expect(screen.getByText('loading invoices')).toBeDefined()
-    await waitFor(() => expect(screen.getByText('invoice-1')).toBeDefined())
+    expect(screen.getByText('loading invoices').textContent).toBe('loading invoices')
+    await waitFor(() => expect(screen.getByText('invoice-1').textContent).toBe('invoice-1'))
     expect(findAll).toHaveBeenCalledTimes(1)
   })
 
@@ -37,9 +37,9 @@ describe('useInvoices', () => {
     const findAll = vi.fn().mockRejectedValueOnce(new Error('Invoice storage unavailable')).mockResolvedValueOnce([pendingInvoice])
     render(<RepositoryProvider repositories={{ invoices: { findAll } } as never}><InvoiceState /></RepositoryProvider>)
 
-    await waitFor(() => expect(screen.getByText('Invoice storage unavailable')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('Invoice storage unavailable').textContent).toBe('Invoice storage unavailable'))
     fireEvent.click(screen.getByRole('button', { name: 'Retry invoice load' }))
-    await waitFor(() => expect(screen.getByText('invoice-1')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('invoice-1').textContent).toBe('invoice-1'))
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
@@ -49,7 +49,7 @@ describe('useInvoices', () => {
     render(<RepositoryProvider repositories={{ invoices: { findAll } } as never}><RevisionState /></RepositoryProvider>)
 
     fireEvent.click(screen.getByRole('button', { name: 'Restore invoices' }))
-    await waitFor(() => expect(screen.getByText('invoice-1')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('invoice-1').textContent).toBe('invoice-1'))
     expect(restore).not.toHaveBeenCalled()
   })
 })

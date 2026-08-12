@@ -29,15 +29,15 @@ describe('InvoiceLineEditor', () => {
   it('renders category selection and a total calculated through the finance utility', () => {
     render(<EditorState />)
     expect((screen.getByLabelText('Category') as HTMLSelectElement).value).toBe('category-1')
-    expect(screen.getByText('Line total: 300')).toBeDefined()
+    expect(screen.getByText('Line total: 300').textContent).toBe('Line total: 300')
   })
 
   it('identifies invalid quantity and unit cost before save', () => {
     render(<EditorState />)
     fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1.2345' } })
-    expect(screen.getByText('Quantity must have at most three decimal places')).toBeDefined()
+    expect(screen.getByText('Quantity must have at most three decimal places').textContent).toBe('Quantity must have at most three decimal places')
     fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1' } })
     fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '-1' } })
-    expect(screen.getByText('Money minor amount must be a non-negative safe integer')).toBeDefined()
+    expect(screen.getByText('Money minor amount must be a non-negative safe integer').textContent).toBe('Money minor amount must be a non-negative safe integer')
   })
 })

@@ -64,6 +64,24 @@ describe('InvoiceForm', () => {
     expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Money minor amount must be a non-negative safe integer')
   })
 
+  it.each([
+    ['supplier', async () => fireEvent.change(screen.getByLabelText('Supplier'), { target: { value: '' } }), 'Value must not be empty'],
+    ['category', async () => fireEvent.change(screen.getByLabelText('Category'), { target: { value: '' } }), 'Value must not be empty'],
+    ['product reference', async () => fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: '' } }), 'Value must not be empty'],
+  ])('shows a visible error and does not create when the %s ID/value is missing', async (_field, clearField, message) => {
+    const create = vi.fn()
+    const update = vi.fn()
+    renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create, update }, payments: { findByInvoice: async () => [] } })
+    await fillValidLine()
+    await clearField()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+
+    expect(screen.getByRole('alert').textContent).toBe(message)
+    expect(create).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
+  })
+
   it('allows editing an invoice without payments and blocks editing with active payments', async () => {
     const update = vi.fn(async () => existing)
     const repositories = { suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], update }, payments: { findByInvoice: async () => [] } }
