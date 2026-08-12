@@ -6,6 +6,8 @@ import { CategoryForm } from '../modules/categories/CategoryForm'
 import { CategoryPage } from '../modules/categories/CategoryPage'
 import { useCategories } from '../modules/categories/useCategories'
 import { InvoiceForm } from '../modules/invoices/InvoiceForm'
+import { InvoiceDetailPage } from '../modules/invoices/InvoiceDetailPage'
+import { InvoiceListPage } from '../modules/invoices/InvoiceListPage'
 import type { InvoiceWithLines } from '../modules/invoices/InvoiceRepository'
 import { useInvoices } from '../modules/invoices/useInvoices'
 import { SettingsPage } from '../modules/settings/SettingsPage'
@@ -51,6 +53,8 @@ export function AppRouter() {
         <Route element={<Layout><CategoryEditRoute /></Layout>} path="/categories/:id/edit" />
         <Route element={<Layout><InvoiceForm /></Layout>} path="/invoices/new" />
         <Route element={<Layout><InvoiceEditRoute /></Layout>} path="/invoices/:id/edit" />
+        <Route element={<Layout><InvoiceDetailRoute /></Layout>} path="/invoices/:id" />
+        <Route element={<Layout><InvoiceListPage /></Layout>} path="/invoices" />
         <Route element={pageRoute(placeholderPages.invoices)} path="/invoices/*" />
         <Route element={pageRoute(placeholderPages.dailyIncome)} path="/daily-income/*" />
         <Route element={<Layout><SettingsPage /></Layout>} path="/settings" />
@@ -89,4 +93,9 @@ function InvoiceEditRoute() {
 
   if (invoice === undefined) return <StateOverlay state="loading"><section aria-label="Invoice form" /></StateOverlay>
   return invoice ? <InvoiceForm invoice={invoice} /> : <Navigate replace to="/invoices" />
+}
+
+function InvoiceDetailRoute() {
+  const { id } = useParams()
+  return id ? <InvoiceDetailPage invoiceId={id} /> : <Navigate replace to="/invoices" />
 }

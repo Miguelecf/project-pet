@@ -59,7 +59,7 @@ observable CRUD/list/delete/restore behavior. The discoverable conformance
 harness reproduces failures for persisted payment void, daily-income hard-delete
 lookup, category post-delete list, and payment balance/overpayment/status; its
 child-process tests have a per-test timeout so coverage is deterministic.
-M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, and M3.2 are complete; M3.3 is next.
+M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, and M3.3 are complete; M3.4 is next.
 
 ## M0.3a — Local Persistence Core + Settings/Suppliers/Categories Repos (~500 lines)
 
@@ -219,11 +219,11 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, and M3.2 are complet
 **Specs**: `invoice-management` (invoice list and detail, invoice routing)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.3.1 RED: Write `src/modules/invoices/InvoiceListPage.test.tsx` — list shows status badges, navigate to detail, empty-state prompt.
-- [ ] 3.3.2 GREEN: Create `src/modules/invoices/InvoiceListPage.tsx` — list with status badges, links to detail.
-- [ ] 3.3.3 RED: Write `src/modules/invoices/InvoiceDetailPage.test.tsx` — shows lines, payments, totals, status. Edit link when no payments.
-- [ ] 3.3.4 GREEN: Create `src/modules/invoices/InvoiceDetailPage.tsx` — full detail view.
-- [ ] 3.3.5 REFACTOR: Verify routing `/invoices`, `/invoices/new`, `/invoices/:id`, `/invoices/:id/edit`.
+- [x] 3.3.1 RED: Write `src/modules/invoices/InvoiceListPage.test.tsx` — list shows status badges, navigate to detail, empty-state prompt.
+- [x] 3.3.2 GREEN: Create `src/modules/invoices/InvoiceListPage.tsx` — list with status badges, links to detail.
+- [x] 3.3.3 RED: Write `src/modules/invoices/InvoiceDetailPage.test.tsx` — shows lines, payments, totals, status. Edit link when no payments.
+- [x] 3.3.4 GREEN: Create `src/modules/invoices/InvoiceDetailPage.tsx` — full detail view.
+- [x] 3.3.5 REFACTOR: Verify routing `/invoices`, `/invoices/new`, `/invoices/:id`, `/invoices/:id/edit`.
 
 ## M3.4 — Payment Form + Void (~490 lines)
 

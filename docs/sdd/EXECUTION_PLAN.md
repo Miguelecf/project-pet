@@ -2,13 +2,14 @@
 
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
 protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
-pure financial rules, and M3.2 invoice create/edit forms are complete.** The
-next executable unit is **M3.3: invoice list and detail pages**.
+pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
+detail pages are complete.** The next executable unit is **M3.4: payment form
+and voiding**.
 
 ## Quick path
 
-1. Begin M3.3 with RED tests for invoice list, detail, and status display.
-2. Reuse M3.2 invoice hooks and forms; do not duplicate financial rules.
+1. Begin M3.4 with RED tests for payment registration and void invariants.
+2. Reuse M3.1 finance rules and M3.3 detail state; do not duplicate financial rules.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -130,6 +131,17 @@ or remote dependencies.
 **M3.2 exit criteria met:** the real local provider supplies form catalogs and
 repositories; create/edit inputs are validated before persistence and active
 payments prevent editing.
+
+### Completed — M3.3 invoice list and detail pages
+
+- [x] List active invoices with payment-derived pending, partially paid, and paid status badges.
+- [x] Navigate client-side from the list to supplier/category contextual invoice details.
+- [x] Display lines, payment history, totals, paid amount, balance, and a payment-derived status.
+- [x] Offer edit only when no active payment exists; expose loading, error/retry, and not-found states.
+
+**M3.3 exit criteria met:** invoice browsing is fully provider/repository-backed,
+with no direct storage access or manual status state; payment registration,
+voiding, deletion, restore, and due-date alerts remain deferred.
 
 ### Deferred — productization
 

@@ -14,7 +14,7 @@ describe('AppRouter', () => {
   it.each([
     ['/', 'A clear view of daily operations, starting here.'],
     ['/categories/new', 'Create category'],
-    ['/invoices/example-id', 'Invoices'],
+    ['/invoices/example-id', 'Invoice not found.'],
     ['/daily-income/new', 'Daily income'],
     ['/settings', 'Settings'],
   ])('renders the expected page for %s', async (path, heading) => {
@@ -118,6 +118,18 @@ describe('AppRouter', () => {
     render(<AppRouter />)
     expect((await screen.findByRole('heading', { level: 1, name: 'Edit invoice' })).textContent).toBe('Edit invoice')
     expect((screen.getByLabelText('Product reference') as HTMLInputElement).value).toBe('DEMO-PENDING')
+  })
+
+  it('routes active invoice list links to a full derived-status detail page', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/invoices')
+
+    render(<AppRouter />)
+    fireEvent.click(await screen.findByRole('link', { name: 'DEMO-200' }))
+
+    expect((await screen.findByRole('heading', { level: 1, name: 'DEMO-200' })).textContent).toBe('DEMO-200')
+    expect(screen.getByLabelText('Status: Partially paid').textContent).toBe('Partially paid')
+    expect(screen.getByText('Balance: 5000').textContent).toBe('Balance: 5000')
   })
 
   it('persists half-up invoice line totals through the real provider on create and displays them after edit-route refetch', async () => {

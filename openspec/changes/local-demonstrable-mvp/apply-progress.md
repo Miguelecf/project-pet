@@ -13,6 +13,7 @@
 - [x] G2-LOCAL — Catalog reachable branch-coverage gate.
 - [x] M3.1 — Pure financial calculations, dates, and validation utilities.
 - [x] M3.2 — Revision-aware invoice create/edit forms and line editor.
+- [x] M3.3 — Invoice list/detail pages with payment-derived status badges.
 
 ## Completed tasks
 
@@ -27,6 +28,7 @@
 - [x] G2.1–G2.3: Catalog coverage review, meaningful reachable-path tests, documented per-module threshold, and sequential gate verification.
 - [x] 3.1.1–3.1.9: Table-driven pure finance/date/validation tests, deterministic safe-integer calculations, strict injected-clock date validation, and refactor verification.
 - [x] 3.2.1–3.2.7: Revision-aware invoices hook, accessible create/edit form, pure-finance line editor, route wiring, and active-payment edit block.
+- [x] 3.3.1–3.3.5: Active invoice list, client detail navigation, contextual lines/payments/totals, derived statuses, conditional edit, and route-state coverage.
 
 ## TDD cycle evidence
 
@@ -273,3 +275,22 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 - `npm run test:coverage`: **243 passed, 1 skipped**; **93.37% statements, 86.05% branches, 95.68% functions, 97.66% lines**.
 - `npm run build`, `npm run lint`, and `git diff --check`: passed.
 - M3.2 remains complete. M3.3 invoice list and detail pages remains the sole next milestone; no list/detail/payment UI, domain, Supabase, or auth work was introduced.
+
+## M3.3 verification — complete
+
+- [x] 3.3.1–3.3.5 completed through `RepositoryProvider` and local repository adapters only; invoice UI has no direct storage or Supabase access.
+- `InvoiceListPage` displays active invoices, empty action, client detail links, and badges calculated from each invoice total plus non-voided repository payments rather than persisted `invoice.status`.
+- `InvoiceDetailPage` resolves supplier/category context, line and payment history, total/paid/balance, payment-derived status, conditional edit link, and loading/error-retry/not-found states.
+
+### M3.3 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.3.1–3.3.2 | `InvoiceListPage.test.tsx` | Component | 28/28 existing invoice/form/router tests passed | Missing list module; 0 tests collected | 2/2 list scenarios passed | Pending, partial, paid, navigation, and empty paths | Extracted pure display-status mapping. |
+| 3.3.3–3.3.4 | `InvoiceDetailPage.test.tsx` | Component | 28/28 existing invoice/form/router tests passed | Missing detail module; 0 tests collected | 3/3 detail scenarios passed | Active/voided payments, not found, repository error/retry | Retry refreshes component state without a page reload. |
+| 3.3.5 | `AppRouter.test.tsx` | Component | 16/16 router tests passed | Added routed seeded-list-to-detail scenario before route wiring | 17/17 router scenarios passed | List, new, detail, edit, and missing-detail routes | Replaced obsolete invoice-placeholder expectation with specified not-found behavior. |
+
+## M3.3 scope and next
+
+- Focused list/detail/router suite passed; full and quality gates are recorded with this milestone commit.
+- **Next:** M3.4 payment form and void. Payment form, payment mutation, void action, invoice deletion/restore, and due-date alerts are intentionally not implemented.
