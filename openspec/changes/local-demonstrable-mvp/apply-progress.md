@@ -15,6 +15,7 @@
 - [x] M3.2 — Revision-aware invoice create/edit forms and line editor.
 - [x] M3.3 — Invoice list/detail pages with payment-derived status badges.
 - [x] M3.4 — Payment registration and void with production load retry.
+- [x] M3.5 — Safe invoice deletion and retained-invoice restore.
 
 ## Completed tasks
 
@@ -31,6 +32,7 @@
 - [x] 3.2.1–3.2.7: Revision-aware invoices hook, accessible create/edit form, pure-finance line editor, route wiring, and active-payment edit block.
 - [x] 3.3.1–3.3.5: Active invoice list, client detail navigation, contextual lines/payments/totals, derived statuses, conditional edit, and route-state coverage.
 - [x] 3.4.1–3.4.6: Revision-aware payment hook, accessible load-error retry, registration and void confirmation, local-provider persistence, refreshed detail balances, and payment invariant coverage.
+- [x] 3.5.1–3.5.5: Confirmed delete/restore controls, active-payment blocking, retained-invoice filter, and real local-provider persistence coverage.
 
 ## TDD cycle evidence
 
@@ -321,3 +323,23 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 - Coverage: **93.43% statements, 85.40% branches, 95.76% functions, 97.56% lines**.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
 - **Next:** M3.5 safe delete and restore. M3.6 due alerts remain deferred.
+
+## M3.5 verification — complete
+
+- [x] `InvoiceDetailPage` confirms deletion and delegates the final invariant to `InvoiceRepository.softDelete`; active-payment rejection is announced as `Cannot delete: void all payments first`.
+- [x] Deletion after voiding all payments is allowed; cancellation makes no mutation.
+- [x] `InvoiceListPage` excludes deleted invoices by default, exposes an explicit retained filter, and confirms restore through `InvoiceRepository.restore`.
+- [x] Real `LocalStateGateway` + `RepositoryProvider` coverage proves persisted `deletedAt` becomes non-null on deletion and `null` on restore before the invoice returns to the active list.
+
+### M3.5 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.5.1–3.5.2 | `InvoiceDetailPage.test.tsx` | Component | 23/23 list/detail/router tests passed | Delete controls and confirmation were absent; new tests failed. | 5/5 detail tests passed after confirmed repository mutation and accessible error handling. | No-payment confirm/cancel, active-payment block, and all-voided deletion exercise distinct invariant paths. | Kept repository as the authoritative persistence/invariant boundary. |
+| 3.5.3–3.5.4 | `InvoiceListPage.test.tsx`, `AppRouter.test.tsx` | Component | 5/5 detail and 2/2 list tests passed | Deleted toggle/restore action were absent; new tests failed. | List/detail/router/local focused suite passed. | Mocked retained filtering plus real local-provider delete → active exclusion → restore persistence paths. | Filter state remains page-local; provider revision refreshes active results. |
+| 3.5.5 | Focused invoice suite | Component + Unit | Focused suites passed before final verification. | N/A — verification task. | Focused invoice suite passed. | Repository, detail, list, and routed gateway paths cover all invariant #8 states. | No further refactor needed. |
+
+## M3.5 scope and next
+
+- M3.5 uses existing local repositories/provider and `ConfirmDialog`; no direct storage, Supabase, domain, auth, dashboard, due-alert, or M4 work was introduced.
+- **Next:** M3.6 due-date alert widget.

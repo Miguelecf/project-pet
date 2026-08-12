@@ -3,12 +3,12 @@
 **M2.1 supplier CRUD and soft delete, M2.2 category CRUD with block-delete
 protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
-detail pages, and M3.4 payment registration and voiding are complete.** The next
-executable unit is **M3.5: safe delete and restore**.
+ detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
+ restore are complete.** The next executable unit is **M3.6: due-date alerts**.
 
 ## Quick path
 
-1. Begin M3.5 with RED tests for deletion and restore invariants.
+1. Begin M3.6 with RED tests for overdue and due-soon boundaries.
 2. Reuse payment-derived invoice state; do not duplicate financial rules.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
@@ -153,8 +153,20 @@ voiding, deletion, restore, and due-date alerts remain deferred.
 
 **M3.4 exit criteria met:** the payment UI uses `PaymentRepository` through
 `RepositoryProvider`; load failures offer a real retry action, local persistence
-records registration and one-way voids, and the detail page derives its refreshed
-status and balance from those records. M3.5 is next.
+ records registration and one-way voids, and the detail page derives its refreshed
+ status and balance from those records.
+
+### Completed — M3.5 safe delete and restore
+
+- [x] Confirm invoice soft deletion from detail; cancellation leaves storage unchanged.
+- [x] Block deletion when any payment remains active with the exact invariant message.
+- [x] Permit deletion after all payments are voided, then return to the active list.
+- [x] Show retained invoices only through an explicit deleted filter and confirm restore.
+- [x] Prove local-provider persistence clears `deletedAt` and returns restored invoices to active results.
+
+**M3.5 exit criteria met:** deletion uses the existing repository invariant, retains
+data for recovery, and provides accessible confirmation, errors, filtering, and
+restoration without direct storage access. M3.6 is next.
 
 ### Deferred — productization
 

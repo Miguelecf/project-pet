@@ -244,11 +244,11 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 **Specs**: `invoice-management` (safe delete, restore deleted invoice)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.5.1 RED: Write safe-delete tests — delete with no payments succeeds, block delete with non-voided payments, delete after voiding all succeeds.
-- [ ] 3.5.2 GREEN: Add soft-delete/restore actions to `InvoiceDetailPage` and `InvoiceListPage` with `ConfirmDialog`.
-- [ ] 3.5.3 RED: Write restore/deleted-filter tests — restore clears `deletedAt`, deleted filter shows retained invoices.
-- [ ] 3.5.4 GREEN: Add deleted-filter toggle and restore action to list page.
-- [ ] 3.5.5 REFACTOR: Verify invariant #8 across all delete paths.
+- [x] 3.5.1 RED: Write safe-delete tests — delete with no payments succeeds, block delete with non-voided payments, delete after voiding all succeeds.
+- [x] 3.5.2 GREEN: Add soft-delete/restore actions to `InvoiceDetailPage` and `InvoiceListPage` with `ConfirmDialog`.
+- [x] 3.5.3 RED: Write restore/deleted-filter tests — restore clears `deletedAt`, deleted filter shows retained invoices.
+- [x] 3.5.4 GREEN: Add deleted-filter toggle and restore action to list page.
+- [x] 3.5.5 REFACTOR: Verify invariant #8 across all delete paths.
 
 ## M3.6 — Due-Date Alert Widget (~250 lines)
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
 import { InvoiceListPage } from './InvoiceListPage'
@@ -38,5 +38,25 @@ describe('InvoiceListPage', () => {
     rerender(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => [] }, payments: { findByInvoice: async () => [] } } as never}><InvoiceListPage /><Location /></RepositoryProvider></MemoryRouter>)
     expect((await screen.findByRole('button', { name: 'New Invoice' })).textContent).toBe('New Invoice')
     expect(screen.getByText('No invoices yet.').textContent).toBe('No invoices yet.')
+  })
+
+  it('shows retained invoices only through the deleted filter and restores them after confirmation', async () => {
+    const deleted = [{ id: 'deleted', docRef: 'INV-DELETED', totalMinor: 1000, status: 'pending', deletedAt: '2026-08-10T00:00:00.000Z' }] as never
+    const findDeleted = vi.fn().mockResolvedValue(deleted)
+    const restore = vi.fn().mockResolvedValue({ id: 'deleted', docRef: 'INV-DELETED', totalMinor: 1000, status: 'pending', deletedAt: null })
+    render(<MemoryRouter><RepositoryProvider repositories={{
+      invoices: { findAll: async () => invoices, findDeleted, restore },
+      payments: { findByInvoice: async () => [] },
+    } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
+
+    expect(await screen.findByRole('link', { name: 'INV-100' })).not.toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
+    expect(await screen.findByRole('link', { name: 'INV-DELETED' })).not.toBeNull()
+    expect(screen.queryByRole('link', { name: 'INV-100' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Restore INV-DELETED' }))
+    expect(screen.getByRole('dialog').textContent).toContain('Restore invoice?')
+    fireEvent.click(screen.getByRole('button', { name: 'Restore invoice' }))
+    await waitFor(() => expect(restore).toHaveBeenCalledWith('deleted'))
+    expect(await screen.findByRole('link', { name: 'INV-100' })).not.toBeNull()
   })
 })

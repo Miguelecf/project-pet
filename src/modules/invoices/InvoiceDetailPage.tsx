@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { StateOverlay } from '../../components/StateOverlay'
 import type { Category, Payment, Supplier } from '../../types/domain'
 import { statusLabel, derivedInvoiceStatus } from './invoicePresentation'
@@ -10,6 +11,7 @@ import { PaymentForm } from './PaymentForm'
 interface InvoiceDetailPageProps { readonly invoiceId: string }
 
 export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
+  const navigate = useNavigate()
   const { repositories, revision } = useRepositories()
   const [detail, setDetail] = useState<InvoiceWithLines | null | undefined>(undefined)
   const [payments, setPayments] = useState<readonly Payment[]>([])
@@ -17,6 +19,8 @@ export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
   const [categories, setCategories] = useState<readonly Category[]>([])
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
@@ -44,15 +48,33 @@ export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
   const activePayments = payments.some((payment) => !payment.isVoid)
   const supplierName = suppliers.find((supplier) => supplier.id === invoice.supplierId)?.name ?? 'Unknown supplier'
 
+  async function deleteInvoice() {
+    setDeleteOpen(false)
+    setDeleteError(null)
+    if (activePayments) {
+      setDeleteError('Cannot delete: void all payments first')
+      return
+    }
+    try {
+      await repositories.invoices.softDelete(invoice.id)
+      navigate('/invoices')
+    } catch (reason) {
+      setDeleteError(reason instanceof Error ? reason.message : 'Could not delete invoice')
+    }
+  }
+
   return <section aria-labelledby="invoice-detail-title" className="invoice-detail-page">
     <p className="eyebrow">Invoices</p>
     <h1 id="invoice-detail-title">{invoice.docRef ?? `Invoice ${invoice.id}`}</h1>
     <p>Supplier: {supplierName}</p><p>Issue date: {invoice.issueDate}</p>{invoice.dueDate && <p>Due date: {invoice.dueDate}</p>}
     <p aria-label={`Status: ${statusLabel(status)}`}>{statusLabel(status)}</p>
     {!activePayments && <Link to={`/invoices/${invoice.id}/edit`}>Edit invoice</Link>}
+    {deleteError && <p role="alert">{deleteError}</p>}
+    <button onClick={() => setDeleteOpen(true)} type="button">Delete invoice</button>
     <h2>Lines</h2><ul aria-label="Invoice lines">{lines.map((line) => <li key={line.id}><strong>{line.description}</strong><span>Category: {categories.find((category) => category.id === line.categoryId)?.name ?? 'Unknown category'}</span><span>Product: {line.productRef}</span><span>Quantity: {line.quantity}</span><span>Line total: {line.lineTotalMinor}</span></li>)}</ul>
     <h2>Payments</h2>{payments.length === 0 ? <p>No payments recorded.</p> : <ul aria-label="Payment history">{payments.map((payment) => <li key={payment.id}>{payment.method.replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())}: {payment.amountMinor}{payment.isVoid ? ' (voided)' : ''}</li>)}</ul>}
     <p>Total: {invoice.totalMinor}</p><p>Paid: {paidMinor}</p><p>Balance: {invoice.totalMinor - paidMinor}</p>
     <PaymentForm invoiceId={invoice.id} onChanged={() => setAttempt((current) => current + 1)} />
+    <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete invoice" message="This invoice will be retained and can be restored later." onCancel={() => setDeleteOpen(false)} onConfirm={() => void deleteInvoice()} open={deleteOpen} title="Delete invoice?" />
   </section>
 }

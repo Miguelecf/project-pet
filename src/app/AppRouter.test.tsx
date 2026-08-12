@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { LocalStateGateway } from '../infrastructure/local/LocalStateGateway'
 import { AppRouter } from './AppRouter'
@@ -208,5 +208,26 @@ describe('AppRouter', () => {
     await waitFor(() => expect(gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')).toEqual(expect.objectContaining({ isVoid: true, voidReason: 'Recorded twice' })))
     expect((await screen.findByText('Balance: 10000')).textContent).toBe('Balance: 10000')
     expect(screen.getByLabelText('Status: Pending').textContent).toBe('Pending')
+  })
+
+  it('persists deletion, excludes it from the active list, and restores it from the retained filter', async () => {
+    await new LocalStateGateway(window.localStorage).loadSeed()
+    window.history.replaceState({}, '', '/invoices/demo-invoice-pending')
+    render(<AppRouter />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
+    const deleteDialog = await screen.findByRole('dialog')
+    fireEvent.click(within(deleteDialog).getByRole('button', { name: 'Delete invoice' }))
+    const gateway = new LocalStateGateway(window.localStorage)
+    await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.deletedAt).not.toBeNull())
+    expect(await screen.findByRole('heading', { level: 1, name: 'Invoices' })).not.toBeNull()
+    expect(screen.queryByRole('link', { name: 'DEMO-100' })).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Restore DEMO-100' }))
+    const restoreDialog = await screen.findByRole('dialog')
+    fireEvent.click(within(restoreDialog).getByRole('button', { name: 'Restore invoice' }))
+    await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.deletedAt).toBeNull())
+    expect(await screen.findByRole('link', { name: 'DEMO-100' })).not.toBeNull()
   })
 })
