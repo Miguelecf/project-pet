@@ -146,13 +146,15 @@ voiding, deletion, restore, and due-date alerts remain deferred.
 ### Completed — M3.4 payment registration and voiding
 
 - [x] Load payment history and balance through a revision-aware provider hook.
+- [x] Expose payment-load failures with a semantic production retry control that refreshes the hook and restores payment controls/status.
 - [x] Register only positive integer-minor payments dated no later than today and never above the current remaining balance.
 - [x] Require a non-empty void reason and confirmation; cancellation does not mutate the payment.
 - [x] Refresh provider-backed invoice detail payment history, balance, and derived status after registration or voiding.
 
 **M3.4 exit criteria met:** the payment UI uses `PaymentRepository` through
-`RepositoryProvider`; local persistence records registration and one-way voids,
-and the detail page derives its refreshed status and balance from those records.
+`RepositoryProvider`; load failures offer a real retry action, local persistence
+records registration and one-way voids, and the detail page derives its refreshed
+status and balance from those records. M3.5 is next.
 
 ### Deferred — productization
 

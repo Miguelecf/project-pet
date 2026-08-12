@@ -51,6 +51,21 @@ describe('PaymentForm', () => {
     expect(register).not.toHaveBeenCalled()
   })
 
+  it('retries a failed payment load from the production form and restores its controls and status', async () => {
+    const findByInvoice = vi.fn(async () => [])
+    findByInvoice.mockRejectedValueOnce(new Error('Payment storage unavailable'))
+    render(<RepositoryProvider repositories={{ payments: { findByInvoice, getBalance: async () => ({ remainingMinor: 1000, status: 'pending' }), register: vi.fn(async () => ({})), void: vi.fn(async () => ({})) } } as never}>
+      <PaymentForm clock={{ today: () => '2026-08-10' as never }} invoiceId={invoiceId} />
+    </RepositoryProvider>)
+
+    expect((await screen.findByRole('alert')).textContent).toBe('Payment storage unavailable')
+    fireEvent.click(screen.getByRole('button', { name: 'Retry payment load' }))
+    expect(await screen.findByText('Remaining balance: 1000 — Status: pending')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Retry payment load' })).toBeNull()
+    expect(screen.getByLabelText('Payment amount (minor units)')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Register payment' }).hasAttribute('disabled')).toBe(false)
+  })
+
   it('requires a reason and confirmation to void, preserves on cancellation, and refreshes the restored balance', async () => {
     const voidPayment = vi.fn(async () => ({}))
     renderForm({ remainingMinor: 600, payments: [{ id: 'payment-1', amountMinor: 400, method: 'cash', isVoid: false }] as never, voidPayment })

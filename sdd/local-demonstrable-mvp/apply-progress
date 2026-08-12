@@ -2,11 +2,7 @@
 
 ## Completed milestones
 
-- [x] M0.2 — Async repository contracts and executable conformance suites.
-- [x] M0.3a — LocalStateSchema, defensive atomic gateway, catalog local repositories, and persisted-envelope validation.
-- [x] M0.3b — Invoice/payment/daily-income adapters, seed data, and restore.
-- [x] M1.1 — BrowserRouter route map, accessible layout, and responsive sidebar navigation.
-- [x] M1.2 — StateOverlay, ConfirmDialog, skip-link, and route-heading focus management.
+- [x] M0.2, M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4.
 
 ## Completed tasks
 
@@ -15,6 +11,7 @@
 - [x] 0.3b.1–0.3b.11: Invoice/payment/daily-income adapters, deterministic seed data, atomic seed load/restore, and local contract verification.
 - [x] 1.1.1–1.1.8: BrowserRouter route map, module placeholders, Layout, Sidebar, application wiring, and navigation refactor verification.
 - [x] 1.2.1–1.2.7: Async state overlays, keyboard-safe confirmation dialog, route-heading focus, and skip-link focus jump.
+- [x] 2.1.1–2.1.10, 2.2.1–2.2.7, 2.3.1–2.3.7, G2.1–G2.3, 3.1.1–3.1.9, 3.2.1–3.2.7, 3.3.1–3.3.5, and 3.4.1–3.4.6.
 
 ## TDD Cycle Evidence
 
@@ -81,3 +78,22 @@ Historical execution order is not claimed where no commit-pinned run exists. The
 - Calendar conformance reproducer: at commit `38cbefa`, `npx vitest run src/infrastructure/local/LocalStateGateway.calendarMutant.test.ts` → 1 file / 1 test passed (exit 0). It launches the committed gateway suite against an isolated test-only permissive-calendar mutation; the child suite exits non-zero and names `impossible invoice issue date`.
 - M0.3a remains pinned at `e278f21` and was not expanded except cohesive gateway seed/restore and its isolated mutant fixture. M0.3b has its own 800-line ceiling. No prior commit is amended or rewritten.
 - M1.2 corrective scope adds a pinned `@testing-library/user-event` development dependency, semantic Tab traversal, causal Enter/Space activation tests, and detached-trigger focus-restoration evidence only; no M2.1, provider, CRUD, Supabase, or auth behavior was added.
+
+## M3.4 corrective verification — complete
+
+- `PaymentForm` wires `usePayments.refresh` to a semantic `Retry payment load` button when the real payment load fails.
+- The production-form test induces a repository load error, clicks Retry, then verifies restored balance/status and registration controls. Existing registration and void coverage remains intact.
+
+### M3.4 corrective TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.4.3–3.4.4 corrective retry | `src/modules/invoices/PaymentForm.test.tsx` | Component | 26/26 focused payment/detail/router tests passed | Production-form retry recovery test failed because no retry button was rendered | 4/4 PaymentForm tests passed after wiring `refresh` to the semantic button | Error state and recovered balance/status/control state exercise distinct paths | Kept existing registration and void handlers unchanged. |
+
+## M3.4 verification
+
+- Focused payment/detail/router tests: **27 passed**.
+- Full suite: **256 passed, 1 skipped**.
+- Coverage: **93.43% statements, 85.40% branches, 95.76% functions, 97.56% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- M3.4 is complete; **M3.5 safe delete and restore is next**. M3.5/M3.6, domain, Supabase, and auth remain unstarted and out of scope.

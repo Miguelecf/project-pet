@@ -29,7 +29,7 @@
 - [x] 3.1.1–3.1.9: Table-driven pure finance/date/validation tests, deterministic safe-integer calculations, strict injected-clock date validation, and refactor verification.
 - [x] 3.2.1–3.2.7: Revision-aware invoices hook, accessible create/edit form, pure-finance line editor, route wiring, and active-payment edit block.
 - [x] 3.3.1–3.3.5: Active invoice list, client detail navigation, contextual lines/payments/totals, derived statuses, conditional edit, and route-state coverage.
-- [x] 3.4.1–3.4.6: Revision-aware payment hook, accessible registration and void confirmation, local-provider persistence, refreshed detail balances, and payment invariant coverage.
+- [x] 3.4.1–3.4.6: Revision-aware payment hook, accessible load-error retry, registration and void confirmation, local-provider persistence, refreshed detail balances, and payment invariant coverage.
 
 ## TDD cycle evidence
 
@@ -300,6 +300,7 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 
 - [x] Payment registration uses `PaymentRepository` through `RepositoryProvider`; amount is a positive safe integer, payment date is validated against the injected clock, and overpayment is rejected from the latest remaining balance.
 - [x] `PaymentForm` shows accessible balance/status feedback, allows partial/exact registration, and requires a non-empty void reason before `ConfirmDialog` confirmation.
+- [x] A payment load failure exposes `Retry payment load` in the production form; retry invokes `usePayments.refresh` and restores balance/status and registration controls.
 - [x] Cancellation preserves the payment. Confirmed void persists the void reason and refreshes invoice detail history, balance, and payment-derived status.
 - [x] No invoice delete/restore, due alerts, direct storage, Supabase, domain, or auth changes were introduced.
 
@@ -308,14 +309,14 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 | Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
 |---|---|---|---|---|---|---|---|
 | 3.4.1–3.4.2 | `src/modules/invoices/usePayments.test.tsx` | Component | 23/23 invoice/detail/router tests passed | Missing hook module: two suites could not resolve imports | 2/2 hook scenarios passed | Load/balance/mutations, error-retry, and provider revision refetch | Shared refresh handles both mutation and revision updates. |
-| 3.4.3–3.4.4 | `src/modules/invoices/PaymentForm.test.tsx` | Component | New form module; hook suite green | Missing form module: suite could not resolve import | 3/3 form scenarios passed | Partial/exact registration; zero/future/overpay; mandatory reason/cancel/confirm | Local validation remains presentation-level; repository preserves final invariant enforcement. |
+| 3.4.3–3.4.4 | `src/modules/invoices/PaymentForm.test.tsx` | Component | 3/3 form scenarios passed before correction | Production-form retry test failed because no semantic retry button existed | 4/4 form scenarios passed | Partial/exact registration; real load-error retry/recovery; zero/future/overpay; mandatory reason/cancel/confirm | Local validation remains presentation-level; repository preserves final invariant enforcement. |
 | 3.4.5 | `src/app/AppRouter.test.tsx`, `InvoiceDetailPage.test.tsx` | Component | 17/17 router scenarios passed before integration assertion | New real local-provider payment/void scenario failed while form was loading | 18/18 router scenarios passed | Registration then persisted void prove refreshed partial/pending states and balances | Detail observes provider revision and its own mutation refresh callback. |
-| 3.4.6 | Focused invoice/payment/router suite | Component | 26/26 passed | N/A — verification task | 26/26 passed | Hook, form, detail, router, and real gateway paths | No further refactor required. |
+| 3.4.6 | Focused invoice/payment/router suite | Component | 27/27 passed | N/A — verification task | 27/27 passed | Hook, form, detail, router, and real gateway paths | No further refactor required. |
 
 ## M3.4 gate evidence
 
-- Focused payment/detail/router suite: **26 passed**.
-- Full suite: **255 passed, 1 skipped**.
-- Coverage: **93.49% statements, 85.49% branches, 95.75% functions, 97.56% lines**.
+- Focused payment/detail/router suite: **27 passed**.
+- Full suite: **256 passed, 1 skipped**.
+- Coverage: **93.43% statements, 85.40% branches, 95.76% functions, 97.56% lines**.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
 - **Next:** M3.5 safe delete and restore. M3.6 due alerts remain deferred.

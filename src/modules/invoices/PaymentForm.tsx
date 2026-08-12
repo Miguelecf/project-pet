@@ -22,7 +22,7 @@ function validatePositiveMoney(value: string): number {
 }
 
 export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: PaymentFormProps) {
-  const { balance, error: loadError, loading, payments, register, voidPayment } = usePayments(invoiceId)
+  const { balance, error: loadError, loading, payments, refresh, register, voidPayment } = usePayments(invoiceId)
   const [amount, setAmount] = useState('')
   const [paymentDate, setPaymentDate] = useState('')
   const [method, setMethod] = useState<PaymentMethod>('cash')
@@ -73,6 +73,7 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
   return <section aria-labelledby="payment-form-title">
     <h2 id="payment-form-title">Register payment</h2>
     {(error ?? loadError) && <p role="alert">{error ?? loadError}</p>}
+    {loadError && <button onClick={() => void refresh()} type="button">Retry payment load</button>}
     {balance && <p aria-live="polite">Remaining balance: {balance.remainingMinor} — Status: {balance.status.replaceAll('_', ' ')}</p>}
     <label>Payment amount (minor units)<input aria-label="Payment amount (minor units)" onChange={(event) => setAmount(event.target.value)} value={amount} /></label>
     <label>Payment date<input aria-label="Payment date" onChange={(event) => setPaymentDate(event.target.value)} type="date" value={paymentDate} /></label>
