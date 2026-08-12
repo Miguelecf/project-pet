@@ -423,7 +423,7 @@ Remaining invoice branches are internally guarded, not reachable from the public
 - M4.1 changes only daily-income hooks/pages/forms/routes and synchronized SDD progress. No dashboard metrics, direct storage/Supabase access, domain contracts, or auth behavior changed.
 - **Next:** M4.2 full approved dashboard scope.
 
-## M4.2 approved plan — not implemented
+## M4.2 approved plan — historical pre-implementation state
 
 - [ ] Day/week/month period filter with inclusive local-calendar boundaries.
 - [ ] Period income, non-voided paid expenses, estimated cash result with explicit
@@ -432,5 +432,34 @@ Remaining invoice branches are internally guarded, not reachable from the public
   seven-date inactivity alert, and exact numeric paid-expense category allocation.
 - [ ] Existing provider-backed `DueAlerts`, `/` landing route, revision refresh,
   empty/error/retry states, keyboard behavior, and screen-reader labels retained.
-- M4.1 remains complete. M4.2 is next; M4.3 and Q2+ remain pending. No product,
-  domain, persistence, Supabase, or auth implementation changed during this design update.
+- This was the approved scope before implementation. M4.3 and Q2+ remain pending.
+
+## M4.2 verification — complete
+
+- [x] `dashboardAggregates` computes injected-calendar day/week/month ranges without
+  parsing record dates as UTC; period income, paid expenses, estimated cash result,
+  category allocation, and all-time outstanding/status/latest views use safe integers.
+- [x] The root `DashboardPage` reads only the existing provider repositories,
+  recomputes on period/revision refresh, and retains provider-backed `DueAlerts`.
+- [x] The accessible UI labels period controls, metrics, disclosure, alerts, weekly
+  summary, latest detail links, category values, loading, retryable errors, zeros,
+  and the seed prompt. M4.3 and Q2+ remain pending.
+
+### M4.2 TDD Cycle Evidence
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 4.2.1–4.2.2 | `dashboardAggregates.test.ts` | Unit | New module | Calendar/formula tests written before module | Focused aggregate suite passed | Day/week/month, leap/year boundaries, exclusions, status, weekly zeros, and safe integer paths | Replaced UTC `Date` calendar conversion with arithmetic calendar helpers |
+| 4.2.3–4.2.4 | `dashboardAggregates.test.ts` | Unit | Aggregate suite passing | Allocation/latest/inactivity tests written before selectors | Focused aggregate suite passed | Remainders, deterministic ties, zero allocation, both inactivity boundaries | Shared checked addition/subtraction retained for every metric |
+| 4.2.5–4.2.7 | `DashboardPage.test.tsx`, `App.test.tsx`, `AppRouter.test.tsx` | Component | Existing root/shell tests passed | Dashboard provider/route expectations preceded root replacement | Focused dashboard/root/router suite passed | Seeded, empty, period, real provider mutation/revision, failure/retry, link, DueAlerts paths | Page stays a repository consumer; no storage/domain changes |
+| 4.2.8 | Focused then full gates | Unit + Component | Focused dashboard suite passed | N/A — verification task | Recorded after sequential gates | Full suite, coverage, build, lint, and diff-check | No further behavior refactor needed |
+
+### M4.2 Scope and Delivery
+
+- M4.2 is complete within the 800-line cumulative guard from `fbddf30`; it changes
+  dashboard/UI/test/documentation artifacts only. No M4.3, Q2+, domain, persistence,
+  Supabase, or auth work was introduced.
+- Sequential gates: focused dashboard/root/router **34/34**, full suite **312 passed,
+  1 skipped**, coverage **95.61% statements, 90.12% branches, 98.01% functions,
+  98.38% lines**, build, lint, and `git diff --check` passed. Commit hash is
+  recorded after the milestone commit.

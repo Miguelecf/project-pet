@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { RepositoryProvider } from './app/RepositoryProvider'
@@ -10,6 +10,8 @@ function renderApp() {
   return render(<MemoryRouter><RepositoryProvider repositories={{
     invoices: { findAll: async () => [] },
     payments: { findByInvoice: async () => [] },
+    dailyIncomes: { findAll: async () => [] },
+    categories: { findAll: async () => [] },
     settings: { get: async () => ({ dueAlertDays: 7 }) },
   } as never}><App /></RepositoryProvider></MemoryRouter>)
 }
@@ -17,7 +19,7 @@ function renderApp() {
 describe('App', () => {
   afterEach(cleanup)
 
-  it('presents Project Pet as a local MVP dashboard foundation', () => {
+  it('presents Project Pet as a local MVP dashboard', async () => {
     renderApp()
 
     expect(screen.getByText('Project Pet')).toBeDefined()
@@ -27,7 +29,7 @@ describe('App', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'A clear view of daily operations, starting here.',
+        name: 'Dashboard',
       }),
     ).toBeDefined()
     expect(screen.getByRole('banner')).toBeDefined()
@@ -35,28 +37,18 @@ describe('App', () => {
     expect(screen.getByRole('contentinfo')).toBeDefined()
   })
 
-  it('connects each planned capability to its own list item', () => {
+  it('renders the complete accessible zero-data dashboard', async () => {
     renderApp()
 
-    const capabilities = screen.getByRole('list', { name: 'Planned capabilities' })
-    const listItems = within(capabilities).getAllByRole('listitem')
-
-    expect(listItems).toHaveLength(3)
-
-    for (const capability of ['Supplier expenses', 'Daily income', 'Cash visibility']) {
-      const item = listItems.find((listItem) => within(listItem).queryByRole('heading', { name: capability }))
-
-      expect(item).toBeDefined()
-      expect(within(item!).getByText('Planned')).toBeDefined()
-    }
+    expect(await screen.findByText('Period income: 0')).not.toBeNull()
+    expect(screen.getByRole('group', { name: 'Dashboard period' })).not.toBeNull()
+    expect(screen.getByText('Estimated cash result — not net profit: 0')).not.toBeNull()
   })
 
-  it('discloses that navigation is available while feature workflows remain placeholders', () => {
+  it('retains shell navigation and its local-only disclosure', async () => {
     renderApp()
 
-    expect(
-      screen.getByText(/Navigation is available now; financial records and calculations remain placeholders/),
-    ).toBeDefined()
+    await screen.findByText('Period income: 0')
     expect(screen.getByText('Local-only MVP. No account, cloud sync, or client data is connected.')).toBeDefined()
     const main = screen.getByRole('main')
     const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
@@ -64,6 +56,6 @@ describe('App', () => {
     expect(main.id).toBe('main-content')
     expect(skipLink.getAttribute('href')).toBe(`#${main.id}`)
     expect(screen.getAllByRole('link')).toHaveLength(7)
-    expect(screen.queryByRole('button')).toBeNull()
+    expect(screen.getByRole('button', { name: 'Refresh dashboard' })).not.toBeNull()
   })
 })

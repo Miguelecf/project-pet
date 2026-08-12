@@ -294,14 +294,14 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 **Specs**: `dashboard` (all requirements; existing DueAlerts remains complete)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 4.2.1 RED: Add `dashboardAggregates.test.ts` for local day/week/month inclusive boundaries, four formulas, active status counts, current-week summary, deleted/void exclusions, and safe integers.
-- [ ] 4.2.2 GREEN: Add `dashboardAggregates.ts` pure date ranges and aggregate functions; outstanding/status remain all-time while income/payment/result use the selected period.
-- [ ] 4.2.3 RED: Cover proportional paid-expense category allocation, deterministic remainder/tie sorting, zero-total invoices, latest-10 tie order, and seven-date inactivity threshold.
-- [ ] 4.2.4 GREEN: Complete pure category/latest/inactivity selectors without changing domain or repository contracts.
-- [ ] 4.2.5 RED: Add `DashboardPage.test.tsx` for provider loading/error/retry, period interaction, reconciliation/disclosure, weekly zeros, latest links, categories, inactivity, empty/seed prompt, revision refresh, DueAlerts, and semantic labels.
-- [ ] 4.2.6 GREEN: Create `DashboardPage.tsx`; read only existing repositories, inject local clock, and render all dashboard sections/accessibility states.
-- [ ] 4.2.7 GREEN: Replace root placeholder in `src/App.tsx`/`src/app/AppRouter.tsx` with the full `/` dashboard and retain shell focus behavior.
-- [ ] 4.2.8 REFACTOR: Run focused/full/coverage/build/lint/diff gates; update progress/TODO/plan. Split before commit if the milestone exceeds 800 changed lines.
+- [x] 4.2.1 RED: Add `dashboardAggregates.test.ts` for local day/week/month inclusive boundaries, four formulas, active status counts, current-week summary, deleted/void exclusions, and safe integers.
+- [x] 4.2.2 GREEN: Add `dashboardAggregates.ts` pure date ranges and aggregate functions; outstanding/status remain all-time while income/payment/result use the selected period.
+- [x] 4.2.3 RED: Cover proportional paid-expense category allocation, deterministic remainder/tie sorting, zero-total invoices, latest-10 tie order, and seven-date inactivity threshold.
+- [x] 4.2.4 GREEN: Complete pure category/latest/inactivity selectors without changing domain or repository contracts.
+- [x] 4.2.5 RED: Add `DashboardPage.test.tsx` for provider loading/error/retry, period interaction, reconciliation/disclosure, weekly zeros, latest links, categories, inactivity, empty/seed prompt, revision refresh, DueAlerts, and semantic labels.
+- [x] 4.2.6 GREEN: Create `DashboardPage.tsx`; read only existing repositories, inject local clock, and render all dashboard sections/accessibility states.
+- [x] 4.2.7 GREEN: Replace root placeholder in `src/App.tsx`/`src/app/AppRouter.tsx` with the full `/` dashboard and retain shell focus behavior.
+- [x] 4.2.8 REFACTOR: Run focused/full/coverage/build/lint/diff gates; update progress/TODO/plan. Split before commit if the milestone exceeds 800 changed lines.
 
 ## M4.3 — Demo Script Document (~150 lines)
 

@@ -12,7 +12,7 @@ describe('AppRouter', () => {
   })
 
   it.each([
-    ['/', 'A clear view of daily operations, starting here.'],
+    ['/', 'Dashboard'],
     ['/categories/new', 'Create category'],
     ['/invoices/example-id', 'Invoice not found.'],
     ['/daily-income/new', 'Create daily income'],
@@ -48,7 +48,7 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'A clear view of daily operations, starting here.' }).textContent).toBe('A clear view of daily operations, starting here.')
+    expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' }).textContent).toBe('Dashboard')
     expect(window.location.pathname).toBe('/')
   })
 
