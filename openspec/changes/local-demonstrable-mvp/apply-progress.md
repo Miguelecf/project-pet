@@ -14,6 +14,7 @@
 - [x] M3.1 — Pure financial calculations, dates, and validation utilities.
 - [x] M3.2 — Revision-aware invoice create/edit forms and line editor.
 - [x] M3.3 — Invoice list/detail pages with payment-derived status badges.
+- [x] M3.4 — Payment registration and void with production load retry.
 
 ## Completed tasks
 
