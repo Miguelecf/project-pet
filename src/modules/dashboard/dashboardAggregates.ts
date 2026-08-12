@@ -41,6 +41,17 @@ const subtract = (left: number, right: number) => {
   if (!Number.isSafeInteger(total)) throw new RangeError('Dashboard calculation exceeds safe integer range')
   return total
 }
+const fromBigInt = (value: bigint) => {
+  const result = Number(value)
+  if (!Number.isSafeInteger(result)) throw new RangeError('Dashboard calculation exceeds safe integer range')
+  return result
+}
+const proportionalShare = (paymentMinor: number, lineTotalMinor: number, invoiceTotalMinor: number) => {
+  if (!Number.isSafeInteger(paymentMinor) || !Number.isSafeInteger(lineTotalMinor) || !Number.isSafeInteger(invoiceTotalMinor) || invoiceTotalMinor <= 0) {
+    throw new RangeError('Dashboard calculation requires safe integer allocation inputs')
+  }
+  return fromBigInt(BigInt(paymentMinor) * BigInt(lineTotalMinor) / BigInt(invoiceTotalMinor))
+}
 const inRange = (date: ISODate, range: DateRange) => date >= range.start && date <= range.end
 
 export function dateRangeFor(period: DashboardPeriod, today: ISODate): DateRange {
@@ -64,7 +75,11 @@ export function aggregateDashboard(input: Input) {
   const periodPayments = payments.filter((payment) => inRange(payment.paymentDate, range))
   const paidExpensesMinor = periodPayments.reduce((sum, payment) => safe(sum, payment.amountMinor), 0)
   const outstandingMinor = active.reduce((sum, invoice) => safe(sum, subtract(invoice.totalMinor, paidByInvoice.get(invoice.id) ?? 0)), 0)
-  const statusCounts = active.reduce((counts, invoice) => ({ ...counts, [deriveStatus(invoice.totalMinor, paidByInvoice.get(invoice.id) ?? 0)]: counts[deriveStatus(invoice.totalMinor, paidByInvoice.get(invoice.id) ?? 0)] + 1 }), { pending: 0, partially_paid: 0, paid: 0 })
+  const statusCounts = active.reduce((counts, invoice) => {
+    const paidMinor = paidByInvoice.get(invoice.id) ?? 0
+    const status = invoice.totalMinor === 0 ? 'pending' : deriveStatus(invoice.totalMinor, paidMinor)
+    return { ...counts, [status]: counts[status] + 1 }
+  }, { pending: 0, partially_paid: 0, paid: 0 })
   const week = dateRangeFor('week', input.today)
   const weeklyIncome = Array.from({ length: 7 }, (_, index) => { const date = addDays(week.start, index); return { date, amountMinor: input.incomes.filter((income) => income.saleDate === date).reduce((sum, income) => safe(sum, income.amountMinor), 0) } })
   const categoryMap = new Map<string, Category>(input.categories.map((category) => [category.id, category]))
@@ -72,10 +87,13 @@ export function aggregateDashboard(input: Input) {
   for (const payment of periodPayments) {
     const invoice = active.find((candidate) => candidate.id === payment.invoiceId)!; const lines = input.lines.filter((line) => line.invoiceId === invoice.id).sort((a, b) => a.position - b.position || a.id.localeCompare(b.id)); const total = lines.reduce((sum, line) => safe(sum, line.lineTotalMinor), 0)
     if (total === 0) continue
-    const shares = lines.map((line) => ({ line, amount: Math.floor(payment.amountMinor * line.lineTotalMinor / total) })); let remainder = subtract(payment.amountMinor, shares.reduce((sum, share) => safe(sum, share.amount), 0))
-    shares.forEach((share) => { if (remainder > 0) { share.amount++; remainder-- } categoryTotals.set(share.line.categoryId, safe(categoryTotals.get(share.line.categoryId) ?? 0, share.amount)) })
+    const shares = lines.map((line) => ({ line, amount: proportionalShare(payment.amountMinor, line.lineTotalMinor, total) })); let remainder = subtract(payment.amountMinor, shares.reduce((sum, share) => safe(sum, share.amount), 0))
+    shares.forEach((share) => { if (remainder > 0) { share.amount++; remainder-- }; if (share.amount > 0) categoryTotals.set(share.line.categoryId, safe(categoryTotals.get(share.line.categoryId) ?? 0, share.amount)) })
   }
   const categoryBreakdown = [...categoryTotals].map(([categoryId, amountMinor]) => ({ categoryId, name: categoryMap.get(categoryId)?.name ?? categoryId, amountMinor })).sort((a, b) => b.amountMinor - a.amountMinor || a.name.localeCompare(b.name) || a.categoryId.localeCompare(b.categoryId))
-  const latestInvoices = active.map((invoice) => ({ invoice, outstandingMinor: subtract(invoice.totalMinor, paidByInvoice.get(invoice.id) ?? 0), status: deriveStatus(invoice.totalMinor, paidByInvoice.get(invoice.id) ?? 0) })).sort((a, b) => b.invoice.issueDate.localeCompare(a.invoice.issueDate) || b.invoice.createdAt.localeCompare(a.invoice.createdAt) || a.invoice.id.localeCompare(b.invoice.id)).slice(0, 10)
+  const latestInvoices = active.map((invoice) => {
+    const paidMinor = paidByInvoice.get(invoice.id) ?? 0
+    return { invoice, outstandingMinor: subtract(invoice.totalMinor, paidMinor), status: invoice.totalMinor === 0 ? 'pending' : deriveStatus(invoice.totalMinor, paidMinor) }
+  }).sort((a, b) => b.invoice.issueDate.localeCompare(a.invoice.issueDate) || b.invoice.createdAt.localeCompare(a.invoice.createdAt) || a.invoice.id.localeCompare(b.invoice.id)).slice(0, 10)
   return { range, metrics: { incomeMinor, paidExpensesMinor, estimatedCashResultMinor: subtract(incomeMinor, paidExpensesMinor), outstandingMinor }, statusCounts, weeklyIncome, categoryBreakdown, latestInvoices, inactive: !input.incomes.some((income) => inRange(income.saleDate, { start: addDays(input.today, -6), end: input.today })) }
 }

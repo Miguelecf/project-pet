@@ -14,6 +14,14 @@ function AddTodayIncome() {
   const { repositories } = useRepositories()
   return <button onClick={() => void repositories.dailyIncomes.create({ saleDate: '2026-08-10' as never, amountMinor: 70 as never, note: null })}>Add today income</button>
 }
+function MutateInvoiceAndPayments() {
+  const { repositories } = useRepositories()
+  return <>
+    <button onClick={() => void repositories.invoices.softDelete('demo-invoice-pending' as never)}>Delete pending invoice</button>
+    <button onClick={() => void repositories.payments.register({ invoiceId: 'demo-invoice-pending' as never, amountMinor: 10000 as never, paymentDate: '2026-08-10' as never, method: 'cash', reference: null, notes: null })}>Register real payment</button>
+    <button onClick={() => void repositories.payments.void('demo-payment-paid' as never, 'Recorded in error')}>Void real payment</button>
+  </>
+}
 const renderPage = (gateway = new LocalStateGateway(new MemoryStorage()), mutation = false) => render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} />{mutation && <AddTodayIncome />}</RepositoryProvider></MemoryRouter>)
 
 describe('DashboardPage', () => {
@@ -65,5 +73,25 @@ describe('DashboardPage', () => {
     expect((await screen.findByRole('alert')).textContent).toContain('Could not load dashboard')
     fireEvent.click(screen.getByRole('button', { name: 'Retry dashboard' }))
     expect(await screen.findByText('Period income: 0')).not.toBeNull()
+  })
+
+  it('rerenders latest invoices after a real provider-backed invoice mutation', async () => {
+    const gateway = new LocalStateGateway(new MemoryStorage())
+    await gateway.loadSeed()
+    render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><MutateInvoiceAndPayments /></RepositoryProvider></MemoryRouter>)
+    expect(await screen.findByRole('link', { name: 'DEMO-100' })).not.toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete pending invoice' }))
+    await waitFor(() => expect(screen.queryByRole('link', { name: 'DEMO-100' })).toBeNull())
+  })
+
+  it('rerenders paid expenses after real payment registration and void mutations', async () => {
+    const gateway = new LocalStateGateway(new MemoryStorage())
+    await gateway.loadSeed()
+    render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><MutateInvoiceAndPayments /></RepositoryProvider></MemoryRouter>)
+    expect(await screen.findByText('Paid expenses: 15000')).not.toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Register real payment' }))
+    await waitFor(() => expect(screen.getByText('Paid expenses: 25000')).not.toBeNull())
+    fireEvent.click(screen.getByRole('button', { name: 'Void real payment' }))
+    await waitFor(() => expect(screen.getByText('Paid expenses: 15000')).not.toBeNull())
   })
 })

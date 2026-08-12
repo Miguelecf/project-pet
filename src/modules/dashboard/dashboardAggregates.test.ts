@@ -70,4 +70,55 @@ describe('dashboard aggregates', () => {
     expect(() => aggregateDashboard({ today: '2026-08-12' as never, period: 'day', invoices: [], payments: [],
       incomes: [income('2026-08-12', Number.MAX_SAFE_INTEGER), income('2026-08-12', 1)] as never, lines: [], categories: [] as never })).toThrow('safe integer')
   })
+
+  it('uses exact integer arithmetic for large valid allocation inputs and reconciles every share to the payment', () => {
+    const result = aggregateDashboard({ today: '2026-08-12' as never, period: 'month',
+      invoices: [invoice({ totalMinor: 9007199254739991 })] as never,
+      payments: [payment({ amountMinor: 9007199254739991 })] as never, incomes: [],
+      lines: [
+        { id: 'one', invoiceId: 'invoice-a', categoryId: 'one', lineTotalMinor: 3002399751580330, position: 1 },
+        { id: 'two', invoiceId: 'invoice-a', categoryId: 'two', lineTotalMinor: 3002399751580330, position: 2 },
+        { id: 'three', invoiceId: 'invoice-a', categoryId: 'three', lineTotalMinor: 3002399751580331, position: 3 },
+      ] as never, categories: [{ id: 'one', name: 'One' }, { id: 'two', name: 'Two' }, { id: 'three', name: 'Three' }] as never })
+    expect(result.categoryBreakdown).toEqual([
+      { categoryId: 'one', name: 'One', amountMinor: 3002399751579997 },
+      { categoryId: 'three', name: 'Three', amountMinor: 3002399751579997 },
+      { categoryId: 'two', name: 'Two', amountMinor: 3002399751579997 },
+    ])
+    expect(result.categoryBreakdown.reduce((sum, category) => sum + category.amountMinor, 0)).toBe(9007199254739991)
+  })
+
+  it('omits zero-total allocations, sorts equal category amounts by name then id, and gives tied-position remainder to line id order', () => {
+    const result = aggregateDashboard({ today: '2026-08-12' as never, period: 'month',
+      invoices: [invoice({ id: 'allocated', totalMinor: 3 }), invoice({ id: 'zero', totalMinor: 0 })] as never,
+      payments: [payment({ invoiceId: 'allocated', amountMinor: 2 }), payment({ id: 'zero-payment', invoiceId: 'zero', amountMinor: 5 })] as never,
+      incomes: [], lines: [
+        { id: 'z-line', invoiceId: 'allocated', categoryId: 'z', lineTotalMinor: 1, position: 1 },
+        { id: 'a-line', invoiceId: 'allocated', categoryId: 'a', lineTotalMinor: 1, position: 1 },
+        { id: 'b-line', invoiceId: 'allocated', categoryId: 'b', lineTotalMinor: 1, position: 2 },
+      ] as never,
+      categories: [{ id: 'z', name: 'Same' }, { id: 'a', name: 'Same' }, { id: 'b', name: 'Bravo' }] as never })
+    expect(result.categoryBreakdown).toEqual([
+      { categoryId: 'a', name: 'Same', amountMinor: 1 },
+      { categoryId: 'z', name: 'Same', amountMinor: 1 },
+    ])
+    const tieSorted = aggregateDashboard({ today: '2026-08-12' as never, period: 'month', invoices: [invoice({ totalMinor: 3 })] as never,
+      payments: [payment({ amountMinor: 3 })] as never, incomes: [], lines: [
+        { id: 'line-z', invoiceId: 'invoice-a', categoryId: 'z', lineTotalMinor: 1, position: 1 },
+        { id: 'line-a', invoiceId: 'invoice-a', categoryId: 'a', lineTotalMinor: 1, position: 2 },
+        { id: 'line-b', invoiceId: 'invoice-a', categoryId: 'b', lineTotalMinor: 1, position: 3 },
+      ] as never, categories: [{ id: 'z', name: 'Same' }, { id: 'a', name: 'Same' }, { id: 'b', name: 'Bravo' }] as never })
+    expect(tieSorted.categoryBreakdown.map((category) => `${category.name}:${category.categoryId}`)).toEqual(['Bravo:b', 'Same:a', 'Same:z'])
+  })
+
+  it('shows exactly ten latest active invoices from twelve and keeps weekly summary stable across period filters', () => {
+    const invoices = Array.from({ length: 12 }, (_, index) => invoice({ id: `invoice-${String(index + 1).padStart(2, '0')}`, issueDate: '2026-08-12', createdAt: `2026-08-12T${String(index).padStart(2, '0')}:00:00.000Z` }))
+    invoices.push(invoice({ id: 'deleted-newest', issueDate: '2026-08-13', deletedAt: '2026-08-13T00:00:00.000Z' }))
+    const shared = { today: '2026-08-12' as never, invoices: invoices as never, payments: [], incomes: [income('2026-08-10', 10), income('2026-08-12', 20)] as never, lines: [], categories: [] as never }
+    const day = aggregateDashboard({ ...shared, period: 'day' })
+    const month = aggregateDashboard({ ...shared, period: 'month' })
+    expect(day.latestInvoices).toHaveLength(10)
+    expect(day.latestInvoices.map((item) => item.invoice.id)).toEqual(['invoice-12', 'invoice-11', 'invoice-10', 'invoice-09', 'invoice-08', 'invoice-07', 'invoice-06', 'invoice-05', 'invoice-04', 'invoice-03'])
+    expect(day.weeklyIncome).toEqual(month.weeklyIncome)
+  })
 })

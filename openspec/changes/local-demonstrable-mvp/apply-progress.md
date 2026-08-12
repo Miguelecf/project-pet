@@ -462,4 +462,32 @@ Remaining invoice branches are internally guarded, not reachable from the public
 - Sequential gates: focused dashboard/root/router **34/34**, full suite **312 passed,
   1 skipped**, coverage **95.61% statements, 90.12% branches, 98.01% functions,
   98.38% lines**, build, lint, and `git diff --check` passed. Commit hash is
-  recorded after the milestone commit.
+   recorded after the milestone commit.
+
+## M4.2 corrective apply after gate failure on `61fb988` — complete
+
+- [x] Replaced number-based proportional multiplication with `BigInt` floor division
+  for safe-integer allocation inputs. Conversion back to `number` is guarded, every
+  category share remains safe, and residual units preserve line `position`, then ID.
+- [x] Added runtime scenarios for exact large allocation reconciliation, zero-total
+  allocation, category amount/name/ID ties, line-ID remainder order, latest ten from
+  twelve active invoices with deleted exclusion, period-invariant weekly income, and
+  real local-provider invoice/payment mutation refreshes.
+- [x] M4.3 and Q2+ remain unstarted; no domain, persistence, Supabase, or auth files
+  were changed.
+
+### Corrective TDD Cycle Evidence
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Exact allocation and selector scenarios | `src/modules/dashboard/dashboardAggregates.test.ts` | Unit | 7/7 aggregate tests passed | 3 new scenarios failed against floating allocation and zero-total status handling | 10/10 aggregate tests passed | Large safe values, zero totals, tie rules, latest 10/12, and period-stable weekly output | Extracted guarded `BigInt` conversion and proportional-share helper |
+| Real provider mutation refresh | `src/modules/dashboard/DashboardPage.test.tsx` | Component | 4/4 dashboard tests passed | Invoice/payment mutation expectations failed because the test harness did not exercise valid repository transitions | 6/6 dashboard tests passed | Real local gateway invoice deletion plus payment registration and void refresh separate dashboard states | Kept the dashboard as a repository/provider consumer |
+
+### Corrective Verification
+
+- Focused dashboard/aggregate/router suite: **39/39 passed**.
+- Full suite: **317 passed, 1 skipped**.
+- Coverage: **95.53% statements, 90.32% branches, 98.02% functions, 98.32% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- Corrective diff: **101 changed lines** (101 additions, 4 deletions). M4.2 is complete
+  only with this corrective commit; **M4.3 is next and remains unstarted**.
