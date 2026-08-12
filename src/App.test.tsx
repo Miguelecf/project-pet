@@ -3,13 +3,22 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
+import { RepositoryProvider } from './app/RepositoryProvider'
 import App from './App'
+
+function renderApp() {
+  return render(<MemoryRouter><RepositoryProvider repositories={{
+    invoices: { findAll: async () => [] },
+    payments: { findByInvoice: async () => [] },
+    settings: { get: async () => ({ dueAlertDays: 7 }) },
+  } as never}><App /></RepositoryProvider></MemoryRouter>)
+}
 
 describe('App', () => {
   afterEach(cleanup)
 
   it('presents Project Pet as a local MVP dashboard foundation', () => {
-    render(<MemoryRouter><App /></MemoryRouter>)
+    renderApp()
 
     expect(screen.getByText('Project Pet')).toBeDefined()
     const demoStatus = screen.getByRole('status')
@@ -27,7 +36,7 @@ describe('App', () => {
   })
 
   it('connects each planned capability to its own list item', () => {
-    render(<MemoryRouter><App /></MemoryRouter>)
+    renderApp()
 
     const capabilities = screen.getByRole('list', { name: 'Planned capabilities' })
     const listItems = within(capabilities).getAllByRole('listitem')
@@ -43,7 +52,7 @@ describe('App', () => {
   })
 
   it('discloses that navigation is available while feature workflows remain placeholders', () => {
-    render(<MemoryRouter><App /></MemoryRouter>)
+    renderApp()
 
     expect(
       screen.getByText(/Navigation is available now; financial records and calculations remain placeholders/),

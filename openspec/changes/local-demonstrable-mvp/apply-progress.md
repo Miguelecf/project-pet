@@ -16,6 +16,7 @@
 - [x] M3.3 — Invoice list/detail pages with payment-derived status badges.
 - [x] M3.4 — Payment registration and void with production load retry.
 - [x] M3.5 — Safe invoice deletion and retained-invoice restore.
+- [x] M3.6 — Provider-backed due-date alerts in the dashboard placeholder.
 
 ## Completed tasks
 
@@ -33,6 +34,7 @@
 - [x] 3.3.1–3.3.5: Active invoice list, client detail navigation, contextual lines/payments/totals, derived statuses, conditional edit, and route-state coverage.
 - [x] 3.4.1–3.4.6: Revision-aware payment hook, accessible load-error retry, registration and void confirmation, local-provider persistence, refreshed detail balances, and payment invariant coverage.
 - [x] 3.5.1–3.5.5: Confirmed delete/restore controls, active-payment blocking, retained-invoice filter, and real local-provider persistence coverage.
+- [x] 3.6.1–3.6.4: Fixed-clock overdue/due-soon alerts, settings boundary, active-balance filtering, semantic badges/list, and detail navigation.
 
 ## TDD cycle evidence
 
@@ -343,3 +345,24 @@ after save) could therefore overwrite a just-selected `ARS` value with the prior
 
 - M3.5 uses existing local repositories/provider and `ConfirmDialog`; no direct storage, Supabase, domain, auth, dashboard, due-alert, or M4 work was introduced.
 - **Next:** M3.6 due-date alert widget.
+
+## M3.6 verification — complete
+
+- [x] `DueAlerts` reads existing invoice, payment, and settings repositories through `RepositoryProvider`; no storage, Supabase, domain, or auth boundary changed.
+- [x] It excludes deleted, paid, undated, and out-of-window invoices; due-soon includes the exact `dueAlertDays` boundary against an injected clock.
+- [x] The dashboard placeholder renders the widget only; metrics, a full dashboard page, and daily-income behavior remain deferred to M4.
+
+### M3.6 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | Triangulate | Refactor |
+|---|---|---|---|---|---|---|---|
+| 3.6.1 | `src/modules/dashboard/DueAlerts.test.tsx` | Component | N/A (new module) | Missing `DueAlerts` module; focused suite collected 0 tests. | 3/3 widget scenarios passed. | Overdue, ordinary due-soon, exact configured boundary, no-alert exclusions, and navigation use distinct paths. | Assertions cover semantic text/list/link outcomes rather than CSS. |
+| 3.6.2 | `src/modules/dashboard/DueAlerts.tsx` | Component | N/A (new module) | Same missing-module RED. | 3/3 widget scenarios passed. | Payment-derived balances plus deleted/paid/undated/later filtering prevent status-field shortcuts. | Kept alert selection as a pure transformation with injected calendar input. |
+| 3.6.3 | `src/App.tsx`, `src/App.test.tsx` | Component | 3/3 existing App tests passed. | Dashboard integration required provider context and initially failed without it. | App plus alert focused suite: 6/6 passed. | Empty alert rendering and widget data rendering exercise both provider-backed states. | The placeholder and all M4 metrics behavior remain intact/deferred. |
+| 3.6.4 | `src/modules/dashboard/DueAlerts.test.tsx` | Component | 6/6 focused App/widget tests passed. | New accessible badge/list assertions failed before the widget existed. | 6/6 focused App/widget tests passed. | Text badges identify both overdue and due-soon entries independently of color; list has concrete entries. | Added visual overdue styling only as a supplementary indicator. |
+
+## M3.6 scope and next
+
+- M3.6 is restricted to the due-date widget and current dashboard placeholder. M3.4/3.5 behavior, metrics/full dashboard, daily-income UI, direct storage, Supabase, domain, and auth are unchanged.
+- Focused suite: **6 passed**. Full suite: **263 passed, 1 skipped**. Coverage: **93.36% statements, 84.79% branches, 95.80% functions, 97.36% lines**. Build, lint, and diff check passed sequentially; the first all-gates shell exceeded the tool timeout during build, then standalone build/lint/diff passed.
+- **Next:** G3-LOCAL core branch-coverage gate.

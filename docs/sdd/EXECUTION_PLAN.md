@@ -4,12 +4,13 @@
 protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
- restore are complete.** The next executable unit is **M3.6: due-date alerts**.
+ restore, and M3.6 due-date alerts are complete.** The next executable unit is
+**G3-LOCAL: core branch coverage**.
 
 ## Quick path
 
-1. Begin M3.6 with RED tests for overdue and due-soon boundaries.
-2. Reuse payment-derived invoice state; do not duplicate financial rules.
+1. Begin G3-LOCAL by reviewing reachable branch coverage in invoice, payment, and daily-income modules.
+2. Retain production behavior; add only meaningful tests for uncovered reachable paths.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ## Operating rules
@@ -167,6 +168,18 @@ voiding, deletion, restore, and due-date alerts remain deferred.
 **M3.5 exit criteria met:** deletion uses the existing repository invariant, retains
 data for recovery, and provides accessible confirmation, errors, filtering, and
 restoration without direct storage access. M3.6 is next.
+
+### Completed — M3.6 due-date alerts
+
+- [x] Derive active invoice balances from provider-backed payment records and exclude paid or retained invoices.
+- [x] Classify dates against the injected clock and the persisted `dueAlertDays` setting, including the exact boundary.
+- [x] Render accessible text badges and a semantic alert list; overdue visual treatment supplements, never replaces, text.
+- [x] Navigate alert entries client-side to their invoice detail pages.
+
+**M3.6 exit criteria met:** the existing dashboard placeholder now displays only
+provider-backed overdue or due-soon active invoices, with fixed-clock component
+coverage and no dashboard metrics, daily-income UI, storage, Supabase, domain, or
+auth changes. G3-LOCAL is next.
 
 ### Deferred — productization
 

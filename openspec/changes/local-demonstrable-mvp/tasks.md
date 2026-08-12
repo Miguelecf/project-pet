@@ -256,10 +256,10 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 **Specs**: `dashboard` (due-date alert widget)
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 
-- [ ] 3.6.1 RED: Write `src/modules/dashboard/DueAlerts.test.tsx` — overdue shows red badge, due-soon within 7 days, no alerts message, exactly-7-days boundary.
-- [ ] 3.6.2 GREEN: Create `src/modules/dashboard/DueAlerts.tsx` — widget with overdue/due-soon badges, semantic list, accessible labels.
-- [ ] 3.6.3 GREEN: Integrate `DueAlerts` into dashboard placeholder. _(Wiring — widget behavior tested in 3.6.1; full dashboard integration tested in M4.2.)_
-- [ ] 3.6.4 REFACTOR: Verify color is not the only indicator (text badge required).
+- [x] 3.6.1 RED: Write `src/modules/dashboard/DueAlerts.test.tsx` — overdue shows red badge, due-soon within 7 days, no alerts message, exactly-7-days boundary.
+- [x] 3.6.2 GREEN: Create `src/modules/dashboard/DueAlerts.tsx` — widget with overdue/due-soon badges, semantic list, accessible labels.
+- [x] 3.6.3 GREEN: Integrate `DueAlerts` into dashboard placeholder. _(Wiring — widget behavior tested in 3.6.1; full dashboard integration tested in M4.2.)_
+- [x] 3.6.4 REFACTOR: Verify color is not the only indicator (text badge required).
 
 ## G3-LOCAL — Core Gate (~100 lines)
 
