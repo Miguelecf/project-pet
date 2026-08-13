@@ -7,13 +7,14 @@ pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  restore, M3.6 due-date alerts, M4.1 daily-income CRUD, and M4.2 full dashboard
 are complete.** M4.3 is complete with the client-facing guided demo script; Q2
 domain coverage edge-case tests, Q3 integration tests, and Q4 gate configuration are
-complete. The next executable unit is **Q5: exploratory QA charters**.
+complete. **Q5: exploratory QA charters** is complete; the remaining executable
+unit is **GMVP final review**.
 
 ## Quick path
 
-1. Create Q5 exploratory QA charters without changing completed product behavior.
+1. Execute the five planned Q5 sessions in a real browser and record results.
 2. Keep G2-LOCAL/G3-LOCAL reachable coverage policies and defensive guards intact.
-3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
+3. Run GMVP final review only after Q5 findings meet their acceptance gates.
 
 ### Completed — Q4 gate configuration
 
@@ -28,8 +29,20 @@ complete. The next executable unit is **Q5: exploratory QA charters**.
 
 **Q4 exit criteria met:** configuration metadata accurately matches available test
 layers and all quality gate commands. Global coverage remains informational, avoiding
-a false threshold that would contradict the approved reachable module policies. Q5 is
-next.
+a false threshold that would contradict the approved reachable module policies.
+
+### Completed — Q5 exploratory QA charters
+
+- [x] Create session sheets for refresh persistence, corrupt recovery, responsive
+  layout at 320px/1920px, keyboard-only navigation, and the client demo.
+- [x] Include date, build, commit, owner/status, objective, setup, checks, expected
+  results, evidence/result fields, and severity tracking in every sheet.
+- [x] Use the closure gate of zero BLOCKER/CRITICAL findings and MAJOR findings
+  resolved or explicitly accepted.
+
+**Q5 exit criteria met:** the five English QA documents are planning artifacts only;
+all result fields truthfully state that manual execution has not occurred. GMVP is
+next and must execute the sheets in a real browser before final closure.
 
 ### Completed — Q3 integration tests
 

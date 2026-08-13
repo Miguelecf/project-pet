@@ -1,5 +1,41 @@
 # Apply Progress: Local Demonstrable MVP
 
+## Q5 exploratory QA charters — complete
+
+- [x] Q5.1 created `docs/qa-exploratory/refresh-persistence.md` as an unexecuted
+  real-browser session sheet covering persistence across all available modules.
+- [x] Q5.2 created `docs/qa-exploratory/corrupt-recovery.md` for invalid JSON and
+  malformed-envelope recovery through the documented seed path.
+- [x] Q5.3 created `docs/qa-exploratory/responsive-layout.md` for 320px and 1920px
+  viewport checks.
+- [x] Q5.4 created `docs/qa-exploratory/keyboard-navigation.md` for keyboard-only
+  skip links, routes, forms, dialogs, and restore.
+- [x] Q5.5 added `docs/qa-exploratory/client-demo.md` and a shared severity template
+  in every sheet: BLOCKER, CRITICAL, MAJOR, MINOR, and SUGGESTION, each with owner,
+  status, and resolution or acceptance fields.
+
+### Q5 documentation evidence
+
+| Requirement | Evidence |
+| --- | --- |
+| Session accountability | Every sheet has date, build, commit, owner, status, and result fields. Current values honestly state planned/unexecuted; no manual run is claimed. |
+| Exploratory coverage | Refresh persistence, corrupt recovery, 320px/1920px layout, keyboard-only navigation, and a client demo follow the quality-gates scope and `docs/demo-script.md`. |
+| Findings | Every sheet includes step-by-step checks, expected results, evidence/result rows, and severity tracking. |
+| Closure | Every sheet requires zero BLOCKER/CRITICAL findings and MAJOR findings resolved or explicitly accepted. |
+
+### Q5 verification
+
+- Documentation-only milestone; no production or test source changed.
+- Manual browser execution did not occur in this apply phase. Build and commit fields
+  intentionally remain execution-time placeholders.
+- Markdown/content consistency passed: each of the five sheets contains the required
+  session fields, objective, setup, checks, expected results, evidence/result fields,
+  five severity levels, and the shared acceptance gate.
+- `git diff --check`, `npm run test:run` (326 passed, 1 pre-existing skipped),
+  `npm run test:coverage` (same tests; 95.57% statements, 90.36% branches, 98.04%
+  functions, 98.34% lines), `npm run build`, and `npm run lint` all exited 0.
+- Next: GMVP, including real-browser execution and closure of these session sheets.
+
 ## Q4 gate configuration — complete
 
 - [x] Q4.1 enables `integration: true` in `openspec/config.yaml`, records test,

@@ -384,11 +384,19 @@ V8 branch coverage per named module, not a false application-wide threshold.
 **Gate**: All charter files exist. Update `docs/terminal-todo.md`.
 **TDD note**: RED/GREEN not applicable — documentation-only milestone, no production code.
 
-- [ ] Q5.1 Create `docs/qa-exploratory/refresh-persistence.md` — charter + session sheet.
-- [ ] Q5.2 Create `docs/qa-exploratory/corrupt-recovery.md` — charter + session sheet.
-- [ ] Q5.3 Create `docs/qa-exploratory/responsive-layout.md` — charter + session sheet (320px/1920px).
-- [ ] Q5.4 Create `docs/qa-exploratory/keyboard-navigation.md` — charter + session sheet.
-- [ ] Q5.5 Each charter includes severity tracking (critical/major/minor).
+- [x] Q5.1 Create `docs/qa-exploratory/refresh-persistence.md` — charter + session sheet.
+- [x] Q5.2 Create `docs/qa-exploratory/corrupt-recovery.md` — charter + session sheet.
+- [x] Q5.3 Create `docs/qa-exploratory/responsive-layout.md` — charter + session sheet (320px/1920px).
+- [x] Q5.4 Create `docs/qa-exploratory/keyboard-navigation.md` — charter + session sheet.
+- [x] Q5.5 Add a client-demo session sheet and ensure every charter tracks BLOCKER, CRITICAL, MAJOR, MINOR, and SUGGESTION findings with owner/status and closure fields.
+
+**Completion evidence:** Five unexecuted English session sheets now cover refresh
+persistence, corrupt recovery, responsive layout at 320px/1920px, keyboard-only
+navigation, and the client demo. Each captures date/build/commit, owner/status,
+objective, setup, checks, expected results, evidence, severity, and the same closure
+gate: zero BLOCKER/CRITICAL findings, with each MAJOR resolved or explicitly accepted.
+The sheets are test plans, not evidence of manual execution. Q5 is complete; GMVP is
+next.
 
 ## GMVP — GLM 5.2 Final Review (0 code)
 
