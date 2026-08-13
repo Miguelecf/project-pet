@@ -311,8 +311,14 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 
 - [x] 4.3.0 RED/GREEN/REFACTOR: Add a semantic `Restore demo data` dashboard control using `ConfirmDialog` and `RepositoryProvider.restore()`; cancel preserves data, confirmation restores the deterministic seed and refreshes by provider revision, and generic success/error/retry feedback is accessible without exposing implementation secrets.
 
-- [ ] 4.3.1 Create `docs/demo-script.md` — step-by-step walkthrough: open app → seeded dashboard → catalogs → create invoice → partial payment → complete payment → void payment → daily income → verify dashboard → restore.
-- [ ] 4.3.2 Verify document contains no code blocks or implementation details.
+- [x] 4.3.1 Create `docs/demo-script.md` — step-by-step walkthrough: open app → seeded dashboard → catalogs → create invoice → partial payment → complete payment → void payment → daily income → verify dashboard → restore.
+- [x] 4.3.2 Verify document contains no code blocks or implementation details.
+
+**Completion evidence:** `docs/demo-script.md` is an English, client-facing
+walkthrough covering local-demo disclosure, deterministic fake data, full lifecycle,
+dashboard interpretation, visible restore confirmation, recovery, expected results,
+and client validation questions. Content checks confirm required headings and steps,
+with no fenced code blocks or implementation details. M4.3 is complete; Q2 is next.
 
 ## Q2 — Domain Coverage: Edge-Case Tests (~300 lines)
 

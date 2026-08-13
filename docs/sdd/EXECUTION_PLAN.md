@@ -5,21 +5,30 @@ protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, M3.6 due-date alerts, M4.1 daily-income CRUD, and M4.2 full dashboard
- are complete.** The restore-demo-data UI prerequisite is complete; the next
- executable unit is **M4.3: the guided demo script**.
+ are complete.** M4.3 is complete with the client-facing guided demo script; the
+next executable unit is **Q2: domain coverage edge-case tests**.
 
 ## Quick path
 
-1. Create `docs/demo-script.md` against the completed restore-demo-data action; do not add business behavior.
+1. Start Q2 edge-case coverage without changing completed M4.3 documentation or business behavior.
 2. Keep G3-LOCAL's test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
-### M4.2 complete — M4.3 is next
+### Completed — M4.3 guided demo script
 
 - [x] Add the dashboard's client-accessible `Restore demo data` control through
   `RepositoryProvider.restore()` with shared confirmation, revision refresh, and
   generic success/error/retry feedback.
-- [ ] Keep the M4.3 walkthrough script pending for the next agent step.
+- [x] Create the English client-facing walkthrough in `docs/demo-script.md` with
+  local-only/no-account/no-cloud disclosure, deterministic fake-data preconditions,
+  all lifecycle steps, dashboard interpretation, visible restore confirmation,
+  recovery notes, expected results, and client validation questions.
+- [x] Check that the document contains no fenced code blocks or implementation details.
+
+**M4.3 exit criteria met:** a product owner can run the local-only, deterministic
+fake-data walkthrough from the seeded dashboard through invoice, payment, void, and
+daily-income actions, validate dashboard semantics, and recover through the visible
+confirmed restore action. Q2 is next.
 
 - [x] Reviewed V8 branch coverage: `src/modules/invoices` 96.73% (178/184); local invoice, payment, and daily-income repositories 100%, 91.30%, and 100% respectively.
 - [x] Added meaningful adapter and invoice UI error/retry/fallback, persistence, state-transition, filtering, date/default-clock, optional-input, client-navigation, and async-unmount tests without changing product behavior.

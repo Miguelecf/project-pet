@@ -501,7 +501,9 @@ Remaining invoice branches are internally guarded, not reachable from the public
   `ConfirmDialog`, publishes the provider revision after successful restore, and
   shows generic visible success or retryable error feedback without exposing storage
   implementation details or secrets.
-- [ ] 4.3.1–4.3.2: `docs/demo-script.md` remains pending for the next agent step.
+- [x] 4.3.1–4.3.2: `docs/demo-script.md` provides the English client-facing,
+  full-lifecycle walkthrough and passed content checks for required headings/steps,
+  no fenced code blocks, and no implementation details.
 
 ### M4.3 prerequisite TDD cycle evidence
 
@@ -515,5 +517,25 @@ Remaining invoice branches are internally guarded, not reachable from the public
 - Full suite: **320 passed, 1 skipped**.
 - Coverage: **95.57% statements, 90.36% branches, 98.04% functions, 98.34% lines**.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
-- The guided walkthrough document remains intentionally uncreated and M4.3 remains
-  incomplete until tasks 4.3.1–4.3.2 are applied.
+- The guided walkthrough document is complete. M4.3 is complete and Q2 is next.
+
+## M4.3 demo-script documentation — complete
+
+- [x] `docs/demo-script.md` discloses the local-only, no-account, no-cloud-sync
+  boundary and deterministic fake data before the product walkthrough.
+- [x] It covers seeded dashboard, catalogs, invoice creation, partial/complete/void
+  payment flow, daily income, period metrics, cash-result disclosure, category
+  breakdown, inactivity and due alerts, visible restore confirmation, recovery,
+  expected results, and client validation questions.
+- [x] Documentation checks verified required headings and lifecycle steps; the file
+  contains no fenced code blocks or implementation details.
+
+### M4.3 documentation verification
+
+- Markdown content checks passed: all 13 required headings and lifecycle steps are
+  present; no fenced code blocks or implementation-detail terms were found.
+- `npm run test:run` passed: **320 passed, 1 skipped**. `npm run build`, `npm run
+  lint`, and `git diff --check` also passed sequentially after the content checks.
+- Documentation-only milestone: no production behavior or tests changed, so strict
+  TDD RED/GREEN evidence is not applicable.
+- M4.3 is complete; **Q2 domain coverage edge-case tests are next**.
