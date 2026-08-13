@@ -1,5 +1,40 @@
 # Apply Progress: Local Demonstrable MVP
 
+## Q2 verification — complete
+
+- [x] Q2.1–Q2.3 are complete as a test-only milestone. Existing focused suites
+  already provided non-duplicative coverage for the requested financial rounding,
+  arithmetic, input rejection, overpayment, status, currency, and ISO-date contracts.
+- [x] Added only `domain.test.ts` assertions that prove `ISODate`, `MoneyMinor`, and
+  `Quantity` remain distinct branded primitives from their raw values and each other.
+- [x] No production source changed.
+
+### Q2 evidence map
+
+| Requirement | Evidence |
+|---|---|
+| `0.005` and `1.005` half-up rounding | `src/utils/finance.test.ts` exact outputs `1` and `101` |
+| Large quantity × small cost | `lineTotalMinor(10_000, 5) === 50_000` |
+| Zero, negative, and >3-decimal inputs | finance and validation table tests reject `0`, `-1`, negative money, and `1.0001` |
+| Overpayment and derived statuses | finance derives pending/partial/paid and rejects overpayment; payment contract rejects registrations above balance before and after partial payment |
+| Currency/status/date/brand contracts | exact `Currency`/`InvoiceStatus` unions; strict ISO-date runtime tests; Q2 branded primitive separation assertions |
+
+### Q2 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Q2.1 | `src/utils/finance.test.ts`, `src/utils/validation.test.ts` | Unit | 71/71 focused Q2 baseline passed | N/A — existing dedicated tests already cover every requested behavior | 71/71 focused suite remained green | Rounding, precision, zero, negative, and decimal-boundary inputs use distinct paths | No production change; duplicate tests avoided |
+| Q2.2 | `src/utils/finance.test.ts`, `src/test/contracts/paymentRepositoryContract.ts` | Unit | 71/71 focused Q2 baseline passed | N/A — existing status and registration tests already cover every requested behavior | 71/71 focused suite remained green | Derivation plus pre-payment and post-partial registration overpayment paths | No production change; duplicate tests avoided |
+| Q2.3 | `src/types/domain.test.ts`, `src/utils/dates.test.ts` | Type + Unit | 71/71 focused Q2 baseline passed | New branded primitive assertions added before execution; production contracts are intentionally read-only | 5/5 domain type tests passed | Raw string/number separation and money-vs-quantity separation complement existing unions/date validation | Test-only contract addition; no production refactor needed |
+
+### Q2 gate results
+
+- Focused Q2 suite: **72/72 passed**.
+- Full suite: **321 passed, 1 skipped**. Coverage: **321 passed, 1 skipped**;
+  **95.57% statements, 90.36% branches, 98.04% functions, 98.34% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- Next: Q3 integration tests.
+
 ## Completed milestones
 
 - [x] M0.2 — Async repository contracts and executable conformance suites.

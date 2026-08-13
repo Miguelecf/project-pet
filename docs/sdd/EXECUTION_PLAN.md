@@ -5,13 +5,14 @@ protection, M2.3 settings CRUD with currency-lock enforcement, G2-LOCAL, M3.1
 pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, M3.6 due-date alerts, M4.1 daily-income CRUD, and M4.2 full dashboard
- are complete.** M4.3 is complete with the client-facing guided demo script; the
-next executable unit is **Q2: domain coverage edge-case tests**.
+are complete.** M4.3 is complete with the client-facing guided demo script; Q2
+domain coverage edge-case tests are complete. The next executable unit is **Q3:
+integration tests**.
 
 ## Quick path
 
-1. Start Q2 edge-case coverage without changing completed M4.3 documentation or business behavior.
-2. Keep G3-LOCAL's test-only coverage work and defensive guards intact.
+1. Start Q3 integration coverage without changing completed Q2 financial or domain contracts.
+2. Keep G3-LOCAL's and Q2's test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
 
 ### Completed — M4.3 guided demo script
@@ -29,6 +30,22 @@ next executable unit is **Q2: domain coverage edge-case tests**.
 fake-data walkthrough from the seeded dashboard through invoice, payment, void, and
 daily-income actions, validate dashboard semantics, and recover through the visible
 confirmed restore action. Q2 is next.
+
+### Completed — Q2 domain coverage edge cases
+
+- [x] Confirm half-up rounding at `0.005` and `1.005`, exact `10000 × 5` minor-unit
+  arithmetic, zero/negative quantity rejection, negative money rejection, and
+  quantities with more than three decimal places.
+- [x] Confirm `deriveStatus` rejects overpayment and the local payment contract
+  rejects overpayment both before any payment and after a partial payment while
+  preserving pending, partially paid, and paid states.
+- [x] Add the missing compile-time separation tests for `ISODate`, `MoneyMinor`, and
+  `Quantity`; existing exact currency/status union and strict calendar ISO-date tests
+  remain the source of evidence for those contracts.
+
+**Q2 exit criteria met:** edge-case requirements are covered by focused finance,
+validation, date, local-payment-contract, and domain-type tests. Only the missing
+branded primitive assertions were added; no production behavior changed. Q3 is next.
 
 - [x] Reviewed V8 branch coverage: `src/modules/invoices` 96.73% (178/184); local invoice, payment, and daily-income repositories 100%, 91.30%, and 100% respectively.
 - [x] Added meaningful adapter and invoice UI error/retry/fallback, persistence, state-transition, filtering, date/default-clock, optional-input, client-navigation, and async-unmount tests without changing product behavior.

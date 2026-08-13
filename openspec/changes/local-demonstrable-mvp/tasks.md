@@ -327,9 +327,17 @@ with no fenced code blocks or implementation details. M4.3 is complete; Q2 is ne
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 **TDD note**: RED/GREEN not applicable — this milestone adds only tests to close coverage gaps on already-implemented code.
 
-- [ ] Q2.1 Add edge-case tests: 0.005 rounding, large qty × small cost, zero-quantity rejection, negative inputs, >3 decimal rejection.
-- [ ] Q2.2 Add overpayment detection tests on `deriveStatus` and payment registration.
-- [ ] Q2.3 Add domain type validation tests: currency enum, status enum, date format, branded types.
+- [x] Q2.1 Verify dedicated edge-case coverage: `roundHalfUp(0.005)`, `roundHalfUp(1.005)`, `lineTotalMinor(10000, 5)`, zero/negative quantity, negative money, and >3-decimal quantity rejection. Existing focused cases were retained without duplicates.
+- [x] Q2.2 Verify overpayment detection in both `deriveStatus` and local payment registration, including partial/exact status transitions and overpayment before/after a partial payment. Existing focused cases were retained without duplicates.
+- [x] Q2.3 Add the missing branded primitive contract assertions (`ISODate`, `MoneyMinor`, `Quantity`); retain existing exact currency/status unions and strict runtime ISO-date format tests.
+
+**Completion evidence:** Q2 is test-only. The financial suite already covered the
+requested 0.005/1.005 half-up cases, large quantity/small cost, zero/negative and
+precision rejections, and status overpayment. Payment contract tests already prove
+registration rejects overpayment before and after partial payment and preserves
+pending/partial/paid transitions. Q2 adds only the previously missing compile-time
+separation assertions for date, money, and quantity brands; no production behavior
+changed.
 
 ## Q3 — Integration Tests (~400 lines)
 

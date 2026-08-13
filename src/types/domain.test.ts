@@ -11,11 +11,14 @@ import type {
   InvoiceLine,
   InvoiceLineId,
   InvoiceStatus,
+  ISODate,
   ISODateTime,
+  MoneyMinor,
   NonEmptyString,
   Payment,
   PaymentId,
   PaymentMethod,
+  Quantity,
   Supplier,
   SupplierId,
   VoidedPayment,
@@ -68,5 +71,12 @@ describe('domain type contracts', () => {
     expectTypeOf<string>().not.toMatchTypeOf<SupplierId>()
     expectTypeOf<string>().not.toMatchTypeOf<InvoiceId>()
     expectTypeOf<string>().not.toMatchTypeOf<PaymentId>()
+  })
+
+  it('keeps financial values and calendar dates as distinct branded primitives', () => {
+    expectTypeOf<string>().not.toMatchTypeOf<ISODate>()
+    expectTypeOf<number>().not.toMatchTypeOf<MoneyMinor>()
+    expectTypeOf<number>().not.toMatchTypeOf<Quantity>()
+    expectTypeOf<MoneyMinor>().not.toMatchTypeOf<Quantity>()
   })
 })

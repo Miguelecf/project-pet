@@ -43,7 +43,7 @@
 
 ## Quality Gates
 
-- [ ] **Q2** — Domain coverage: edge-case tests on financial rules (~300 lines)
+- [x] **Q2** — Domain coverage: financial edge-case evidence and branded primitive contracts (test-only)
 - [ ] **Q3** — Integration tests: multi-step flows, state conservation, corrupt recovery (~400 lines)
 - [ ] **Q4** — Gate config: `openspec/config.yaml` quality thresholds (~50 lines)
 - [ ] **Q5** — `docs/qa-exploratory/` charters with severity tracking (0 code)
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 19 | 24 | 79% |
+| 20 | 24 | 83% |
 
 ## Preserved Boundaries (read-only)
 
