@@ -45,7 +45,11 @@ confirmed restore action. Q2 is next.
 
 **Q2 exit criteria met:** edge-case requirements are covered by focused finance,
 validation, date, local-payment-contract, and domain-type tests. Only the missing
-branded primitive assertions were added; no production behavior changed. Q3 is next.
+branded primitive assertions were added; no production behavior changed. Q2
+introduced no skipped or disabled tests; the one intentional pre-existing `it.skip`
+remains at `src/test/contracts/repositoryContracts.mutant.test.ts:13` for the
+mutation harness. Commit `d324f31` churn is 88 changed lines (79 additions,
+9 deletions), within the 800-line milestone guard. Q3 is next.
 
 - [x] Reviewed V8 branch coverage: `src/modules/invoices` 96.73% (178/184); local invoice, payment, and daily-income repositories 100%, 91.30%, and 100% respectively.
 - [x] Added meaningful adapter and invoice UI error/retry/fallback, persistence, state-transition, filtering, date/default-clock, optional-input, client-navigation, and async-unmount tests without changing product behavior.

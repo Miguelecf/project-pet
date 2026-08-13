@@ -337,7 +337,11 @@ precision rejections, and status overpayment. Payment contract tests already pro
 registration rejects overpayment before and after partial payment and preserves
 pending/partial/paid transitions. Q2 adds only the previously missing compile-time
 separation assertions for date, money, and quantity brands; no production behavior
-changed.
+changed. Q2 introduced no skipped or disabled tests; the one intentional
+pre-existing `it.skip` remains at
+`src/test/contracts/repositoryContracts.mutant.test.ts:13` for the mutation
+harness. Commit `d324f31` churn is 88 changed lines (79 additions, 9 deletions),
+within the 800-line milestone guard. Q3 is next.
 
 ## Q3 — Integration Tests (~400 lines)
 

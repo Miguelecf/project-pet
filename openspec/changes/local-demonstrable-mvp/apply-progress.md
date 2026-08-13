@@ -32,7 +32,12 @@
 - Focused Q2 suite: **72/72 passed**.
 - Full suite: **321 passed, 1 skipped**. Coverage: **321 passed, 1 skipped**;
   **95.57% statements, 90.36% branches, 98.04% functions, 98.34% lines**.
+- Q2 introduced no skipped or disabled tests. The one intentional pre-existing
+  `it.skip` remains at `src/test/contracts/repositoryContracts.mutant.test.ts:13`
+  for the mutation harness when no mutant is selected.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- Commit `d324f31` churn is **88 changed lines**: 79 additions and 9 deletions,
+  within the 800-line milestone guard.
 - Next: Q3 integration tests.
 
 ## Completed milestones
