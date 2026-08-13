@@ -489,5 +489,7 @@ Remaining invoice branches are internally guarded, not reachable from the public
 - Full suite: **317 passed, 1 skipped**.
 - Coverage: **95.53% statements, 90.32% branches, 98.02% functions, 98.32% lines**.
 - `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
-- Corrective diff: **101 changed lines** (101 additions, 4 deletions). M4.2 is complete
-  only with this corrective commit; **M4.3 is next and remains unstarted**.
+- Corrective commit `0faf355` diff: **135 changed lines** (130 additions, 5 deletions).
+  The production/tests subset is **105 changed lines**; the remaining 30 additions are
+  this apply-progress evidence. M4.2 is complete only with this corrective commit;
+  **M4.3 is next and remains unstarted**.
