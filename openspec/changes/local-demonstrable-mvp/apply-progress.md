@@ -1,5 +1,31 @@
 # Apply Progress: Local Demonstrable MVP
 
+## Q4 gate configuration — complete
+
+- [x] Q4.1 enables `integration: true` in `openspec/config.yaml`, records test,
+  coverage, build, lint, and diff-check commands, and retains `strict_tdd: true`.
+  `vitest.config.ts` remains the executable source enforcing `allowOnly: false`.
+- [x] Q4.2 runs the full sequential suite. Coverage is globally informational; the
+  approved G2-LOCAL/G3-LOCAL rule remains >=90% reachable V8 branch coverage per
+  named module, so no false global threshold was added.
+
+### Q4 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Q4.1 | `openspec/config.yaml`, `vitest.config.ts` | Configuration | `npm run test:run`: 326 passed, 1 skipped before metadata edit | N/A — configuration-only; no production behavior or test contract changed | Final gate suite recorded below | Skipped: declarative metadata with no branching; Vitest config separately confirms `allowOnly: false` | Kept module policy explicit and avoided a global threshold |
+| Q4.2 | Full gate commands | Configuration | Q4.1 config inspection | N/A — verification-only | Final sequential results recorded below | Five independent command paths | No refactor needed |
+
+### Q4 sequential gate results
+
+- `npm run test:run`: **326 passed, 1 pre-existing skipped**.
+- `npm run test:coverage`: **326 passed, 1 pre-existing skipped**;
+  **95.57% statements, 90.36% branches, 98.04% functions, 98.34% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check`: exited **0**, in that
+  order after the two test commands.
+- Module gates remain distinct from these global informational totals: G2-LOCAL and
+  G3-LOCAL require >=90% reachable V8 branch coverage only for their named modules.
+
 ## Q3 integration tests — complete
 
 - [x] Q3.1 added deterministic invoice lifecycle coverage through the real

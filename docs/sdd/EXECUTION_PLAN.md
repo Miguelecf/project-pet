@@ -6,14 +6,30 @@ pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, M3.6 due-date alerts, M4.1 daily-income CRUD, and M4.2 full dashboard
 are complete.** M4.3 is complete with the client-facing guided demo script; Q2
-domain coverage edge-case tests and Q3 integration tests are complete. The next
-executable unit is **Q4: gate configuration**.
+domain coverage edge-case tests, Q3 integration tests, and Q4 gate configuration are
+complete. The next executable unit is **Q5: exploratory QA charters**.
 
 ## Quick path
 
-1. Configure Q4 quality-gate capability metadata without changing completed product behavior.
-2. Keep G3-LOCAL, Q2, and Q3 test-only coverage work and defensive guards intact.
+1. Create Q5 exploratory QA charters without changing completed product behavior.
+2. Keep G2-LOCAL/G3-LOCAL reachable coverage policies and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
+
+### Completed — Q4 gate configuration
+
+- [x] Enable the Vitest integration-test capability in `openspec/config.yaml` to
+  reflect Q3's real local-adapter and `RepositoryProvider` scenarios; browser E2E
+  remains unavailable.
+- [x] Declare test, coverage, build, lint, and `git diff --check` commands in the
+  SDD configuration while retaining `strict_tdd: true`.
+- [x] Retain Vitest `allowOnly: false` as the executable focused-test guard.
+- [x] Document coverage correctly: no global percentage is enforced; G2-LOCAL and
+  G3-LOCAL require >=90% reachable V8 branch coverage only for their approved modules.
+
+**Q4 exit criteria met:** configuration metadata accurately matches available test
+layers and all quality gate commands. Global coverage remains informational, avoiding
+a false threshold that would contradict the approved reachable module policies. Q5 is
+next.
 
 ### Completed — Q3 integration tests
 

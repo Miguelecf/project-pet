@@ -368,8 +368,14 @@ Q3 is complete; Q4 is next.
 **Gate**: `npm run test:run && npm run build && npm run lint && npm run test:coverage` all exit 0. Update `docs/terminal-todo.md`.
 **TDD note**: RED/GREEN not applicable — configuration-only milestone, no production code.
 
-- [ ] Q4.1 Update `openspec/config.yaml` — set `integration: true`, confirm all gate commands, set coverage threshold.
-- [ ] Q4.2 Run full gate suite and confirm all exit 0.
+- [x] Q4.1 Update `openspec/config.yaml` — enable integration, declare all gate commands, preserve strict TDD and explicit coverage policy.
+- [x] Q4.2 Run full gate suite and confirm all exit 0.
+
+**Completion evidence:** `integration: true` reflects the Q3 Vitest scenarios using
+real local adapters and `RepositoryProvider`. `vitest.config.ts` continues to enforce
+`allowOnly: false`. Every command is explicit, including `git diff --check`. Coverage
+is informational globally: the approved G2-LOCAL/G3-LOCAL policy is >=90% reachable
+V8 branch coverage per named module, not a false application-wide threshold.
 
 ## Q5 — Exploratory QA Charters (0 code)
 

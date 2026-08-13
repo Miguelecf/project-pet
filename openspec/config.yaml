@@ -6,7 +6,7 @@ context: |
   Architecture: local-first modular monolith; feature modules, domain contracts, replaceable adapters
   Boundary: @supabase/supabase-js is isolated to src/lib/supabase; no product code may import it directly
   Current delivery: local demonstrable MVP; remote auth/database/RLS/deploy are deferred to productization
-  Quality: Strict TDD; Vitest unit/type/component tests; Oxlint; TypeScript build; V8 coverage
+  Quality: Strict TDD; Vitest unit/type/component/integration tests; Oxlint; TypeScript build; V8 coverage
   Workflow: hybrid OpenSpec + Engram, automatic execution, mainline milestone commits, 800 changed-line review guard
 
 strict_tdd: true
@@ -16,10 +16,12 @@ testing:
   test_command: "npm run test:run"
   unit: true
   component: true
-  integration: false
+  integration: true
   e2e: false
   coverage: true
   coverage_command: "npm run test:coverage"
+  diff_check: true
+  diff_check_command: "git diff --check"
   linter: true
   lint_command: "npm run lint"
   type_checker: true
@@ -52,6 +54,11 @@ rules:
     build_command: "npm run build"
     lint_command: "npm run lint"
     coverage_command: "npm run test:coverage"
-    coverage_threshold: 0
+    diff_check_command: "git diff --check"
+    coverage_threshold: null # No global threshold; approved reachable module gates apply.
+    coverage_policy:
+      metric: "V8 reachable branch coverage"
+      module_threshold: 90
+      approved_gates: "G2-LOCAL catalog modules; G3-LOCAL invoice UI/core and local invoice, payment, and daily-income adapters"
   archive:
     - Warn before merging destructive deltas
