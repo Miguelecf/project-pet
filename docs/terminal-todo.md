@@ -44,7 +44,7 @@
 ## Quality Gates
 
 - [x] **Q2** — Domain coverage: financial edge-case evidence and branded primitive contracts (test-only; 88 changed lines: 79 additions, 9 deletions; no Q2-introduced skips)
-- [ ] **Q3** — Integration tests: multi-step flows, state conservation, corrupt recovery (~400 lines)
+- [x] **Q3** — Integration tests: multi-step flows, state conservation, corrupt recovery (test-only)
 - [ ] **Q4** — Gate config: `openspec/config.yaml` quality thresholds (~50 lines)
 - [ ] **Q5** — `docs/qa-exploratory/` charters with severity tracking (0 code)
 
@@ -58,7 +58,7 @@
 
 | Completed | Total | % |
 |-----------|-------|---|
-| 20 | 24 | 83% |
+| 21 | 24 | 88% |
 
 ## Preserved Boundaries (read-only)
 

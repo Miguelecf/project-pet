@@ -350,9 +350,16 @@ within the 800-line milestone guard. Q3 is next.
 **Gate**: `npm run test:run` green. Update `docs/terminal-todo.md`.
 **TDD note**: RED/GREEN not applicable — this milestone adds only integration tests exercising already-implemented code.
 
-- [ ] Q3.1 Create `src/integration/invoiceLifecycle.test.tsx` — full lifecycle: create → pay → void → delete → verify deleted filter.
-- [ ] Q3.2 Create `src/integration/persistenceRecovery.test.tsx` — corrupt localStorage → app degrades to empty + seed prompt. State conservation across sequential mutations.
-- [ ] Q3.3 Create `src/integration/dailyIncomeDashboard.test.tsx` — daily income create/edit/delete → dashboard metrics update.
+- [x] Q3.1 Create `src/integration/invoiceLifecycle.test.tsx` — full lifecycle: create → partial payment → full payment → void → delete → verify deleted filter and restore.
+- [x] Q3.2 Create `src/integration/persistenceRecovery.test.tsx` — invalid JSON and parseable malformed localStorage degrade to the dashboard empty/seed prompt; sequential mutations conserve state.
+- [x] Q3.3 Create `src/integration/dailyIncomeDashboard.test.tsx` — daily income create/edit/delete updates day metrics through the real provider revision.
+
+**Completion evidence:** Q3 adds five deterministic, test-only integration scenarios
+using real `RepositoryProvider`, `LocalStateGateway`, local adapters, and public
+repository contracts. No production behavior changed. Browser refresh persistence is
+not claimed here because jsdom does not execute a real browser refresh; the tests
+instead prove persisted state through the local gateway and provider remount paths.
+Q3 is complete; Q4 is next.
 
 ## Q4 — Gate Configuration (~50 lines)
 

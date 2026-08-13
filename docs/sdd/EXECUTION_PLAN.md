@@ -6,14 +6,33 @@ pure financial rules, M3.2 invoice create/edit forms, and M3.3 invoice list and
  detail pages, M3.4 payment registration and voiding, and M3.5 safe delete and
  restore, M3.6 due-date alerts, M4.1 daily-income CRUD, and M4.2 full dashboard
 are complete.** M4.3 is complete with the client-facing guided demo script; Q2
-domain coverage edge-case tests are complete. The next executable unit is **Q3:
-integration tests**.
+domain coverage edge-case tests and Q3 integration tests are complete. The next
+executable unit is **Q4: gate configuration**.
 
 ## Quick path
 
-1. Start Q3 integration coverage without changing completed Q2 financial or domain contracts.
-2. Keep G3-LOCAL's and Q2's test-only coverage work and defensive guards intact.
+1. Configure Q4 quality-gate capability metadata without changing completed product behavior.
+2. Keep G3-LOCAL, Q2, and Q3 test-only coverage work and defensive guards intact.
 3. Deliver one mainline milestone within the 800 changed-line review guard, then run all quality gates.
+
+### Completed — Q3 integration tests
+
+- [x] Exercise invoice creation, partial and full payment, payment voiding,
+  soft deletion, retained filtering, and restoration through real provider and local
+  repository contracts with deterministic IDs.
+- [x] Prove invalid JSON and parseable malformed persisted envelopes degrade to the
+  accessible empty dashboard/seed prompt without a crash; prove sequential income
+  create/edit/delete mutations preserve the remaining envelope state.
+- [x] Prove a daily-income create, edit, and delete refresh day metrics through the
+  real `RepositoryProvider` revision.
+
+**Q3 exit criteria met:** five integration scenarios use `MemoryStorage`, real local
+adapters, and semantic rendered assertions where UI is involved. No production
+behavior changed. A browser-refresh claim is intentionally out of scope because
+jsdom does not perform a real browser refresh; gateway persistence and provider
+remount contracts remain the executable evidence. Focused integration tests pass
+5/5; the full suite passes 326 with one pre-existing skipped mutation-harness test;
+coverage, build, lint, and diff checks pass. Q4 is next.
 
 ### Completed — M4.3 guided demo script
 

@@ -1,5 +1,39 @@
 # Apply Progress: Local Demonstrable MVP
 
+## Q3 integration tests — complete
+
+- [x] Q3.1 added deterministic invoice lifecycle coverage through the real
+  `RepositoryProvider`, `LocalStateGateway`, and public repository contracts:
+  create, partial payment, full payment, both voids, soft delete, deleted query,
+  restore, and active query all conserve the same invoice and payment records.
+- [x] Q3.2 added malformed-storage recovery coverage for invalid JSON and a
+  parseable malformed envelope, plus sequential daily-income create/edit/delete
+  state conservation through the validated local gateway.
+- [x] Q3.3 added a real-provider dashboard scenario showing day income metrics
+  refresh after daily-income create, edit, and hard delete.
+- [x] No production files changed. Browser refresh persistence is not claimed: jsdom
+  cannot execute a real browser refresh. These tests prove the supported gateway and
+  provider persistence boundaries instead.
+
+### Q3 TDD cycle evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| Q3.1 | `src/integration/invoiceLifecycle.test.tsx` | Integration | Existing invoice/provider tests were preserved; test-only task | Test written before the focused run; existing public contracts already implement the behavior | 1/1 passed | Partial, paid, one-void, all-void, deleted, and restored states | No production refactor permitted or needed |
+| Q3.2 | `src/integration/persistenceRecovery.test.tsx` | Integration | Existing gateway/dashboard tests were preserved; test-only task | Tests written before the focused run; existing defensive gateway implements recovery | 3/3 passed | Invalid JSON, parseable malformed envelope, and sequential mutations | No production refactor permitted or needed |
+| Q3.3 | `src/integration/dailyIncomeDashboard.test.tsx` | Integration | Existing dashboard/income tests were preserved; test-only task | Test written before the focused run; existing provider revision implements refresh | 1/1 passed | Create, edit, and delete each drive a distinct metric state | No production refactor permitted or needed |
+
+### Q3 focused result
+
+- Focused integration suite: **5/5 passed**.
+- Full suite: **326 passed, 1 skipped**. Coverage: **95.57% statements,
+  90.36% branches, 98.04% functions, 98.34% lines**. Build, lint, and
+  `git diff --check` passed sequentially.
+- Determinism: integration tests use `MemoryStorage`; generated IDs are stubbed where
+  IDs become observable; the dashboard clock is fixed to `2026-08-10`.
+- Q3 has no browser-refresh assertion because jsdom cannot validate an actual browser
+  refresh. No skipped or disabled tests were introduced.
+
 ## Q2 verification — complete
 
 - [x] Q2.1–Q2.3 are complete as a test-only milestone. Existing focused suites
