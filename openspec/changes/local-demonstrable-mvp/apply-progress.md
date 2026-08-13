@@ -493,3 +493,27 @@ Remaining invoice branches are internally guarded, not reachable from the public
   The production/tests subset is **105 changed lines**; the remaining 30 additions are
   this apply-progress evidence. M4.2 is complete only with this corrective commit;
   **M4.3 is next and remains unstarted**.
+
+## M4.3 restore-demo-data prerequisite — complete
+
+- [x] 4.3.0: The dashboard now exposes a client-accessible `Restore demo data`
+  action backed solely by `RepositoryProvider.restore()`. It uses the shared
+  `ConfirmDialog`, publishes the provider revision after successful restore, and
+  shows generic visible success or retryable error feedback without exposing storage
+  implementation details or secrets.
+- [ ] 4.3.1–4.3.2: `docs/demo-script.md` remains pending for the next agent step.
+
+### M4.3 prerequisite TDD cycle evidence
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 4.3.0 | `src/app/RestoreDemoData.test.tsx` | Component | Dashboard suite 6/6 passed | Missing `RestoreDemoData` module; suite failed to collect | 3/3 restore scenarios passed | Confirmed seed restore/refresh, cancel preservation, and failure/retry use distinct real provider/gateway paths | Kept the control small and dashboard-local; reused `ConfirmDialog` and provider revision rather than adding storage access |
+
+### M4.3 prerequisite verification
+
+- Focused restore/layout/dashboard suite: **14/14 passed**.
+- Full suite: **320 passed, 1 skipped**.
+- Coverage: **95.57% statements, 90.36% branches, 98.04% functions, 98.34% lines**.
+- `npm run build`, `npm run lint`, and `git diff --check` passed sequentially.
+- The guided walkthrough document remains intentionally uncreated and M4.3 remains
+  incomplete until tasks 4.3.1–4.3.2 are applied.

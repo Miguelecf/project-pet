@@ -90,7 +90,12 @@ h1 { max-width: 720px; margin: 12px 0 20px; font-size: clamp(2.45rem, 6vw, 4.5re
 .capability-list h3 { margin: 0 0 4px; font-size: 1rem; }
 .capability-list p { margin: 0; color: var(--text-secondary); font-size: 0.94rem; line-height: 1.5; }
 .status { padding: 5px 9px; border: 1px solid color-mix(in srgb, var(--amber) 27%, transparent); border-radius: 999px; background: var(--amber-surface); color: var(--amber); font-size: 0.75rem; font-weight: 700; }
-.app-footer { padding: 24px 0 32px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.875rem; }
+.app-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0 32px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.875rem; }
+.app-footer p { margin: 0; }
+.restore-demo-data { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.restore-demo-data button { padding: 9px 14px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--surface-elevated); color: var(--text-primary); font: inherit; font-weight: 700; }
+.restore-demo-data [role="status"] { color: var(--mint); }
+.restore-demo-data [role="alert"] { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; color: var(--amber); }
 
 @media (max-width: 767px) {
   .app-shell { width: min(100% - 28px, 1120px); }

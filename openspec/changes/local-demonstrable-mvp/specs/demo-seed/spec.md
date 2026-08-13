@@ -59,6 +59,10 @@ Seed data MUST exercise all demo paths: a `pending` invoice (no payments), a `pa
 ### Requirement: Restore/Reset Action
 
 The system SHALL provide a user-accessible restore action (button or menu item) that resets all data to `SEED_DATA`. A confirmation dialog MUST precede the reset.
+The action MUST invoke `RepositoryProvider.restore()`, publish a revision so active
+repository consumers refresh, and expose visible success or retryable error feedback.
+It MUST describe only local demo data and MUST NOT disclose credentials, storage keys,
+or other implementation secrets.
 
 #### Scenario: Restore resets all data
 
@@ -71,6 +75,14 @@ The system SHALL provide a user-accessible restore action (button or menu item) 
 - GIVEN the user clicks the restore button
 - WHEN the confirmation dialog appears
 - THEN the user MUST click "Confirm" to proceed or "Cancel" to abort
+
+#### Scenario: Restore feedback is accessible and retryable
+
+- GIVEN a user confirms the restore action
+- WHEN the provider restore succeeds
+- THEN a visible success status confirms that demo data was restored and consumers refresh
+- WHEN the provider restore fails
+- THEN an accessible error and retry action are visible without exposing internal details
 
 #### Scenario: Cancel restore preserves data
 

@@ -2,8 +2,9 @@
 
 ## Technical Approach
 
-Preserve completed M0–M4.1. M4.2 adds pure fixed-clock aggregation and a
-provider-backed dashboard; only `LocalStateGateway` accesses storage.
+Preserve completed M0–M4.2. Before M4.3 documentation can describe the full demo
+lifecycle, add a small provider-backed restore control to the dashboard; only
+`LocalStateGateway` accesses storage.
 
 ```text
 BrowserRouter → page → hook → RepositoryProvider → repository → LocalStateGateway
@@ -37,6 +38,16 @@ Save → repository validates draft/current envelope → calculate/derive → ga
 Failure → reject typed error → preserve stored envelope/revision → accessible retry/error UI
 ```
 
+### Restore Demo Data Interaction
+
+`RestoreDemoData` lives in the existing dashboard shell because the walkthrough
+starts and ends there. It calls only `RepositoryProvider.restore()` through
+`useRepositories`, opens the shared `ConfirmDialog` before mutation, and renders a
+local-only confirmation message. A successful restore uses the provider revision to
+refresh dashboard consumers and announces success. A failure preserves existing data,
+shows a generic accessible error, and permits retry without exposing storage or
+credential details.
+
 ## File Plan
 
 ### Existing files to modify
@@ -44,7 +55,8 @@ Failure → reject typed error → preserve stored envelope/revision → accessi
 | File | Planned change |
 |---|---|
 | `src/App.tsx`, `src/app/AppRouter.tsx`, tests, `src/index.css` | Replace the root placeholder with the full accessible `DashboardPage` at `/`. |
-| SDD/TODO/plan artifacts | Record M4.2 scope and progress without changing M4.1 or later status. |
+| `src/modules/dashboard/DashboardPage.tsx`, `src/index.css` | Add the client-accessible restore control to the existing dashboard shell. |
+| SDD/TODO/plan artifacts | Record the M4.3 restore prerequisite while keeping the walkthrough itself pending. |
 
 `src/types/domain.ts`, `src/types/domain.test.ts`, and `src/lib/supabase/` are existing read-only boundaries.
 
@@ -56,10 +68,14 @@ Failure → reject typed error → preserve stored envelope/revision → accessi
 | `src/modules/dashboard/dashboardAggregates.test.ts` | Deterministic unit acceptance coverage. |
 | `src/modules/dashboard/DashboardPage.tsx` | Repository consumer and semantic dashboard UI. |
 | `src/modules/dashboard/DashboardPage.test.tsx` | Provider, routing, state, refresh, and accessibility coverage. |
+| `src/app/RestoreDemoData.tsx` | Confirmed provider restore action with visible success/error feedback. |
+| `src/app/RestoreDemoData.test.tsx` | Semantic restore, cancellation, refresh, error, retry, and dialog coverage. |
 
 ## Testing, Delivery, and Rollback
 
-M4.2 uses strict RED→GREEN→REFACTOR: pure table-driven tests cover boundaries,
+The restore prerequisite uses strict RED→GREEN→REFACTOR: semantic component tests
+cover named control/dialog, cancellation preservation, successful seed restoration
+with revision refresh, and generic failure/retry feedback. M4.2 uses strict RED→GREEN→REFACTOR: pure table-driven tests cover boundaries,
 formula reconciliation, exclusions, allocation remainders, ties, and empty data;
 provider-backed component tests cover loading/error/retry, revision refresh, route,
 filter, disclosure, links, and semantics. Run focused/full/coverage/build/lint/diff

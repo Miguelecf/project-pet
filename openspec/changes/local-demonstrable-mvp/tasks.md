@@ -307,8 +307,9 @@ M0.3a, M0.3b, M1.1, M1.2, M2.1, M2.2, M2.3, G2-LOCAL, M3.1, M3.2, M3.3, and M3.4
 
 **Commit**: `docs(demo): guided walkthrough script — M4.3`
 **Specs**: `demo-seed` (demo walkthrough document)
-**Gate**: No code. Verify `docs/demo-script.md` covers full lifecycle with no code blocks. Update `docs/terminal-todo.md`.
-**TDD note**: RED/GREEN not applicable — documentation-only milestone, no production code.
+**Gate**: First deliver the restore-demo-data prerequisite, then verify `docs/demo-script.md` covers full lifecycle with no code blocks. Update `docs/terminal-todo.md`.
+
+- [x] 4.3.0 RED/GREEN/REFACTOR: Add a semantic `Restore demo data` dashboard control using `ConfirmDialog` and `RepositoryProvider.restore()`; cancel preserves data, confirmation restores the deterministic seed and refreshes by provider revision, and generic success/error/retry feedback is accessible without exposing implementation secrets.
 
 - [ ] 4.3.1 Create `docs/demo-script.md` — step-by-step walkthrough: open app → seeded dashboard → catalogs → create invoice → partial payment → complete payment → void payment → daily income → verify dashboard → restore.
 - [ ] 4.3.2 Verify document contains no code blocks or implementation details.

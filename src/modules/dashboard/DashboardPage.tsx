@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRepositories } from '../../app/useRepositories'
+import { RestoreDemoData } from '../../app/RestoreDemoData'
 import type { Clock } from '../../utils/dates'
 import { DueAlerts } from './DueAlerts'
 import { aggregateDashboard, type DashboardPeriod } from './dashboardAggregates'
@@ -17,6 +18,6 @@ export function DashboardPage({ clock }: { readonly clock: Clock }) {
     <section><h2>Current week income</h2><ul aria-label="Current week income">{state.weeklyIncome.map((day) => <li key={day.date}>{day.date}: {day.amountMinor}</li>)}</ul></section>
     <section><h2>Latest invoices</h2>{state.latestInvoices.length ? <ul aria-label="Latest invoices">{state.latestInvoices.map(({ invoice, status, outstandingMinor }) => <li key={invoice.id}><Link to={`/invoices/${invoice.id}`}>{invoice.docRef ?? 'Invoice'}</Link> — {invoice.issueDate} — {status} — {invoice.totalMinor} — Outstanding {outstandingMinor}</li>)}</ul> : <p>No invoices yet</p>}</section>
     <section><h2>Paid-expense categories</h2>{state.categoryBreakdown.length ? <ul aria-label="Paid-expense categories">{state.categoryBreakdown.map((category) => <li key={category.categoryId}>{category.name}: {category.amountMinor}</li>)}</ul> : <p>No paid-expense categories for this period</p>}</section>
-    {state.latestInvoices.length === 0 && <p>Load seed data to explore the dashboard.</p>}<DueAlerts clock={clock} />
+    {state.latestInvoices.length === 0 && <p>Load seed data to explore the dashboard.</p>}<DueAlerts clock={clock} /><RestoreDemoData />
   </div>
 }
