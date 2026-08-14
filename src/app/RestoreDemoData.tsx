@@ -22,23 +22,23 @@ export function RestoreDemoData() {
   }
 
   return (
-    <section aria-label="Demo data controls" className="restore-demo-data">
-      <button onClick={() => setConfirming(true)} type="button">Restore demo data</button>
-      {success && <p role="status">Demo data restored.</p>}
+    <section aria-label="Controles de datos de ejemplo" className="restore-demo-data">
+      <button onClick={() => setConfirming(true)} type="button">Restaurar datos de ejemplo</button>
+      {success && <p role="status">Datos de ejemplo restaurados.</p>}
       {error && (
         <div role="alert">
-          <p>Could not restore demo data.</p>
-          <button onClick={() => void handleRestore()} type="button">Retry restore demo data</button>
+          <p>No pudimos restaurar los datos de ejemplo.</p>
+          <button onClick={() => void handleRestore()} type="button">Reintentar</button>
         </div>
       )}
       <ConfirmDialog
-        cancelLabel="Cancel"
-        confirmLabel="Restore demo data"
-        message="This replaces all local demo data with the original seed data."
+        cancelLabel="Cancelar"
+        confirmLabel="Restaurar"
+        message="Esto reemplaza todos los datos locales de ejemplo por los datos originales."
         onCancel={() => setConfirming(false)}
         onConfirm={() => void handleRestore()}
         open={confirming}
-        title="Restore demo data?"
+        title="¿Restaurar datos de ejemplo?"
       />
     </section>
   )

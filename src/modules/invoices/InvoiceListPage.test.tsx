@@ -25,9 +25,9 @@ describe('InvoiceListPage', () => {
     renderList()
 
     expect((await screen.findByRole('link', { name: 'INV-100' })).getAttribute('href')).toBe('/invoices/pending')
-    expect((await screen.findByLabelText('Status: Pending')).textContent).toBe('Pending')
-    expect((await screen.findByLabelText('Status: Partially paid')).textContent).toBe('Partially paid')
-    expect((await screen.findByLabelText('Status: Paid')).textContent).toBe('Paid')
+    expect((await screen.findByLabelText('Estado: Pendiente')).textContent).toBe('Pendiente')
+    expect((await screen.findByLabelText('Estado: Pago parcial')).textContent).toBe('Pago parcial')
+    expect((await screen.findByLabelText('Estado: Pagada')).textContent).toBe('Pagada')
   })
 
   it('uses client navigation for invoice links and offers New Invoice from an empty list', async () => {
@@ -36,9 +36,9 @@ describe('InvoiceListPage', () => {
     expect(screen.getByText('/invoices/pending').textContent).toBe('/invoices/pending')
 
     rerender(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => [] }, payments: { findByInvoice: async () => [] } } as never}><InvoiceListPage /><Location /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByRole('button', { name: 'New Invoice' })).textContent).toBe('New Invoice')
-    expect(screen.getByText('No invoices yet.').textContent).toBe('No invoices yet.')
-    fireEvent.click(screen.getByRole('button', { name: 'New Invoice' }))
+    expect((await screen.findByRole('button', { name: 'Crear factura' })).textContent).toBe('Crear factura')
+    expect(screen.getByText('Todavía no hay facturas.').textContent).toBe('Todavía no hay facturas.')
+    fireEvent.click(screen.getByRole('button', { name: 'Crear factura' }))
     expect(screen.getByText('/invoices/new').textContent).toBe('/invoices/new')
   })
 
@@ -52,12 +52,12 @@ describe('InvoiceListPage', () => {
     } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
     expect(await screen.findByRole('link', { name: 'INV-100' })).not.toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
     expect(await screen.findByRole('link', { name: 'INV-DELETED' })).not.toBeNull()
     expect(screen.queryByRole('link', { name: 'INV-100' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Restore INV-DELETED' }))
-    expect(screen.getByRole('dialog').textContent).toContain('Restore invoice?')
-    fireEvent.click(screen.getByRole('button', { name: 'Restore invoice' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar INV-DELETED' }))
+    expect(screen.getByRole('dialog').textContent).toContain('¿Restaurar factura?')
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
     await waitFor(() => expect(restore).toHaveBeenCalledWith('deleted'))
     expect(await screen.findByRole('link', { name: 'INV-100' })).not.toBeNull()
   })
@@ -69,9 +69,9 @@ describe('InvoiceListPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll, findDeleted }, payments: { findByInvoice } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
     expect((await screen.findByRole('alert')).textContent).toContain('Payment lookup unavailable')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
     await waitFor(() => expect(screen.getByRole('link', { name: 'INV-100' })).toBeTruthy())
-    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
     expect((await screen.findByRole('alert')).textContent).toContain('Deleted invoices unavailable')
   })
 
@@ -82,9 +82,9 @@ describe('InvoiceListPage', () => {
       payments: { findByInvoice: async () => [] },
     } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restore INV-DELETED' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Restore invoice' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar INV-DELETED' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
     expect((await screen.findByRole('alert')).textContent).toContain('Restore unavailable')
     expect(screen.queryByRole('link', { name: 'INV-100' })).toBeNull()
   })
@@ -97,12 +97,12 @@ describe('InvoiceListPage', () => {
       payments: { findByInvoice: async () => { throw 'offline' } },
     } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not load invoice payments')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
-    await screen.findByRole('link', { name: 'Invoice anonymous' })
-    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restore Invoice deleted' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos cargar los pagos de las facturas')
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    await screen.findByRole('link', { name: 'Factura anonymous' })
+    fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar Factura deleted' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
@@ -113,9 +113,9 @@ describe('InvoiceListPage', () => {
       payments: { findByInvoice: async () => [] },
     } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
-    expect(await screen.findByText('No deleted invoices.')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Show active invoices' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
+    expect(await screen.findByText('No hay facturas eliminadas.')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Ver facturas activas' }))
     expect(await screen.findByRole('link', { name: 'INV-100' })).toBeTruthy()
     expect(findDeleted).toHaveBeenCalledTimes(1)
   })
@@ -126,7 +126,7 @@ describe('InvoiceListPage', () => {
     const paymentLoad = new Promise<readonly unknown[]>((resolve) => { resolvePayments = resolve })
     const deletedLoad = new Promise<readonly unknown[]>((resolve) => { resolveDeleted = resolve })
     const { unmount } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => invoices, findDeleted: () => deletedLoad }, payments: { findByInvoice: () => paymentLoad } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
     unmount()
     await Promise.resolve()
     await Promise.resolve()
@@ -139,22 +139,22 @@ describe('InvoiceListPage', () => {
     const paymentLoad = new Promise<readonly unknown[]>((_, reject) => { rejectPayments = reject })
     const deletedLoad = new Promise<readonly unknown[]>((_, reject) => { rejectDeleted = reject })
     const { unmount } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => invoices, findDeleted: () => deletedLoad }, payments: { findByInvoice: () => paymentLoad } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
     unmount()
     await act(async () => { rejectPayments(new Error('offline')); rejectDeleted(new Error('offline')) })
   })
 
   it('uses safe non-Error fallbacks for deleted queries and restore failures', async () => {
     render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => invoices, findDeleted: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [] } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not load deleted invoices')
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos cargar las facturas eliminadas')
     cleanup()
 
     const deleted = [{ id: 'deleted', docRef: 'INV-DELETED', totalMinor: 1000, status: 'pending', deletedAt: '2026-08-10T00:00:00.000Z' }] as never
     render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => invoices, findDeleted: async () => deleted, restore: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [] } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Show deleted invoices' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restore INV-DELETED' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Restore invoice' }))
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not restore invoice')
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar INV-DELETED' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos restaurar la factura')
   })
 })

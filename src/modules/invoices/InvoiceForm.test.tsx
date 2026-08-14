@@ -24,14 +24,14 @@ function formRepositories(create = vi.fn()) {
 }
 
 async function fillValidLine() {
-  fireEvent.click(await screen.findByRole('button', { name: 'Add line' }))
-  fireEvent.change(await screen.findByLabelText('Supplier'), { target: { value: 'supplier-1' } })
-  fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-10' } })
-  fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'category-1' } })
-  fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: 'BOLT' } })
-  fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Steel bolt' } })
-  fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '2' } })
-  fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '150' } })
+  fireEvent.click(await screen.findByRole('button', { name: 'Agregar línea' }))
+  fireEvent.change(await screen.findByLabelText('Proveedor'), { target: { value: 'supplier-1' } })
+  fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-10' } })
+  fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: 'category-1' } })
+  fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: 'BOLT' } })
+  fireEvent.change(screen.getByLabelText('Descripción'), { target: { value: 'Steel bolt' } })
+  fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '2' } })
+  fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '150' } })
 }
 
 describe('InvoiceForm', () => {
@@ -41,37 +41,37 @@ describe('InvoiceForm', () => {
     const create = vi.fn(async () => existing)
     renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create }, payments: { findByInvoice: async () => [] } })
     await fillValidLine()
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({ supplierId: 'supplier-1', currency: 'USD', lines: [expect.objectContaining({ categoryId: 'category-1', productRef: 'BOLT', externalSku: null, quantity: 2, unitCostMinor: 150 })] })))
   })
 
   it('rejects no lines and invalid quantity, future issue date, and negative cost accessibly', async () => {
     renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create: vi.fn() }, payments: { findByInvoice: async () => [] } })
-    await screen.findByLabelText('Supplier')
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    await screen.findByLabelText('Proveedor')
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getByRole('alert').textContent).toBe('Invoice requires at least one line')
     await fillValidLine()
-    fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '0' } })
-    fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-11' } })
-    fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '-100' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '0' } })
+    fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-11' } })
+    fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '-100' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getByText('Date must not be in the future').textContent).toBe('Date must not be in the future')
-    fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-10' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-10' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Quantity must be a positive finite number')
-    fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1.2345' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1.2345' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Quantity must have at most three decimal places')
-    fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Money minor amount must be a non-negative safe integer')
   })
 
   it.each([
-    ['supplier', async () => fireEvent.change(screen.getByLabelText('Supplier'), { target: { value: '' } }), 'Value must not be empty'],
-    ['category', async () => fireEvent.change(screen.getByLabelText('Category'), { target: { value: '' } }), 'Value must not be empty'],
-    ['product reference', async () => fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: '' } }), 'Value must not be empty'],
+    ['supplier', async () => fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: '' } }), 'Value must not be empty'],
+    ['category', async () => fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: '' } }), 'Value must not be empty'],
+    ['product reference', async () => fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: '' } }), 'Value must not be empty'],
   ])('shows a visible error and does not create when the %s ID/value is missing', async (_field, clearField, message) => {
     const create = vi.fn()
     const update = vi.fn()
@@ -79,7 +79,7 @@ describe('InvoiceForm', () => {
     await fillValidLine()
     await clearField()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     expect(screen.getByRole('alert').textContent).toBe(message)
     expect(create).not.toHaveBeenCalled()
@@ -90,15 +90,15 @@ describe('InvoiceForm', () => {
     const update = vi.fn(async () => existing)
     const repositories = { suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], update }, payments: { findByInvoice: async () => [] } }
     const { rerender } = renderForm(repositories, existing)
-    await screen.findByLabelText('Supplier')
-    fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-09-01' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    await screen.findByLabelText('Proveedor')
+    fireEvent.change(screen.getByLabelText('Fecha de vencimiento'), { target: { value: '2026-09-01' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(update).toHaveBeenCalledWith('invoice-1', expect.objectContaining({ dueDate: '2026-09-01' })))
 
     rerender(<MemoryRouter><RepositoryProvider repositories={{ ...repositories, payments: { findByInvoice: async () => [{ isVoid: false }] } } as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} invoice={existing} /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByRole('alert')).textContent).toBe('Void all payments before editing')
-    expect((screen.getByRole('button', { name: 'Save invoice' }) as HTMLButtonElement).disabled).toBe(true)
-    expect((screen.getByLabelText('Product reference') as HTMLInputElement).disabled).toBe(true)
+    expect((await screen.findByRole('alert')).textContent).toBe('Anulá todos los pagos antes de editar')
+    expect((screen.getByRole('button', { name: 'Guardar' }) as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByLabelText('Referencia del producto') as HTMLInputElement).disabled).toBe(true)
   })
 
   it('reports catalog-load and active-payment lookup failures without saving', async () => {
@@ -116,15 +116,15 @@ describe('InvoiceForm', () => {
     const create = vi.fn(async () => existing)
     const { rerender } = render(<MemoryRouter><RepositoryProvider repositories={formRepositories(create) as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} /></RepositoryProvider></MemoryRouter>)
     await fillValidLine()
-    fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-09-01' } })
-    fireEvent.change(screen.getByLabelText('Document reference'), { target: { value: ' INV-9 ' } })
-    fireEvent.change(screen.getByLabelText('Notes'), { target: { value: ' note ' } })
-    fireEvent.change(screen.getByLabelText('External SKU'), { target: { value: ' SKU-9 ' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.change(screen.getByLabelText('Fecha de vencimiento'), { target: { value: '2026-09-01' } })
+    fireEvent.change(screen.getByLabelText('Referencia del documento'), { target: { value: ' INV-9 ' } })
+    fireEvent.change(screen.getByLabelText('Notas'), { target: { value: ' note ' } })
+    fireEvent.change(screen.getByLabelText('SKU externo'), { target: { value: ' SKU-9 ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({ docRef: 'INV-9', dueDate: '2026-09-01', notes: 'note', lines: [expect.objectContaining({ externalSku: 'SKU-9' })] })))
 
     rerender(<MemoryRouter initialEntries={['/invoices/new']}><RepositoryProvider repositories={formRepositories() as never}><InvoiceForm clock={{ today: () => '2026-08-10' as never }} /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
   })
 
   it('uses the default clock deterministically when no clock is supplied', async () => {
@@ -133,15 +133,15 @@ describe('InvoiceForm', () => {
     try {
       render(<MemoryRouter><RepositoryProvider repositories={formRepositories() as never}><InvoiceForm /></RepositoryProvider></MemoryRouter>)
       await vi.runAllTimersAsync()
-      fireEvent.click(screen.getByRole('button', { name: 'Add line' }))
-      fireEvent.change(screen.getByLabelText('Supplier'), { target: { value: 'supplier-1' } })
-      fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'category-1' } })
-      fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: 'BOLT' } })
-      fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Steel bolt' } })
-      fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '2' } })
-      fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '150' } })
-      fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-11' } })
-      fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Agregar línea' }))
+      fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'supplier-1' } })
+      fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: 'category-1' } })
+      fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: 'BOLT' } })
+      fireEvent.change(screen.getByLabelText('Descripción'), { target: { value: 'Steel bolt' } })
+      fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '2' } })
+      fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '150' } })
+      fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-11' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
       expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Date must not be in the future')
     } finally {
       vi.useRealTimers()
@@ -172,16 +172,16 @@ describe('InvoiceForm', () => {
 
   it('uses safe fallbacks for non-Error catalog, payment-check, and save failures', async () => {
     renderForm({ suppliers: { findAll: async () => { throw 'offline' } }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [] }, payments: { findByInvoice: async () => [] } })
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not load invoice form')
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos cargar el formulario de factura')
     cleanup()
 
     renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create: async () => { throw 'offline' } }, payments: { findByInvoice: async () => { throw 'offline' } } }, existing)
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not check invoice payments')
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos verificar los pagos de la factura')
     cleanup()
 
     renderForm({ ...formRepositories(vi.fn(async () => { throw 'offline' })) })
     await fillValidLine()
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not save invoice')
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos guardar la factura')
   })
 })

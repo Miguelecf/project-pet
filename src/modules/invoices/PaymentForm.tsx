@@ -34,14 +34,14 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
     try {
       const amountMinor = validatePositiveMoney(amount)
       const remainingMinor = balance?.remainingMinor
-      if (remainingMinor === null || remainingMinor === undefined) throw new Error('Payment balance is unavailable')
-      if (amountMinor > remainingMinor) throw new RangeError(`Payment exceeds remaining balance (${remainingMinor})`)
+      if (remainingMinor === null || remainingMinor === undefined) throw new Error('El saldo para el pago no está disponible')
+      if (amountMinor > remainingMinor) throw new RangeError(`El pago supera el saldo pendiente (${remainingMinor})`)
       await register({ invoiceId, amountMinor: amountMinor as never, paymentDate: validateISODate(paymentDate, clock, { kind: 'payment' }), method, reference: null, notes: null })
       setAmount('')
       setError(null)
       onChanged?.()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not register payment')
+      setError(reason instanceof Error ? reason.message : 'No pudimos registrar el pago')
     }
   }
 
@@ -51,7 +51,7 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
       setError(null)
       setVoiding({ id, reason })
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message.replace('Value must not be empty', 'Void reason is required') : 'Void reason is required')
+      setError(reason instanceof Error ? reason.message.replace('Value must not be empty', 'El motivo de anulación es obligatorio') : 'El motivo de anulación es obligatorio')
     }
   }
 
@@ -64,25 +64,25 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
       onChanged?.()
     } catch (reason) {
       setVoiding(null)
-      setError(reason instanceof Error ? reason.message : 'Could not void payment')
+      setError(reason instanceof Error ? reason.message : 'No pudimos anular el pago')
     }
   }
 
-  if (loading) return <p role="status">Loading payments.</p>
+  if (loading) return <p role="status">Cargando pagos.</p>
 
   return <section aria-labelledby="payment-form-title">
-    <h2 id="payment-form-title">Register payment</h2>
+    <h2 id="payment-form-title">Registrar pago</h2>
     {(error ?? loadError) && <p role="alert">{error ?? loadError}</p>}
-    {loadError && <button onClick={() => void refresh()} type="button">Retry payment load</button>}
-    {balance && <p aria-live="polite">Remaining balance: {balance.remainingMinor} — Status: {balance.status.replaceAll('_', ' ')}</p>}
-    <label>Payment amount (minor units)<input aria-label="Payment amount (minor units)" onChange={(event) => setAmount(event.target.value)} value={amount} /></label>
-    <label>Payment date<input aria-label="Payment date" onChange={(event) => setPaymentDate(event.target.value)} type="date" value={paymentDate} /></label>
-    <label>Payment method<select aria-label="Payment method" onChange={(event) => setMethod(event.target.value as PaymentMethod)} value={method}><option value="cash">Cash</option><option value="bank_transfer">Bank transfer</option><option value="debit_card">Debit card</option><option value="credit_card">Credit card</option><option value="digital_wallet">Digital wallet</option></select></label>
-    <button disabled={!balance || balance.remainingMinor === 0} onClick={() => void submit()} type="button">Register payment</button>
+    {loadError && <button onClick={() => void refresh()} type="button">Reintentar</button>}
+    {balance && <p aria-live="polite">Saldo pendiente: {balance.remainingMinor} — Estado: {balance.status === 'partially_paid' ? 'Pago parcial' : balance.status === 'paid' ? 'Pagada' : 'Pendiente'}</p>}
+    <label>Monto del pago (unidades mínimas)<input aria-label="Monto del pago (unidades mínimas)" onChange={(event) => setAmount(event.target.value)} value={amount} /></label>
+    <label>Fecha de pago<input aria-label="Fecha de pago" onChange={(event) => setPaymentDate(event.target.value)} type="date" value={paymentDate} /></label>
+    <label>Método de pago<select aria-label="Método de pago" onChange={(event) => setMethod(event.target.value as PaymentMethod)} value={method}><option value="cash">Efectivo</option><option value="bank_transfer">Transferencia bancaria</option><option value="debit_card">Tarjeta de débito</option><option value="credit_card">Tarjeta de crédito</option><option value="digital_wallet">Billetera virtual</option></select></label>
+    <button disabled={!balance || balance.remainingMinor === 0} onClick={() => void submit()} type="button">Registrar pago</button>
     {payments.filter((payment) => !payment.isVoid).map((payment) => <div key={payment.id}>
-      <label>Void reason for {payment.id}<input aria-label={`Void reason for ${payment.id}`} onChange={(event) => setReasons((current) => ({ ...current, [payment.id]: event.target.value }))} value={reasons[payment.id] ?? ''} /></label>
-      <button aria-label={`Void payment ${payment.id}`} onClick={() => requestVoid(payment.id)} type="button">Void payment</button>
+      <label>Motivo de anulación para {payment.id}<input aria-label={`Motivo de anulación para ${payment.id}`} onChange={(event) => setReasons((current) => ({ ...current, [payment.id]: event.target.value }))} value={reasons[payment.id] ?? ''} /></label>
+      <button aria-label={`Anular pago ${payment.id}`} onClick={() => requestVoid(payment.id)} type="button">Anular pago</button>
     </div>)}
-    <ConfirmDialog cancelLabel="Cancel" confirmLabel="Void payment" message={voiding ? `Void this payment? Reason: ${voiding.reason}` : ''} onCancel={() => setVoiding(null)} onConfirm={() => void confirmVoid()} open={voiding !== null} title="Void payment" />
+    <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Anular pago" message={voiding ? `¿Anular este pago? Motivo: ${voiding.reason}` : ''} onCancel={() => setVoiding(null)} onConfirm={() => void confirmVoid()} open={voiding !== null} title="Anular pago" />
   </section>
 }

@@ -24,7 +24,7 @@ function validationError(line: InvoiceLineDraft): string | null {
     lineTotalMinor(Number(line.quantity), Number(line.unitCostMinor))
     return null
   } catch (reason) {
-    return reason instanceof Error ? reason.message : 'Invalid line values'
+    return reason instanceof Error ? reason.message : 'Los valores de la línea no son válidos'
   }
 }
 
@@ -35,25 +35,25 @@ export function InvoiceLineEditor({ categories, lines, onChange, disabled = fals
 
   return (
     <fieldset>
-      <legend>Invoice lines</legend>
+      <legend>Líneas de factura</legend>
       {lines.map((line, index) => {
         const error = validationError(line)
         const total = error === null ? lineTotalMinor(Number(line.quantity), Number(line.unitCostMinor)) : null
         return (
-          <fieldset aria-label={`Invoice line ${index + 1}`} key={index}>
-            <legend>Line {index + 1}</legend>
-            <label>Category<select aria-label="Category" disabled={disabled} onChange={(event) => changeLine(index, 'categoryId', event.target.value)} value={line.categoryId}><option value="">Select category</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
-            <label>Product reference<input aria-label="Product reference" disabled={disabled} onChange={(event) => changeLine(index, 'productRef', event.target.value)} value={line.productRef} /></label>
-            <label>External SKU<input aria-label="External SKU" disabled={disabled} onChange={(event) => changeLine(index, 'externalSku', event.target.value)} value={line.externalSku} /></label>
-            <label>Description<input aria-label="Description" disabled={disabled} onChange={(event) => changeLine(index, 'description', event.target.value)} value={line.description} /></label>
-            <label>Quantity<input aria-label="Quantity" disabled={disabled} inputMode="decimal" onChange={(event) => changeLine(index, 'quantity', event.target.value)} value={line.quantity} /></label>
-            <label>Unit cost (minor units)<input aria-label="Unit cost (minor units)" disabled={disabled} inputMode="numeric" onChange={(event) => changeLine(index, 'unitCostMinor', event.target.value)} value={line.unitCostMinor} /></label>
-            {error ? <p role="alert">{error}</p> : <p>Line total: {total}</p>}
-            {lines.length > 1 && <button disabled={disabled} onClick={() => onChange(lines.filter((_, current) => current !== index))} type="button">Remove line</button>}
+          <fieldset aria-label={`Línea de factura ${index + 1}`} key={index}>
+            <legend>Línea {index + 1}</legend>
+            <label>Categoría<select aria-label="Categoría" disabled={disabled} onChange={(event) => changeLine(index, 'categoryId', event.target.value)} value={line.categoryId}><option value="">Seleccioná una categoría</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
+            <label>Referencia del producto<input aria-label="Referencia del producto" disabled={disabled} onChange={(event) => changeLine(index, 'productRef', event.target.value)} value={line.productRef} /></label>
+            <label>SKU externo<input aria-label="SKU externo" disabled={disabled} onChange={(event) => changeLine(index, 'externalSku', event.target.value)} value={line.externalSku} /></label>
+            <label>Descripción<input aria-label="Descripción" disabled={disabled} onChange={(event) => changeLine(index, 'description', event.target.value)} value={line.description} /></label>
+            <label>Cantidad<input aria-label="Cantidad" disabled={disabled} inputMode="decimal" onChange={(event) => changeLine(index, 'quantity', event.target.value)} value={line.quantity} /></label>
+            <label>Costo unitario (unidades mínimas)<input aria-label="Costo unitario (unidades mínimas)" disabled={disabled} inputMode="numeric" onChange={(event) => changeLine(index, 'unitCostMinor', event.target.value)} value={line.unitCostMinor} /></label>
+            {error ? <p role="alert">{error}</p> : <p>Total de la línea: {total}</p>}
+            {lines.length > 1 && <button disabled={disabled} onClick={() => onChange(lines.filter((_, current) => current !== index))} type="button">Quitar línea</button>}
           </fieldset>
         )
       })}
-      <button disabled={disabled} onClick={() => onChange([...lines, emptyLine])} type="button">Add line</button>
+      <button disabled={disabled} onClick={() => onChange([...lines, emptyLine])} type="button">Agregar línea</button>
     </fieldset>
   )
 }

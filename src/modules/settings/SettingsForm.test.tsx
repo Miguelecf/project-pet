@@ -19,10 +19,10 @@ describe('SettingsForm', () => {
     const onSave = vi.fn(async () => undefined)
     render(<SettingsForm onSave={onSave} settings={settings} />)
 
-    fireEvent.change(screen.getByLabelText('Due alert days'), { target: { value: '-1' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    fireEvent.change(screen.getByLabelText('Días de aviso de vencimiento'), { target: { value: '-1' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    expect((await screen.findByRole('alert')).textContent).toBe('Due alert days must be a non-negative whole number')
+    expect((await screen.findByRole('alert')).textContent).toBe('Los días de aviso de vencimiento deben ser un número entero igual o mayor a cero')
     expect(onSave).not.toHaveBeenCalled()
   })
 
@@ -30,8 +30,8 @@ describe('SettingsForm', () => {
     const onSave = vi.fn(async () => { throw new Error('Cannot change currency: 3 invoice(s) exist with USD and 2 daily income(s) exist with USD') })
     render(<SettingsForm onSave={onSave} settings={settings} />)
 
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'ARS' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Cannot change currency: 3 invoice(s) exist with USD and 2 daily income(s) exist with USD'))
     expect(onSave).toHaveBeenCalledWith({ currency: 'ARS', dueAlertDays: 7 })
@@ -41,10 +41,10 @@ describe('SettingsForm', () => {
     const onSave = vi.fn(async () => undefined)
     const { rerender } = render(<SettingsForm onSave={onSave} settings={settings} />)
 
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
-    fireEvent.change(screen.getByLabelText('Due alert days'), { target: { value: '10' } })
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'ARS' } })
+    fireEvent.change(screen.getByLabelText('Días de aviso de vencimiento'), { target: { value: '10' } })
     rerender(<SettingsForm onSave={onSave} settings={{ ...settings }} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ currency: 'ARS', dueAlertDays: 10 }))
   })
@@ -53,9 +53,9 @@ describe('SettingsForm', () => {
     const onSave = vi.fn(async () => { throw 'offline' })
     render(<SettingsForm onSave={onSave} settings={settings} />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save settings'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('No pudimos guardar la configuración'))
     expect(onSave).toHaveBeenCalledWith({ currency: 'USD', dueAlertDays: 7 })
   })
 })

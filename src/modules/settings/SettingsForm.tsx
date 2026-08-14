@@ -15,28 +15,28 @@ export function SettingsForm({ onSave, settings }: SettingsFormProps) {
   async function save() {
     const parsedDueAlertDays = Number(dueAlertDays)
     if (!Number.isInteger(parsedDueAlertDays) || parsedDueAlertDays < 0) {
-      setError('Due alert days must be a non-negative whole number')
+      setError('Los días de aviso de vencimiento deben ser un número entero igual o mayor a cero')
       return
     }
     setError(null)
     try {
       await onSave({ currency, dueAlertDays: parsedDueAlertDays as never })
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not save settings')
+      setError(reason instanceof Error ? reason.message : 'No pudimos guardar la configuración')
     }
   }
 
   return (
     <form onSubmit={(event) => { event.preventDefault(); void save() }}>
       {error && <p role="alert">{error}</p>}
-      <label htmlFor="settings-currency">Currency</label>
+      <label htmlFor="settings-currency">Moneda</label>
       <select id="settings-currency" name="currency" onChange={(event) => setCurrency(event.target.value as Currency)} value={currency}>
         <option value="USD">USD</option>
         <option value="ARS">ARS</option>
       </select>
-      <label htmlFor="settings-due-alert-days">Due alert days</label>
+      <label htmlFor="settings-due-alert-days">Días de aviso de vencimiento</label>
       <input id="settings-due-alert-days" name="due-alert-days" onChange={(event) => setDueAlertDays(event.target.value)} type="number" value={dueAlertDays} />
-      <button type="submit">Save settings</button>
+      <button type="submit">Guardar</button>
     </form>
   )
 }

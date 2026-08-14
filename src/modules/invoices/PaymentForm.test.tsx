@@ -18,9 +18,9 @@ function renderForm({ remainingMinor = 1000, payments = [], register = vi.fn(asy
 }
 
 function submit(amount: string, date = '2026-08-10') {
-  fireEvent.change(screen.getByLabelText('Payment amount (minor units)'), { target: { value: amount } })
-  fireEvent.change(screen.getByLabelText('Payment date'), { target: { value: date } })
-  fireEvent.click(screen.getByRole('button', { name: 'Register payment' }))
+  fireEvent.change(screen.getByLabelText('Monto del pago (unidades mínimas)'), { target: { value: amount } })
+  fireEvent.change(screen.getByLabelText('Fecha de pago'), { target: { value: date } })
+  fireEvent.click(screen.getByRole('button', { name: 'Registrar pago' }))
 }
 
 describe('PaymentForm', () => {
@@ -28,26 +28,26 @@ describe('PaymentForm', () => {
 
   it('registers partial and exact payments with accessible derived balance feedback', async () => {
     const partial = renderForm({ remainingMinor: 1000 })
-    await screen.findByText(/Remaining balance: 1000/)
+    await screen.findByText(/Saldo pendiente: 1000/)
     submit('400')
     await waitFor(() => expect(partial.register).toHaveBeenCalledWith(expect.objectContaining({ amountMinor: 400, paymentDate: '2026-08-10', method: 'cash' })))
 
     cleanup()
     const exact = renderForm({ remainingMinor: 1000 })
-    await screen.findByText(/Remaining balance: 1000/)
+    await screen.findByText(/Saldo pendiente: 1000/)
     submit('1000')
     await waitFor(() => expect(exact.register).toHaveBeenCalledWith(expect.objectContaining({ amountMinor: 1000 })))
   })
 
   it('rejects zero, future dates, and overpayments against the current remaining balance', async () => {
     const { register } = renderForm({ remainingMinor: 200 })
-    await screen.findByText(/Remaining balance: 200/)
+    await screen.findByText(/Saldo pendiente: 200/)
     submit('0')
     expect(screen.getByRole('alert').textContent).toBe('Payment amount must be a positive safe integer')
     submit('100', '2026-08-11')
     expect(screen.getByRole('alert').textContent).toBe('Date must not be in the future')
     submit('300')
-    expect(screen.getByRole('alert').textContent).toBe('Payment exceeds remaining balance (200)')
+    expect(screen.getByRole('alert').textContent).toBe('El pago supera el saldo pendiente (200)')
     expect(register).not.toHaveBeenCalled()
   })
 
@@ -59,26 +59,26 @@ describe('PaymentForm', () => {
     </RepositoryProvider>)
 
     expect((await screen.findByRole('alert')).textContent).toBe('Payment storage unavailable')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry payment load' }))
-    expect(await screen.findByText('Remaining balance: 1000 — Status: pending')).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Retry payment load' })).toBeNull()
-    expect(screen.getByLabelText('Payment amount (minor units)')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Register payment' }).hasAttribute('disabled')).toBe(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    expect(await screen.findByText('Saldo pendiente: 1000 — Estado: Pendiente')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Reintentar' })).toBeNull()
+    expect(screen.getByLabelText('Monto del pago (unidades mínimas)')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Registrar pago' }).hasAttribute('disabled')).toBe(false)
   })
 
   it('requires a reason and confirmation to void, preserves on cancellation, and refreshes the restored balance', async () => {
     const voidPayment = vi.fn(async () => ({}))
     renderForm({ remainingMinor: 600, payments: [{ id: 'payment-1', amountMinor: 400, method: 'cash', isVoid: false }] as never, voidPayment })
-    await screen.findByRole('button', { name: 'Void payment payment-1' })
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment payment-1' }))
-    expect(screen.getByRole('alert').textContent).toBe('Void reason is required')
-    fireEvent.change(screen.getByLabelText('Void reason for payment-1'), { target: { value: 'Duplicate entry' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment payment-1' }))
+    await screen.findByRole('button', { name: 'Anular pago payment-1' })
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago payment-1' }))
+    expect(screen.getByRole('alert').textContent).toBe('El motivo de anulación es obligatorio')
+    fireEvent.change(screen.getByLabelText('Motivo de anulación para payment-1'), { target: { value: 'Duplicate entry' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago payment-1' }))
     expect(screen.getByRole('dialog').textContent).toContain('Duplicate entry')
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
     expect(voidPayment).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment payment-1' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago payment-1' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago' }))
     await waitFor(() => expect(voidPayment).toHaveBeenCalledWith('payment-1', 'Duplicate entry'))
   })
 
@@ -86,39 +86,39 @@ describe('PaymentForm', () => {
     const register = vi.fn(async () => { throw new Error('Payment persistence unavailable') })
     const voidPayment = vi.fn(async () => { throw new Error('Void persistence unavailable') })
     renderForm({ remainingMinor: 1000, payments: [{ id: 'payment-1', amountMinor: 400, method: 'cash', isVoid: false }] as never, register, voidPayment })
-    await screen.findByText(/Remaining balance: 1000/)
+    await screen.findByText(/Saldo pendiente: 1000/)
     submit('400')
     expect((await screen.findByRole('alert')).textContent).toBe('Payment persistence unavailable')
-    expect((screen.getByLabelText('Payment amount (minor units)') as HTMLInputElement).value).toBe('400')
-    fireEvent.change(screen.getByLabelText('Void reason for payment-1'), { target: { value: 'Duplicate entry' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment payment-1' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment' }))
+    expect((screen.getByLabelText('Monto del pago (unidades mínimas)') as HTMLInputElement).value).toBe('400')
+    fireEvent.change(screen.getByLabelText('Motivo de anulación para payment-1'), { target: { value: 'Duplicate entry' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago payment-1' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago' }))
     expect((await screen.findByRole('alert')).textContent).toBe('Void persistence unavailable')
   })
 
   it('submits the selected payment method and disables registration when no balance remains', async () => {
     const register = vi.fn(async () => ({}))
     const { rerender } = renderForm({ remainingMinor: 1000, register })
-    await screen.findByText(/Remaining balance: 1000/)
-    fireEvent.change(screen.getByLabelText('Payment method'), { target: { value: 'bank_transfer' } })
+    await screen.findByText(/Saldo pendiente: 1000/)
+    fireEvent.change(screen.getByLabelText('Método de pago'), { target: { value: 'bank_transfer' } })
     submit('100')
     await waitFor(() => expect(register).toHaveBeenCalledWith(expect.objectContaining({ method: 'bank_transfer' })))
 
     rerender(<RepositoryProvider repositories={{ payments: { findByInvoice: async () => [], getBalance: async () => ({ remainingMinor: 0, status: 'paid' }), register } } as never}><PaymentForm clock={{ today: () => '2026-08-10' as never }} invoiceId={invoiceId} /></RepositoryProvider>)
-    expect((await screen.findByRole('button', { name: 'Register payment' }) as HTMLButtonElement).disabled).toBe(true)
+    expect((await screen.findByRole('button', { name: 'Registrar pago' }) as HTMLButtonElement).disabled).toBe(true)
   })
 
   it('uses safe messages when payment mutations reject with non-Error values', async () => {
     const register = vi.fn(async () => { throw 'offline' })
     const voidPayment = vi.fn(async () => { throw 'offline' })
     renderForm({ remainingMinor: 1000, payments: [{ id: 'payment-1', amountMinor: 400, method: 'cash', isVoid: false }] as never, register, voidPayment })
-    await screen.findByText(/Remaining balance: 1000/)
+    await screen.findByText(/Saldo pendiente: 1000/)
     submit('400')
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not register payment')
-    fireEvent.change(screen.getByLabelText('Void reason for payment-1'), { target: { value: 'Duplicate entry' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment payment-1' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment' }))
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not void payment')
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos registrar el pago')
+    fireEvent.change(screen.getByLabelText('Motivo de anulación para payment-1'), { target: { value: 'Duplicate entry' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago payment-1' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos anular el pago')
   })
 
   it('uses the default clock deterministically for payment dates', async () => {
@@ -127,7 +127,7 @@ describe('PaymentForm', () => {
     try {
       render(<RepositoryProvider repositories={{ payments: { findByInvoice: async () => [], getBalance: async () => ({ remainingMinor: 1000, status: 'pending' }), register: vi.fn() } } as never}><PaymentForm invoiceId={invoiceId} /></RepositoryProvider>)
       await act(async () => { await Promise.resolve(); await Promise.resolve() })
-      expect(screen.getByText(/Remaining balance: 1000/)).toBeTruthy()
+      expect(screen.getByText(/Saldo pendiente: 1000/)).toBeTruthy()
       submit('100', '2026-08-11')
       expect(screen.getByRole('alert').textContent).toBe('Date must not be in the future')
     } finally {

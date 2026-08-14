@@ -21,8 +21,8 @@ describe('persistence recovery integration', () => {
 
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /></RepositoryProvider></MemoryRouter>)
 
-    expect(await screen.findByText('Load seed data to explore the dashboard.')).not.toBeNull()
-    expect(screen.getByText('Period income: 0')).not.toBeNull()
+    expect(await screen.findByText('Cuando cargues una factura, vas a verla acá junto con lo que falta pagar.')).not.toBeNull()
+    expect(screen.getByText('Entró a caja: 0')).not.toBeNull()
     expect(gateway.recovery).toBe('needs_seed')
   })
 

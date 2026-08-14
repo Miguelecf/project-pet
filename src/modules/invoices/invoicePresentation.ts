@@ -7,5 +7,5 @@ export function derivedInvoiceStatus(totalMinor: number, payments: readonly Paym
 }
 
 export function statusLabel(status: InvoiceStatus): string {
-  return status === 'partially_paid' ? 'Partially paid' : status[0].toUpperCase() + status.slice(1)
+  return status === 'partially_paid' ? 'Pago parcial' : status === 'paid' ? 'Pagada' : 'Pendiente'
 }

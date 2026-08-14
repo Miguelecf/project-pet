@@ -14,10 +14,10 @@ describe('StateOverlay', () => {
       </StateOverlay>,
     )
 
-    expect(screen.getByRole('status').textContent).toContain('Loading')
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeDefined()
+    expect(screen.getByRole('status').textContent).toContain('Cargando')
+    expect(screen.getByRole('progressbar', { name: 'Cargando' })).toBeDefined()
     expect(screen.getByRole('button', { name: 'Edit supplier' }).parentElement?.hasAttribute('inert')).toBe(true)
-    expect(screen.queryByRole('button', { name: 'Dismiss' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Cerrar' })).toBeNull()
   })
 
   it('retries or dismisses an error through visible actions', () => {
@@ -31,8 +31,8 @@ describe('StateOverlay', () => {
     )
 
     expect(screen.getByRole('alert').textContent).toContain('Could not load suppliers')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }))
 
     expect(onRetry).toHaveBeenCalledOnce()
     expect(onDismiss).toHaveBeenCalledOnce()

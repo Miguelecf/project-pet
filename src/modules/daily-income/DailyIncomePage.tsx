@@ -18,28 +18,28 @@ export function DailyIncomePage() {
       setDeleting(null)
     } catch (reason) {
       setDeleting(null)
-      setMutationError(reason instanceof Error ? reason.message : 'Could not delete daily income')
+      setMutationError(reason instanceof Error ? reason.message : 'No pudimos eliminar el ingreso diario')
     }
   }
 
-  if (loading) return <StateOverlay state="loading"><section aria-label="Daily income list" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Lista de ingresos diarios" /></StateOverlay>
   const error = mutationError ?? loadError
-  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Daily income list" /></StateOverlay>
-  if (incomes.length === 0) return <StateOverlay emptyActionLabel="Create daily income" emptyMessage="No daily incomes yet." onEmptyAction={() => navigate('/daily-income/new')} state="empty"><section aria-label="Daily income list" /></StateOverlay>
+  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Lista de ingresos diarios" /></StateOverlay>
+  if (incomes.length === 0) return <StateOverlay emptyActionLabel="Crear ingreso diario" emptyMessage="Todavía no hay ingresos diarios." onEmptyAction={() => navigate('/daily-income/new')} state="empty"><section aria-label="Lista de ingresos diarios" /></StateOverlay>
 
   return <section aria-labelledby="daily-income-title">
-    <p className="eyebrow">Operations</p>
-    <h1 id="daily-income-title">Daily income</h1>
-    <Link className="primary-action" to="/daily-income/new">New daily income</Link>
-    <ul aria-label="Daily incomes">
+    <p className="eyebrow">Operación</p>
+    <h1 id="daily-income-title">Ingresos diarios</h1>
+    <Link className="primary-action" to="/daily-income/new">Crear ingreso diario</Link>
+    <ul aria-label="Ingresos diarios">
       {incomes.map((income) => <li key={income.id}>
-        <span>{income.saleDate} — {income.amountMinor} {income.currency} — {income.note ?? 'No note'}</span>
+        <span>{income.saleDate} — {income.amountMinor} {income.currency} — {income.note ?? 'Sin nota'}</span>
         <div>
-          <Link aria-label={`Edit income ${income.saleDate}`} to={`/daily-income/${income.id}/edit`}>Edit</Link>
-          <button aria-label={`Delete income ${income.saleDate}`} onClick={() => setDeleting(income)} type="button">Delete</button>
+          <Link aria-label={`Editar ingreso del ${income.saleDate}`} to={`/daily-income/${income.id}/edit`}>Editar</Link>
+          <button aria-label={`Eliminar ingreso del ${income.saleDate}`} onClick={() => setDeleting(income)} type="button">Eliminar</button>
         </div>
       </li>)}
     </ul>
-    <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete" message={`Delete income for ${deleting?.saleDate ?? 'this date'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Delete daily income" />
+    <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message={`¿Eliminar el ingreso del ${deleting?.saleDate ?? 'día seleccionado'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Eliminar ingreso diario" />
   </section>
 }

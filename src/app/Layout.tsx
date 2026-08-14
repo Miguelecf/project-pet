@@ -50,7 +50,7 @@ export function Layout({ children }: LayoutProps) {
         onClick={focusMainContent}
         onKeyDown={handleSkipLinkKeyDown}
       >
-        Skip to main content
+        Ir al contenido principal
       </a>
       <header className="app-header">
         <div className="brand-lockup">
@@ -58,13 +58,13 @@ export function Layout({ children }: LayoutProps) {
             PP
           </span>
           <div>
-            <p className="eyebrow">Pet-shop financial operations</p>
+            <p className="eyebrow">Operación financiera de pet shop</p>
             <p className="brand-name">Project Pet</p>
           </div>
         </div>
         <p className="demo-badge" role="status">
           <span aria-hidden="true" />
-          Local MVP · Demo mode
+          MVP local · Modo demo
         </p>
       </header>
       <div className="app-body">
@@ -74,7 +74,7 @@ export function Layout({ children }: LayoutProps) {
         </main>
       </div>
       <footer className="app-footer">
-        <p>Local-only MVP. No account, cloud sync, or client data is connected.</p>
+        <p>MVP solo local. No hay cuenta, sincronización en la nube ni datos de clientes conectados.</p>
       </footer>
     </div>
   )

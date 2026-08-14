@@ -8,6 +8,14 @@ import type { InvoiceWithLines } from './InvoiceRepository'
 import { useRepositories } from '../../app/useRepositories'
 import { PaymentForm } from './PaymentForm'
 
+const paymentMethodLabels = {
+  cash: 'Efectivo',
+  bank_transfer: 'Transferencia bancaria',
+  debit_card: 'Tarjeta de débito',
+  credit_card: 'Tarjeta de crédito',
+  digital_wallet: 'Billetera virtual',
+} as const
+
 interface InvoiceDetailPageProps { readonly invoiceId: string }
 
 export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
@@ -34,47 +42,47 @@ export function InvoiceDetailPage({ invoiceId }: InvoiceDetailPageProps) {
         setSuppliers(nextSuppliers)
         setCategories(nextCategories)
       })
-      .catch((reason) => { if (active) { setDetail(null); setError(reason instanceof Error ? reason.message : 'Could not load invoice') } })
+      .catch((reason) => { if (active) { setDetail(null); setError(reason instanceof Error ? reason.message : 'No pudimos cargar la factura') } })
     return () => { active = false }
   }, [attempt, invoiceId, repositories, revision])
 
-  if (detail === undefined) return <StateOverlay state="loading"><section aria-label="Invoice detail" /></StateOverlay>
-  if (error) return <StateOverlay error={error} onRetry={() => setAttempt((current) => current + 1)} state="error"><section aria-label="Invoice detail" /></StateOverlay>
-  if (!detail) return <section><h1>Invoice not found.</h1><Link to="/invoices">Back to invoices</Link></section>
+  if (detail === undefined) return <StateOverlay state="loading"><section aria-label="Detalle de factura" /></StateOverlay>
+  if (error) return <StateOverlay error={error} onRetry={() => setAttempt((current) => current + 1)} state="error"><section aria-label="Detalle de factura" /></StateOverlay>
+  if (!detail) return <section><h1>No encontramos la factura.</h1><Link to="/invoices">Volver a facturas</Link></section>
 
   const { invoice, lines } = detail
   const status = derivedInvoiceStatus(invoice.totalMinor, payments)
   const paidMinor = payments.filter((payment) => !payment.isVoid).reduce((total, payment) => total + (payment.amountMinor as number), 0)
   const activePayments = payments.some((payment) => !payment.isVoid)
-  const supplierName = suppliers.find((supplier) => supplier.id === invoice.supplierId)?.name ?? 'Unknown supplier'
+  const supplierName = suppliers.find((supplier) => supplier.id === invoice.supplierId)?.name ?? 'Proveedor desconocido'
 
   async function deleteInvoice() {
     setDeleteOpen(false)
     setDeleteError(null)
     if (activePayments) {
-      setDeleteError('Cannot delete: void all payments first')
+      setDeleteError('No podés eliminarla: primero anulá todos los pagos')
       return
     }
     try {
       await repositories.invoices.softDelete(invoice.id)
       navigate('/invoices')
     } catch (reason) {
-      setDeleteError(reason instanceof Error ? reason.message : 'Could not delete invoice')
+      setDeleteError(reason instanceof Error ? reason.message : 'No pudimos eliminar la factura')
     }
   }
 
   return <section aria-labelledby="invoice-detail-title" className="invoice-detail-page">
-    <p className="eyebrow">Invoices</p>
-    <h1 id="invoice-detail-title">{invoice.docRef ?? `Invoice ${invoice.id}`}</h1>
-    <p>Supplier: {supplierName}</p><p>Issue date: {invoice.issueDate}</p>{invoice.dueDate && <p>Due date: {invoice.dueDate}</p>}
-    <p aria-label={`Status: ${statusLabel(status)}`}>{statusLabel(status)}</p>
-    {!activePayments && <Link to={`/invoices/${invoice.id}/edit`}>Edit invoice</Link>}
+    <p className="eyebrow">Facturas</p>
+    <h1 id="invoice-detail-title">{invoice.docRef ?? `Factura ${invoice.id}`}</h1>
+    <p>Proveedor: {supplierName}</p><p>Fecha de emisión: {invoice.issueDate}</p>{invoice.dueDate && <p>Fecha de vencimiento: {invoice.dueDate}</p>}
+    <p aria-label={`Estado: ${statusLabel(status)}`}>{statusLabel(status)}</p>
+    {!activePayments && <Link to={`/invoices/${invoice.id}/edit`}>Editar factura</Link>}
     {deleteError && <p role="alert">{deleteError}</p>}
-    <button onClick={() => setDeleteOpen(true)} type="button">Delete invoice</button>
-    <h2>Lines</h2><ul aria-label="Invoice lines">{lines.map((line) => <li key={line.id}><strong>{line.description}</strong><span>Category: {categories.find((category) => category.id === line.categoryId)?.name ?? 'Unknown category'}</span><span>Product: {line.productRef}</span><span>Quantity: {line.quantity}</span><span>Line total: {line.lineTotalMinor}</span></li>)}</ul>
-    <h2>Payments</h2>{payments.length === 0 ? <p>No payments recorded.</p> : <ul aria-label="Payment history">{payments.map((payment) => <li key={payment.id}>{payment.method.replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())}: {payment.amountMinor}{payment.isVoid ? ' (voided)' : ''}</li>)}</ul>}
-    <p>Total: {invoice.totalMinor}</p><p>Paid: {paidMinor}</p><p>Balance: {invoice.totalMinor - paidMinor}</p>
+    <button onClick={() => setDeleteOpen(true)} type="button">Eliminar factura</button>
+    <h2>Líneas</h2><ul aria-label="Líneas de factura">{lines.map((line) => <li key={line.id}><strong>{line.description}</strong><span>Categoría: {categories.find((category) => category.id === line.categoryId)?.name ?? 'Categoría desconocida'}</span><span>Producto: {line.productRef}</span><span>Cantidad: {line.quantity}</span><span>Total de la línea: {line.lineTotalMinor}</span></li>)}</ul>
+    <h2>Pagos</h2>{payments.length === 0 ? <p>No hay pagos registrados.</p> : <ul aria-label="Historial de pagos">{payments.map((payment) => <li key={payment.id}>{paymentMethodLabels[payment.method]}: {payment.amountMinor}{payment.isVoid ? ' (anulado)' : ''}</li>)}</ul>}
+    <p>Total: {invoice.totalMinor}</p><p>Pagado: {paidMinor}</p><p>Saldo: {invoice.totalMinor - paidMinor}</p>
     <PaymentForm invoiceId={invoice.id} onChanged={() => setAttempt((current) => current + 1)} />
-    <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete invoice" message="This invoice will be retained and can be restored later." onCancel={() => setDeleteOpen(false)} onConfirm={() => void deleteInvoice()} open={deleteOpen} title="Delete invoice?" />
+    <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message="Esta factura se conservará y podrás restaurarla más adelante." onCancel={() => setDeleteOpen(false)} onConfirm={() => void deleteInvoice()} open={deleteOpen} title="¿Eliminar factura?" />
   </section>
 }

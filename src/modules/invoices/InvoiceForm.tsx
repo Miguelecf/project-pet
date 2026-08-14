@@ -54,14 +54,14 @@ export function InvoiceForm({ invoice: invoiceWithLines, clock = systemClock() }
         setCategories(nextCategories)
         setCurrency(settings.currency)
       })
-      .catch((reason) => { if (active) setError(reason instanceof Error ? reason.message : 'Could not load invoice form') })
+      .catch((reason) => { if (active) setError(reason instanceof Error ? reason.message : 'No pudimos cargar el formulario de factura') })
     if (invoice) {
       void repositories.payments.findByInvoice(invoice.id).then((payments) => {
         if (active && payments.some((payment) => !payment.isVoid)) {
           setBlocked(true)
-          setError('Void all payments before editing')
+          setError('Anulá todos los pagos antes de editar')
         }
-      }).catch((reason) => { if (active) setError(reason instanceof Error ? reason.message : 'Could not check invoice payments') })
+      }).catch((reason) => { if (active) setError(reason instanceof Error ? reason.message : 'No pudimos verificar los pagos de la factura') })
     }
     return () => { active = false }
   }, [invoice, repositories])
@@ -90,24 +90,24 @@ export function InvoiceForm({ invoice: invoiceWithLines, clock = systemClock() }
       else await create(input)
       navigate('/invoices')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not save invoice')
+      setError(reason instanceof Error ? reason.message : 'No pudimos guardar la factura')
     }
   }
 
   return (
     <section aria-labelledby="invoice-form-title" className="invoice-form">
-      <p className="eyebrow">Invoices</p>
-      <h1 id="invoice-form-title">{invoice ? 'Edit invoice' : 'Create invoice'}</h1>
+      <p className="eyebrow">Facturas</p>
+      <h1 id="invoice-form-title">{invoice ? 'Editar factura' : 'Crear factura'}</h1>
       {error && <p role="alert">{error}</p>}
-      <label>Supplier<select aria-label="Supplier" disabled={blocked} onChange={(event) => setSupplierId(event.target.value)} value={supplierId}><option value="">Select supplier</option>{suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select></label>
-      <label>Issue date<input aria-label="Issue date" disabled={blocked} onChange={(event) => setIssueDate(event.target.value)} type="date" value={issueDate} /></label>
-      <label>Due date<input aria-label="Due date" disabled={blocked} onChange={(event) => setDueDate(event.target.value)} type="date" value={dueDate} /></label>
-      <label>Document reference<input aria-label="Document reference" disabled={blocked} onChange={(event) => setDocRef(event.target.value)} value={docRef} /></label>
-      <label>Notes<textarea aria-label="Notes" disabled={blocked} onChange={(event) => setNotes(event.target.value)} value={notes} /></label>
+      <label>Proveedor<select aria-label="Proveedor" disabled={blocked} onChange={(event) => setSupplierId(event.target.value)} value={supplierId}><option value="">Seleccioná un proveedor</option>{suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select></label>
+      <label>Fecha de emisión<input aria-label="Fecha de emisión" disabled={blocked} onChange={(event) => setIssueDate(event.target.value)} type="date" value={issueDate} /></label>
+      <label>Fecha de vencimiento<input aria-label="Fecha de vencimiento" disabled={blocked} onChange={(event) => setDueDate(event.target.value)} type="date" value={dueDate} /></label>
+      <label>Referencia del documento<input aria-label="Referencia del documento" disabled={blocked} onChange={(event) => setDocRef(event.target.value)} value={docRef} /></label>
+      <label>Notas<textarea aria-label="Notas" disabled={blocked} onChange={(event) => setNotes(event.target.value)} value={notes} /></label>
       <InvoiceLineEditor categories={categories} disabled={blocked} lines={lines} onChange={setLines} />
       <div className="invoice-form__actions">
-        <button disabled={blocked} onClick={() => void save()} type="button">Save invoice</button>
-        <button onClick={() => navigate('/invoices')} type="button">Cancel</button>
+        <button disabled={blocked} onClick={() => void save()} type="button">Guardar</button>
+        <button onClick={() => navigate('/invoices')} type="button">Cancelar</button>
       </div>
     </section>
   )

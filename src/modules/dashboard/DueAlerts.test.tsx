@@ -38,11 +38,11 @@ describe('DueAlerts', () => {
     ])
 
     expect(await screen.findByRole('link', { name: /INV-OVERDUE/ })).not.toBeNull()
-    expect(screen.getByLabelText('Overdue')).not.toBeNull()
-    expect(screen.getAllByLabelText('Due soon')).toHaveLength(2)
-    expect(screen.getAllByText('Due soon')).toHaveLength(2)
-    expect(screen.getByText('Due date: 2026-08-17')).not.toBeNull()
-    expect(screen.getByText('Outstanding balance: 3000')).not.toBeNull()
+    expect(screen.getByLabelText('Vencida')).not.toBeNull()
+    expect(screen.getAllByLabelText('Vence pronto')).toHaveLength(2)
+    expect(screen.getAllByText('Vence pronto')).toHaveLength(2)
+    expect(screen.getByText('Vence el 2026-08-17')).not.toBeNull()
+    expect(screen.getByText('Falta pagar 3000')).not.toBeNull()
   })
 
   it('excludes paid, deleted, undated, and later invoices and announces a clear no-alert state', async () => {
@@ -53,7 +53,7 @@ describe('DueAlerts', () => {
       { id: 'later', docRef: 'INV-LATER', dueDate: '2026-08-18', totalMinor: 1000, deletedAt: null },
     ], 7, { paid: [{ amountMinor: 1000, isVoid: false }] })
 
-    expect(await screen.findByText('No upcoming or overdue invoices')).not.toBeNull()
+    expect(await screen.findByText('No tenés facturas vencidas ni próximas a vencer.')).not.toBeNull()
     expect(screen.queryByRole('list')).toBeNull()
     expect(screen.queryByText('INV-PAID')).toBeNull()
     expect(screen.queryByText('INV-DELETED')).toBeNull()
@@ -67,7 +67,7 @@ describe('DueAlerts', () => {
     const alertLink = await screen.findByRole('link', { name: /INV-SOON/ })
     expect(alertLink.getAttribute('href')).toBe('/invoices/soon')
     expect(screen.getByRole('list').querySelectorAll('li')).toHaveLength(1)
-    expect(screen.getByLabelText('Due soon')).not.toBeNull()
+    expect(screen.getByLabelText('Vence pronto')).not.toBeNull()
     fireEvent.click(alertLink)
     expect(screen.getByLabelText('location').textContent).toBe('/invoices/soon')
   })

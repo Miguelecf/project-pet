@@ -21,8 +21,8 @@ describe('SupplierForm', () => {
   it('creates a trimmed supplier and navigates back to the list', async () => {
     const create = vi.fn(async () => alpha)
     renderForm({ create }, undefined)
-    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: '  Alpha  ' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+    fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: '  Alpha  ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(create).toHaveBeenCalledWith({ name: 'Alpha', defaultDueDays: null }))
   })
@@ -30,11 +30,11 @@ describe('SupplierForm', () => {
   it('rejects empty names and surfaces duplicate repository errors', async () => {
     const create = vi.fn(async () => { throw new Error('duplicate supplier name') })
     renderForm({ create }, undefined)
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
-    expect(screen.getByRole('alert').textContent).toBe('Supplier name is required')
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    expect(screen.getByRole('alert').textContent).toBe('El nombre del proveedor es obligatorio')
 
-    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: 'Alpha' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+    fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate supplier name'))
   })
 
@@ -42,13 +42,13 @@ describe('SupplierForm', () => {
     const update = vi.fn(async () => ({ ...alpha, name: 'Gamma' }))
     const softDelete = vi.fn(async () => undefined)
     renderForm({ update, softDelete }, alpha)
-    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: 'Gamma' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+    fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: 'Gamma' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(update).toHaveBeenCalledWith('alpha', { name: 'Gamma', defaultDueDays: null }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar proveedor' }))
     expect(softDelete).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
     await waitFor(() => expect(softDelete).toHaveBeenCalledWith('alpha'))
   })
 
@@ -58,11 +58,11 @@ describe('SupplierForm', () => {
     const [editable, existing] = gateway.read().suppliers
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierForm supplier={editable} /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
+    fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate supplier name'))
-    expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe(`  ${existing.name.toLowerCase()}  `)
+    expect((screen.getByLabelText('Nombre del proveedor') as HTMLInputElement).value).toBe(`  ${existing.name.toLowerCase()}  `)
     expect(gateway.read().suppliers.map((supplier) => ({ id: supplier.id, name: supplier.name, normalizedName: supplier.normalizedName, deletedAt: supplier.deletedAt }))).toEqual([
       { id: editable.id, name: editable.name, normalizedName: editable.normalizedName, deletedAt: null },
       { id: existing.id, name: existing.name, normalizedName: existing.normalizedName, deletedAt: null },
@@ -75,8 +75,8 @@ describe('SupplierForm', () => {
     const [editable] = gateway.read().suppliers
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierForm supplier={editable} /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar proveedor' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
 
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     expect(gateway.read().suppliers.find((supplier) => supplier.id === editable.id)?.deletedAt).toBeNull()
@@ -85,17 +85,17 @@ describe('SupplierForm', () => {
   it('uses fallback errors for non-Error save and delete failures', async () => {
     const create = vi.fn(async () => { throw 'offline' })
     renderForm({ create })
-    fireEvent.change(screen.getByLabelText('Supplier name'), { target: { value: 'Alpha' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save supplier' }))
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save supplier'))
+    fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('No pudimos guardar el proveedor'))
     cleanup()
 
     const softDelete = vi.fn(async () => { throw 'offline' })
     renderForm({ softDelete }, alpha)
-    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar proveedor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not delete supplier'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('No pudimos eliminar el proveedor'))
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
@@ -103,8 +103,8 @@ describe('SupplierForm', () => {
     const softDelete = vi.fn(async () => { throw new Error('Storage unavailable') })
     renderForm({ softDelete }, alpha)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete supplier' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar proveedor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Storage unavailable'))
     expect(softDelete).toHaveBeenCalledWith('alpha')

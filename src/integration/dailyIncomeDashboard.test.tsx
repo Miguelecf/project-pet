@@ -10,6 +10,7 @@ import { MemoryStorage } from '../infrastructure/local/LocalRepositoryTestFixtur
 import { DashboardPage } from '../modules/dashboard/DashboardPage'
 
 const clock = { today: () => '2026-08-10' as never }
+const incomeValue = () => screen.getByText('Entró a caja').parentElement?.querySelector('dd')?.textContent
 
 function IncomeMutations() {
   const { repositories } = useRepositories()
@@ -31,15 +32,16 @@ describe('daily income dashboard integration', () => {
     await gateway.loadSeed()
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><IncomeMutations /></RepositoryProvider></MemoryRouter>)
 
-    await screen.findByText('Period income: 55000')
-    screen.getByRole('button', { name: 'Day' }).click()
-    await screen.findByText('Period income: 0')
+    await screen.findByText('Lo importante ahora')
+    expect(incomeValue()).toBe('55000')
+    screen.getByRole('button', { name: 'Día' }).click()
+    await waitFor(() => expect(incomeValue()).toBe('0'))
     screen.getByRole('button', { name: 'Create dashboard income' }).click()
-    await waitFor(() => expect(screen.getByText('Period income: 25000')).not.toBeNull())
+    await waitFor(() => expect(incomeValue()).toBe('25000'))
     screen.getByRole('button', { name: 'Edit dashboard income' }).click()
-    await waitFor(() => expect(screen.getByText('Period income: 30000')).not.toBeNull())
+    await waitFor(() => expect(incomeValue()).toBe('30000'))
     screen.getByRole('button', { name: 'Delete dashboard income' }).click()
-    await waitFor(() => expect(screen.getByText('Period income: 0')).not.toBeNull())
+    await waitFor(() => expect(incomeValue()).toBe('0'))
     expect(gateway.read().dailyIncomes.some((income) => income.id === 'income-dashboard-q3')).toBe(false)
   })
 })

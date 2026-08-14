@@ -40,24 +40,24 @@ export function DailyIncomeForm({ clock = systemClock(), income }: DailyIncomeFo
       else await create(input)
       navigate('/daily-income')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not save daily income')
+      setError(reason instanceof Error ? reason.message : 'No pudimos guardar el ingreso diario')
     }
   }
 
   return <section aria-labelledby="daily-income-form-title">
-    <p className="eyebrow">Operations</p>
-    <h1 id="daily-income-form-title">{income ? 'Edit daily income' : 'Create daily income'}</h1>
-    {settings && <p>Currency snapshot: {income?.currency ?? settings.currency}</p>}
+    <p className="eyebrow">Operación</p>
+    <h1 id="daily-income-form-title">{income ? 'Editar ingreso diario' : 'Crear ingreso diario'}</h1>
+    {settings && <p>Moneda registrada: {income?.currency ?? settings.currency}</p>}
     {error && <p role="alert">{error}</p>}
-    <label htmlFor="sale-date">Sale date</label>
+    <label htmlFor="sale-date">Fecha de venta</label>
     <input id="sale-date" name="sale-date" onChange={(event) => setSaleDate(event.target.value)} type="date" value={saleDate} />
-    <label htmlFor="daily-income-amount">Amount (minor units)</label>
+    <label htmlFor="daily-income-amount">Monto (unidades mínimas)</label>
     <input id="daily-income-amount" inputMode="numeric" name="daily-income-amount" onChange={(event) => setAmount(event.target.value)} value={amount} />
-    <label htmlFor="daily-income-note">Note (optional)</label>
+    <label htmlFor="daily-income-note">Nota (opcional)</label>
     <textarea id="daily-income-note" name="daily-income-note" onChange={(event) => setNote(event.target.value)} value={note} />
     <div>
-      <button onClick={() => void save()} type="button">Save daily income</button>
-      <button onClick={() => navigate('/daily-income')} type="button">Cancel</button>
+      <button onClick={() => void save()} type="button">Guardar</button>
+      <button onClick={() => navigate('/daily-income')} type="button">Cancelar</button>
     </div>
   </section>
 }

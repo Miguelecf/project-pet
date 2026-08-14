@@ -15,12 +15,12 @@ export function CategoryPage() {
     try {
       const references = await isReferenced(category.id)
       if (references > 0) {
-        setMutationError(`Cannot delete: referenced by ${references} invoice line(s)`)
+        setMutationError(`No podés eliminarla porque está usada en ${references} línea(s) de factura`)
         return
       }
       setDeleting(category)
     } catch (reason) {
-      setMutationError(reason instanceof Error ? reason.message : 'Could not check category references')
+      setMutationError(reason instanceof Error ? reason.message : 'No pudimos verificar las referencias de la categoría')
     }
   }
 
@@ -31,32 +31,32 @@ export function CategoryPage() {
       setDeleting(null)
     } catch (reason) {
       setDeleting(null)
-      setMutationError(reason instanceof Error ? reason.message : 'Could not delete category')
+      setMutationError(reason instanceof Error ? reason.message : 'No pudimos eliminar la categoría')
     }
   }
 
-  if (loading) return <StateOverlay state="loading"><section aria-label="Category list" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Lista de categorías" /></StateOverlay>
   const error = mutationError ?? loadError
-  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Category list" /></StateOverlay>
-  if (categories.length === 0) return <StateOverlay emptyActionLabel="New Category" emptyMessage="No categories yet." onEmptyAction={() => navigate('/categories/new')} state="empty"><section aria-label="Category list" /></StateOverlay>
+  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Lista de categorías" /></StateOverlay>
+  if (categories.length === 0) return <StateOverlay emptyActionLabel="Crear categoría" emptyMessage="Todavía no hay categorías." onEmptyAction={() => navigate('/categories/new')} state="empty"><section aria-label="Lista de categorías" /></StateOverlay>
 
   return (
     <section aria-labelledby="categories-title" className="category-page">
-      <p className="eyebrow">Catalog</p>
-      <h1 id="categories-title">Categories</h1>
-      <Link className="primary-action" to="/categories/new">New Category</Link>
-      <ul aria-label="Categories" className="category-list">
+      <p className="eyebrow">Catálogo</p>
+      <h1 id="categories-title">Categorías</h1>
+      <Link className="primary-action" to="/categories/new">Crear categoría</Link>
+      <ul aria-label="Categorías" className="category-list">
         {categories.map((category) => (
           <li key={category.id}>
             <span>{category.name}</span>
             <div>
-              <Link aria-label={`Edit ${category.name}`} to={`/categories/${category.id}/edit`}>Edit</Link>
-              <button aria-label={`Delete ${category.name}`} onClick={() => void requestDelete(category)} type="button">Delete</button>
+              <Link aria-label={`Editar ${category.name}`} to={`/categories/${category.id}/edit`}>Editar</Link>
+              <button aria-label={`Eliminar ${category.name}`} onClick={() => void requestDelete(category)} type="button">Eliminar</button>
             </div>
           </li>
         ))}
       </ul>
-      <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete" message={`Delete ${deleting?.name ?? 'category'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Delete category" />
+      <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message={`¿Eliminar ${deleting?.name ?? 'esta categoría'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Eliminar categoría" />
     </section>
   )
 }

@@ -12,11 +12,11 @@ describe('AppRouter', () => {
   })
 
   it.each([
-    ['/', 'Dashboard'],
-    ['/categories/new', 'Create category'],
-    ['/invoices/example-id', 'Invoice not found.'],
-    ['/daily-income/new', 'Create daily income'],
-    ['/settings', 'Settings'],
+    ['/', 'Así está tu negocio'],
+    ['/categories/new', 'Crear categoría'],
+    ['/invoices/example-id', 'No encontramos la factura.'],
+    ['/daily-income/new', 'Crear ingreso diario'],
+    ['/settings', 'Configuración'],
   ])('renders the expected page for %s', async (path, heading) => {
     window.history.replaceState({}, '', path)
 
@@ -30,7 +30,7 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect((await screen.findByRole('button', { name: 'Create Supplier' })).textContent).toBe('Create Supplier')
+    expect((await screen.findByRole('button', { name: 'Crear proveedor' })).textContent).toBe('Crear proveedor')
   })
 
   it('renders the settings form with accessible current-value controls at /settings', async () => {
@@ -38,17 +38,17 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect((await screen.findByLabelText('Currency') as HTMLSelectElement).value).toBe('USD')
-    expect((screen.getByLabelText('Due alert days') as HTMLInputElement).value).toBe('7')
-    expect(screen.getByRole('button', { name: 'Save settings' }).textContent).toBe('Save settings')
+    expect((await screen.findByLabelText('Moneda') as HTMLSelectElement).value).toBe('USD')
+    expect((screen.getByLabelText('Días de aviso de vencimiento') as HTMLInputElement).value).toBe('7')
+    expect(screen.getByRole('button', { name: 'Guardar' }).textContent).toBe('Guardar')
   })
 
-  it('redirects an unknown route to the dashboard', () => {
+  it('redirects an unknown route to the dashboard', async () => {
     window.history.replaceState({}, '', '/nonexistent')
 
     render(<AppRouter />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' }).textContent).toBe('Dashboard')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Así está tu negocio' })).textContent).toBe('Así está tu negocio')
     expect(window.location.pathname).toBe('/')
   })
 
@@ -58,8 +58,8 @@ describe('AppRouter', () => {
 
     render(<AppRouter />)
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).textContent).toBe('Edit supplier')
-    expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe('Demo Supplier A')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Editar proveedor' })).textContent).toBe('Editar proveedor')
+    expect((screen.getByLabelText('Nombre del proveedor') as HTMLInputElement).value).toBe('Demo Supplier A')
   })
 
   it('navigates from a list edit link to the pre-filled supplier form', async () => {
@@ -67,10 +67,10 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/suppliers')
 
     render(<AppRouter />)
-    fireEvent.click(await screen.findByRole('link', { name: 'Edit Demo Supplier A' }))
+    fireEvent.click(await screen.findByRole('link', { name: 'Editar Demo Supplier A' }))
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Edit supplier' })).textContent).toBe('Edit supplier')
-    expect((screen.getByLabelText('Supplier name') as HTMLInputElement).value).toBe('Demo Supplier A')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Editar proveedor' })).textContent).toBe('Editar proveedor')
+    expect((screen.getByLabelText('Nombre del proveedor') as HTMLInputElement).value).toBe('Demo Supplier A')
   })
 
   it('navigates from a category list edit link to the pre-filled category form', async () => {
@@ -78,10 +78,10 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/categories')
 
     render(<AppRouter />)
-    fireEvent.click(await screen.findByRole('link', { name: 'Edit Demo Category A' }))
+    fireEvent.click(await screen.findByRole('link', { name: 'Editar Demo Category A' }))
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Edit category' })).textContent).toBe('Edit category')
-    expect((screen.getByLabelText('Category name') as HTMLInputElement).value).toBe('Demo Category A')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Editar categoría' })).textContent).toBe('Editar categoría')
+    expect((screen.getByLabelText('Nombre de la categoría') as HTMLInputElement).value).toBe('Demo Category A')
   })
 
   it('navigates from the category list New Category action to the create form', async () => {
@@ -89,9 +89,9 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/categories')
 
     render(<AppRouter />)
-    fireEvent.click(await screen.findByRole('link', { name: 'New Category' }))
+    fireEvent.click(await screen.findByRole('link', { name: 'Crear categoría' }))
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Create category' })).textContent).toBe('Create category')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Crear categoría' })).textContent).toBe('Crear categoría')
     expect(window.location.pathname).toBe('/categories/new')
   })
 
@@ -101,9 +101,9 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/categories')
 
     render(<AppRouter />)
-    fireEvent.click(await screen.findByRole('button', { name: 'New Category' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Crear categoría' }))
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Create category' })).textContent).toBe('Create category')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Crear categoría' })).textContent).toBe('Crear categoría')
     expect(window.location.pathname).toBe('/categories/new')
   })
 
@@ -112,12 +112,12 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/invoices/new')
     const { unmount } = render(<AppRouter />)
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Create invoice' })).textContent).toBe('Create invoice')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Crear factura' })).textContent).toBe('Crear factura')
     unmount()
     window.history.replaceState({}, '', '/invoices/demo-invoice-pending/edit')
     render(<AppRouter />)
-    expect((await screen.findByRole('heading', { level: 1, name: 'Edit invoice' })).textContent).toBe('Edit invoice')
-    expect((screen.getByLabelText('Product reference') as HTMLInputElement).value).toBe('DEMO-PENDING')
+    expect((await screen.findByRole('heading', { level: 1, name: 'Editar factura' })).textContent).toBe('Editar factura')
+    expect((screen.getByLabelText('Referencia del producto') as HTMLInputElement).value).toBe('DEMO-PENDING')
   })
 
   it('routes active invoice list links to a full derived-status detail page', async () => {
@@ -128,8 +128,8 @@ describe('AppRouter', () => {
     fireEvent.click(await screen.findByRole('link', { name: 'DEMO-200' }))
 
     expect((await screen.findByRole('heading', { level: 1, name: 'DEMO-200' })).textContent).toBe('DEMO-200')
-    expect(screen.getByLabelText('Status: Partially paid').textContent).toBe('Partially paid')
-    expect(screen.getByText('Balance: 5000').textContent).toBe('Balance: 5000')
+    expect(screen.getByLabelText('Estado: Pago parcial').textContent).toBe('Pago parcial')
+    expect(screen.getByText('Saldo: 5000').textContent).toBe('Saldo: 5000')
   })
 
   it('persists half-up invoice line totals through the real provider on create and displays them after edit-route refetch', async () => {
@@ -137,15 +137,15 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/invoices/new')
     const { unmount } = render(<AppRouter />)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Add line' }))
-    fireEvent.change(screen.getByLabelText('Supplier'), { target: { value: 'demo-supplier-a' } })
-    fireEvent.change(screen.getByLabelText('Issue date'), { target: { value: '2026-08-10' } })
-    fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'demo-category-1' } })
-    fireEvent.change(screen.getByLabelText('Product reference'), { target: { value: 'CREATE-FRACTION' } })
-    fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Created fractional line' } })
-    fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1.255' } })
-    fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '100' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Agregar línea' }))
+    fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'demo-supplier-a' } })
+    fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-10' } })
+    fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: 'demo-category-1' } })
+    fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: 'CREATE-FRACTION' } })
+    fireEvent.change(screen.getByLabelText('Descripción'), { target: { value: 'Created fractional line' } })
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1.255' } })
+    fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '100' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     const gateway = new LocalStateGateway(window.localStorage)
     await waitFor(() => expect(gateway.read().invoices).toHaveLength(4))
@@ -156,9 +156,9 @@ describe('AppRouter', () => {
     unmount()
     window.history.replaceState({}, '', `/invoices/${created?.id}/edit`)
     render(<AppRouter />)
-    expect((await screen.findByLabelText('Product reference') as HTMLInputElement).value).toBe('CREATE-FRACTION')
-    expect((screen.getByLabelText('Quantity') as HTMLInputElement).value).toBe('1.255')
-    expect(screen.getByText('Line total: 126').textContent).toBe('Line total: 126')
+    expect((await screen.findByLabelText('Referencia del producto') as HTMLInputElement).value).toBe('CREATE-FRACTION')
+    expect((screen.getByLabelText('Cantidad') as HTMLInputElement).value).toBe('1.255')
+    expect(screen.getByText('Total de la línea: 126').textContent).toBe('Total de la línea: 126')
   })
 
   it('persists edited invoice fields and recomputed line totals through the real provider after refetch', async () => {
@@ -166,11 +166,11 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/invoices/demo-invoice-pending/edit')
     const { unmount } = render(<AppRouter />)
 
-    await screen.findByRole('heading', { level: 1, name: 'Edit invoice' })
-    fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-09-01' } })
-    fireEvent.change(screen.getByLabelText('Quantity'), { target: { value: '1.255' } })
-    fireEvent.change(screen.getByLabelText('Unit cost (minor units)'), { target: { value: '100' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save invoice' }))
+    await screen.findByRole('heading', { level: 1, name: 'Editar factura' })
+    fireEvent.change(screen.getByLabelText('Fecha de vencimiento'), { target: { value: '2026-09-01' } })
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1.255' } })
+    fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '100' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     const gateway = new LocalStateGateway(window.localStorage)
     await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.totalMinor).toBe(126))
@@ -180,9 +180,9 @@ describe('AppRouter', () => {
     unmount()
     window.history.replaceState({}, '', '/invoices/demo-invoice-pending/edit')
     render(<AppRouter />)
-    expect((await screen.findByLabelText('Due date') as HTMLInputElement).value).toBe('2026-09-01')
-    expect((screen.getByLabelText('Quantity') as HTMLInputElement).value).toBe('1.255')
-    expect(screen.getByText('Line total: 126').textContent).toBe('Line total: 126')
+    expect((await screen.findByLabelText('Fecha de vencimiento') as HTMLInputElement).value).toBe('2026-09-01')
+    expect((screen.getByLabelText('Cantidad') as HTMLInputElement).value).toBe('1.255')
+    expect(screen.getByText('Total de la línea: 126').textContent).toBe('Total de la línea: 126')
   })
 
   it('persists payment registration and voiding through the real provider and refreshes invoice detail balances', async () => {
@@ -191,23 +191,23 @@ describe('AppRouter', () => {
     render(<AppRouter />)
 
     await screen.findByRole('heading', { level: 1, name: 'DEMO-100' })
-    await screen.findByLabelText('Payment amount (minor units)')
-    fireEvent.change(screen.getByLabelText('Payment amount (minor units)'), { target: { value: '4000' } })
-    fireEvent.change(screen.getByLabelText('Payment date'), { target: { value: '2026-08-10' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Register payment' }))
+    await screen.findByLabelText('Monto del pago (unidades mínimas)')
+    fireEvent.change(screen.getByLabelText('Monto del pago (unidades mínimas)'), { target: { value: '4000' } })
+    fireEvent.change(screen.getByLabelText('Fecha de pago'), { target: { value: '2026-08-10' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar pago' }))
 
     const gateway = new LocalStateGateway(window.localStorage)
     await waitFor(() => expect(gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')).toEqual(expect.objectContaining({ amountMinor: 4000, isVoid: false })))
-    expect((await screen.findByText('Balance: 6000')).textContent).toBe('Balance: 6000')
-    expect(screen.getByLabelText('Status: Partially paid').textContent).toBe('Partially paid')
+    expect((await screen.findByText('Saldo: 6000')).textContent).toBe('Saldo: 6000')
+    expect(screen.getByLabelText('Estado: Pago parcial').textContent).toBe('Pago parcial')
 
     const registeredPayment = gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')
-    fireEvent.change(screen.getByLabelText(`Void reason for ${registeredPayment?.id}`), { target: { value: 'Recorded twice' } })
-    fireEvent.click(screen.getByRole('button', { name: `Void payment ${registeredPayment?.id}` }))
-    fireEvent.click(screen.getByRole('button', { name: 'Void payment' }))
+    fireEvent.change(screen.getByLabelText(`Motivo de anulación para ${registeredPayment?.id}`), { target: { value: 'Recorded twice' } })
+    fireEvent.click(screen.getByRole('button', { name: `Anular pago ${registeredPayment?.id}` }))
+    fireEvent.click(screen.getByRole('button', { name: 'Anular pago' }))
     await waitFor(() => expect(gateway.read().payments.find((payment) => payment.invoiceId === 'demo-invoice-pending')).toEqual(expect.objectContaining({ isVoid: true, voidReason: 'Recorded twice' })))
-    expect((await screen.findByText('Balance: 10000')).textContent).toBe('Balance: 10000')
-    expect(screen.getByLabelText('Status: Pending').textContent).toBe('Pending')
+    expect((await screen.findByText('Saldo: 10000')).textContent).toBe('Saldo: 10000')
+    expect(screen.getByLabelText('Estado: Pendiente').textContent).toBe('Pendiente')
   })
 
   it('persists deletion, excludes it from the active list, and restores it from the retained filter', async () => {
@@ -215,18 +215,18 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/invoices/demo-invoice-pending')
     render(<AppRouter />)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar factura' }))
     const deleteDialog = await screen.findByRole('dialog')
-    fireEvent.click(within(deleteDialog).getByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(within(deleteDialog).getByRole('button', { name: 'Eliminar' }))
     const gateway = new LocalStateGateway(window.localStorage)
     await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.deletedAt).not.toBeNull())
-    expect(await screen.findByRole('heading', { level: 1, name: 'Invoices' })).not.toBeNull()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Facturas' })).not.toBeNull()
     expect(screen.queryByRole('link', { name: 'DEMO-100' })).toBeNull()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show deleted invoices' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restore DEMO-100' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar DEMO-100' }))
     const restoreDialog = await screen.findByRole('dialog')
-    fireEvent.click(within(restoreDialog).getByRole('button', { name: 'Restore invoice' }))
+    fireEvent.click(within(restoreDialog).getByRole('button', { name: 'Restaurar' }))
     await waitFor(() => expect(gateway.read().invoices.find((invoice) => invoice.id === 'demo-invoice-pending')?.deletedAt).toBeNull())
     expect(await screen.findByRole('link', { name: 'DEMO-100' })).not.toBeNull()
   })
@@ -236,10 +236,10 @@ describe('AppRouter', () => {
     window.history.replaceState({}, '', '/daily-income/new')
     const { unmount } = render(<AppRouter />)
 
-    fireEvent.change(await screen.findByLabelText('Sale date'), { target: { value: '2026-08-10' } })
-    fireEvent.change(screen.getByLabelText('Amount (minor units)'), { target: { value: '25000' } })
-    fireEvent.change(screen.getByLabelText('Note (optional)'), { target: { value: 'Counter sale' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save daily income' }))
+    fireEvent.change(await screen.findByLabelText('Fecha de venta'), { target: { value: '2026-08-10' } })
+    fireEvent.change(screen.getByLabelText('Monto (unidades mínimas)'), { target: { value: '25000' } })
+    fireEvent.change(screen.getByLabelText('Nota (opcional)'), { target: { value: 'Counter sale' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     const gateway = new LocalStateGateway(window.localStorage)
     await waitFor(() => expect(gateway.read().dailyIncomes.find((income) => income.saleDate === '2026-08-10')).toEqual(expect.objectContaining({ amountMinor: 25000, currency: 'USD', note: 'Counter sale' })))
     const created = gateway.read().dailyIncomes.find((income) => income.saleDate === '2026-08-10')
@@ -248,8 +248,8 @@ describe('AppRouter', () => {
     unmount()
     window.history.replaceState({}, '', `/daily-income/${created?.id}/edit`)
     render(<AppRouter />)
-    fireEvent.change(await screen.findByLabelText('Amount (minor units)'), { target: { value: '30000' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save daily income' }))
+    fireEvent.change(await screen.findByLabelText('Monto (unidades mínimas)'), { target: { value: '30000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(gateway.read().dailyIncomes.find((income) => income.id === created?.id)?.amountMinor).toBe(30000))
     expect(await screen.findByText('2026-08-10 — 30000 USD — Counter sale')).not.toBeNull()
   })

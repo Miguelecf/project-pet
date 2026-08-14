@@ -25,22 +25,22 @@ describe('InvoiceDetailPage', () => {
     renderDetail()
 
     expect((await screen.findByRole('heading', { level: 1, name: 'INV-100' })).textContent).toBe('INV-100')
-    expect(screen.getByText('Supplier: Acme Supplies').textContent).toBe('Supplier: Acme Supplies')
-    expect(screen.getByText('Category: Hardware').textContent).toBe('Category: Hardware')
+    expect(screen.getByText('Proveedor: Acme Supplies').textContent).toBe('Proveedor: Acme Supplies')
+    expect(screen.getByText('Categoría: Hardware').textContent).toBe('Categoría: Hardware')
     expect(screen.getByText('Steel bolt').textContent).toBe('Steel bolt')
-    expect(screen.getByText('Cash: 400').textContent).toBe('Cash: 400')
+    expect(screen.getByText('Efectivo: 400').textContent).toBe('Efectivo: 400')
     expect(screen.getByText('Total: 1000').textContent).toBe('Total: 1000')
-    expect(screen.getByText('Balance: 600').textContent).toBe('Balance: 600')
-    expect(screen.getByText('Partially paid').textContent).toBe('Partially paid')
-    expect(screen.queryByRole('link', { name: 'Edit invoice' })).toBeNull()
+    expect(screen.getByText('Saldo: 600').textContent).toBe('Saldo: 600')
+    expect(screen.getByText('Pago parcial').textContent).toBe('Pago parcial')
+    expect(screen.queryByRole('link', { name: 'Editar factura' })).toBeNull()
   })
 
   it('offers editing only with no active payments and reports not-found and load failures', async () => {
     const { rerender } = renderDetail([{ id: 'voided', amountMinor: 1000, paymentDate: '2026-08-02', method: 'cash', isVoid: true }])
-    expect((await screen.findByRole('link', { name: 'Edit invoice' })).getAttribute('href')).toBe('/invoices/invoice-1/edit')
+    expect((await screen.findByRole('link', { name: 'Editar factura' })).getAttribute('href')).toBe('/invoices/invoice-1/edit')
 
     rerender(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: async () => null }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'missing' as never} /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByText('Invoice not found.')).textContent).toBe('Invoice not found.')
+    expect((await screen.findByText('No encontramos la factura.')).textContent).toBe('No encontramos la factura.')
   })
 
   it('shows a repository error and retries the detail load', async () => {
@@ -48,7 +48,7 @@ describe('InvoiceDetailPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
 
     expect((await screen.findByRole('alert')).textContent).toContain('Invoice storage unavailable')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
     await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'INV-100' }).textContent).toBe('INV-100'))
     expect(findById).toHaveBeenCalledTimes(2)
   })
@@ -62,13 +62,13 @@ describe('InvoiceDetailPage', () => {
       categories: { findAll: async () => [] },
     } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
-    expect(screen.getByRole('dialog').textContent).toContain('Delete invoice?')
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar factura' }))
+    expect(screen.getByRole('dialog').textContent).toContain('¿Eliminar factura?')
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
     expect(softDelete).not.toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete invoice' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar factura' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
     await waitFor(() => expect(softDelete).toHaveBeenCalledWith('invoice-1'))
 
     rerender(<MemoryRouter><RepositoryProvider repositories={{
@@ -77,9 +77,9 @@ describe('InvoiceDetailPage', () => {
       suppliers: { findAll: async () => [] },
       categories: { findAll: async () => [] },
     } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
-    expect((await screen.findByRole('alert')).textContent).toBe('Cannot delete: void all payments first')
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar factura' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('No podés eliminarla: primero anulá todos los pagos')
     expect(softDelete).toHaveBeenCalledTimes(1)
   })
 
@@ -92,8 +92,8 @@ describe('InvoiceDetailPage', () => {
       categories: { findAll: async () => [] },
     } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar factura' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
     await waitFor(() => expect(softDelete).toHaveBeenCalledWith('invoice-1'))
   })
 
@@ -106,24 +106,24 @@ describe('InvoiceDetailPage', () => {
       categories: { findAll: async () => [] },
     } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
 
-    expect((await screen.findByRole('heading', { level: 1, name: 'Invoice invoice-1' })).textContent).toBe('Invoice invoice-1')
-    expect(screen.getByText('Supplier: Unknown supplier').textContent).toBe('Supplier: Unknown supplier')
-    expect(screen.getByText('Category: Unknown category').textContent).toBe('Category: Unknown category')
-    expect(screen.getByText('No payments recorded.').textContent).toBe('No payments recorded.')
-    expect(screen.queryByText('Due date: 2026-08-15')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Delete invoice' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
+    expect((await screen.findByRole('heading', { level: 1, name: 'Factura invoice-1' })).textContent).toBe('Factura invoice-1')
+    expect(screen.getByText('Proveedor: Proveedor desconocido').textContent).toBe('Proveedor: Proveedor desconocido')
+    expect(screen.getByText('Categoría: Categoría desconocida').textContent).toBe('Categoría: Categoría desconocida')
+    expect(screen.getByText('No hay pagos registrados.').textContent).toBe('No hay pagos registrados.')
+    expect(screen.queryByText('Fecha de vencimiento: 2026-08-15')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar factura' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
     expect((await screen.findByRole('alert')).textContent).toBe('Delete unavailable')
   })
 
   it('uses safe load and delete error fallbacks for non-Error repository failures', async () => {
     const { rerender } = render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [] }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not load invoice')
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos cargar la factura')
 
     rerender(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findById: async () => ({ invoice, lines }), softDelete: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [], getBalance: async () => ({ remainingMinor: 1000, status: 'pending' }) }, suppliers: { findAll: async () => [] }, categories: { findAll: async () => [] } } as never}><InvoiceDetailPage invoiceId={'invoice-1' as never} /></RepositoryProvider></MemoryRouter>)
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete invoice' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete invoice' }))
-    expect((await screen.findByRole('alert')).textContent).toBe('Could not delete invoice')
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar factura' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
+    expect((await screen.findByRole('alert')).textContent).toBe('No pudimos eliminar la factura')
   })
 
   it('ignores an asynchronous detail completion after unmount', async () => {

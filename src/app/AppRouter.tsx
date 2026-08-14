@@ -21,16 +21,16 @@ import { Layout } from './Layout'
 import { RepositoryProvider } from './RepositoryProvider'
 
 const placeholderPages = {
-  suppliers: { title: 'Suppliers', description: 'Supplier management will be available in the next catalog milestone.' },
-  categories: { title: 'Categories', description: 'Category management will be available in the next catalog milestone.' },
-  invoices: { title: 'Invoices', description: 'Invoice management will be available after the financial rules milestone.' },
-  settings: { title: 'Settings', description: 'Settings management will be available in the next catalog milestone.' },
+  suppliers: { title: 'Proveedores', description: 'La gestión de proveedores estará disponible en la próxima etapa del catálogo.' },
+  categories: { title: 'Categorías', description: 'La gestión de categorías estará disponible en la próxima etapa del catálogo.' },
+  invoices: { title: 'Facturas', description: 'La gestión de facturas estará disponible después de la etapa de reglas financieras.' },
+  settings: { title: 'Configuración', description: 'La gestión de la configuración estará disponible en la próxima etapa del catálogo.' },
 }
 
 function PlaceholderPage({ title, description }: { title: string; description: string }) {
   return (
     <section className="placeholder-page" aria-labelledby={`${title.toLowerCase().replaceAll(' ', '-')}-title`}>
-      <p className="eyebrow">Local demo</p>
+      <p className="eyebrow">Demo local</p>
       <h1 id={`${title.toLowerCase().replaceAll(' ', '-')}-title`}>{title}</h1>
       <p>{description}</p>
     </section>
@@ -72,7 +72,7 @@ export function AppRouter() {
 function SupplierEditRoute() {
   const { suppliers, loading } = useSuppliers()
   const { id } = useParams()
-  if (loading) return <StateOverlay state="loading"><section aria-label="Supplier form" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Formulario de proveedor" /></StateOverlay>
   const supplier = suppliers.find((candidate) => candidate.id === id)
   return supplier ? <SupplierForm supplier={supplier} /> : <Navigate replace to="/suppliers" />
 }
@@ -80,7 +80,7 @@ function SupplierEditRoute() {
 function CategoryEditRoute() {
   const { categories, loading } = useCategories()
   const { id } = useParams()
-  if (loading) return <StateOverlay state="loading"><section aria-label="Category form" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Formulario de categoría" /></StateOverlay>
   const category = categories.find((candidate) => candidate.id === id)
   return category ? <CategoryForm category={category} /> : <Navigate replace to="/categories" />
 }
@@ -95,7 +95,7 @@ function InvoiceEditRoute() {
     void findById(id as never).then(setInvoice).catch(() => setInvoice(null))
   }, [findById, id])
 
-  if (invoice === undefined) return <StateOverlay state="loading"><section aria-label="Invoice form" /></StateOverlay>
+  if (invoice === undefined) return <StateOverlay state="loading"><section aria-label="Formulario de factura" /></StateOverlay>
   return invoice ? <InvoiceForm invoice={invoice} /> : <Navigate replace to="/invoices" />
 }
 
@@ -107,7 +107,7 @@ function InvoiceDetailRoute() {
 function DailyIncomeEditRoute() {
   const { id } = useParams()
   const { incomes, loading } = useDailyIncomes()
-  if (loading) return <StateOverlay state="loading"><section aria-label="Daily income form" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Formulario de ingreso diario" /></StateOverlay>
   const income = incomes.find((candidate) => candidate.id === id)
   return income ? <DailyIncomeForm income={income} /> : <Navigate replace to="/daily-income" />
 }

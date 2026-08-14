@@ -56,23 +56,23 @@ export function DueAlerts({ clock }: { readonly clock: Clock }) {
   useEffect(() => { void refresh() }, [refresh, revision])
 
   return (
-    <section aria-labelledby="due-alerts-title">
-      <h2 id="due-alerts-title">Due-date alerts</h2>
+    <section aria-labelledby="due-alerts-title" className="dashboard-panel dashboard-panel--alerts">
+      <div className="section-heading"><div><p className="section-label">Para atender</p><h2 id="due-alerts-title">Vencimientos cercanos</h2></div></div>
       {alerts.length === 0 ? (
-        <p>No upcoming or overdue invoices</p>
+        <p className="empty-panel">No tenés facturas vencidas ni próximas a vencer.</p>
       ) : (
-        <ul aria-label="Due-date alerts">
+        <ul className="due-alert-list" aria-label="Vencimientos cercanos">
           {alerts.map(({ invoice, kind, outstandingMinor }) => (
             <li key={invoice.id}>
-              <Link to={`/invoices/${invoice.id}`}>{invoice.docRef ?? 'Invoice'}</Link>
+              <Link to={`/invoices/${invoice.id}`}>{invoice.docRef ?? 'Factura'}</Link>
               <span
-                aria-label={kind === 'overdue' ? 'Overdue' : 'Due soon'}
+                aria-label={kind === 'overdue' ? 'Vencida' : 'Vence pronto'}
                 className={kind === 'overdue' ? 'due-alert-badge due-alert-badge--overdue' : 'due-alert-badge'}
               >
-                {kind === 'overdue' ? 'Overdue' : 'Due soon'}
+                {kind === 'overdue' ? 'Vencida' : 'Vence pronto'}
               </span>
-              <span>Due date: {invoice.dueDate}</span>
-              <span>Outstanding balance: {outstandingMinor}</span>
+              <span className="due-alert-list__date">Vence el {invoice.dueDate}</span>
+              <span className="due-alert-list__balance">Falta pagar {outstandingMinor}</span>
             </li>
           ))}
         </ul>

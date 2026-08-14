@@ -17,12 +17,12 @@ function SupplierNames() {
     void repositories.suppliers.findAll().then((suppliers) => setNames(suppliers.map((supplier) => supplier.name)))
   }, [repositories, revision])
 
-  return <p>Suppliers: {names.join(', ')}</p>
+  return <p>Proveedores: {names.join(', ')}</p>
 }
 
 function AddSupplier() {
   const { repositories } = useRepositories()
-  return <button onClick={() => void repositories.suppliers.create({ name: 'Temporary supplier', defaultDueDays: null })} type="button">Add temporary supplier</button>
+  return <button onClick={() => void repositories.suppliers.create({ name: 'Temporary supplier', defaultDueDays: null })} type="button">Agregar proveedor temporal</button>
 }
 
 describe('RestoreDemoData', () => {
@@ -33,18 +33,18 @@ describe('RestoreDemoData', () => {
     await gateway.loadSeed()
     render(<RepositoryProvider gateway={gateway}><RestoreDemoData /><AddSupplier /><SupplierNames /></RepositoryProvider>)
 
-    expect(screen.getByRole('button', { name: 'Restore demo data' })).not.toBeNull()
-    expect(await screen.findByText('Suppliers: Demo Supplier A, Demo Supplier B')).not.toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Add temporary supplier' }))
-    await screen.findByText('Suppliers: Demo Supplier A, Demo Supplier B, Temporary supplier')
-    fireEvent.click(screen.getByRole('button', { name: 'Restore demo data' }))
+    expect(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' })).not.toBeNull()
+    expect(await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B')).not.toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar proveedor temporal' }))
+    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' }))
 
-    const dialog = screen.getByRole('dialog', { name: 'Restore demo data?' })
-    expect(within(dialog).getByText('This replaces all local demo data with the original seed data.')).not.toBeNull()
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Restore demo data' }))
+    const dialog = screen.getByRole('dialog', { name: '¿Restaurar datos de ejemplo?' })
+    expect(within(dialog).getByText('Esto reemplaza todos los datos locales de ejemplo por los datos originales.')).not.toBeNull()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Restaurar' }))
 
-    await screen.findByText('Demo data restored.')
-    await waitFor(() => expect(screen.getByText('Suppliers: Demo Supplier A, Demo Supplier B')).not.toBeNull())
+    await screen.findByText('Datos de ejemplo restaurados.')
+    await waitFor(() => expect(screen.getByText('Proveedores: Demo Supplier A, Demo Supplier B')).not.toBeNull())
   })
 
   it('keeps data unchanged when the confirmation dialog is cancelled', async () => {
@@ -52,14 +52,14 @@ describe('RestoreDemoData', () => {
     await gateway.loadSeed()
     render(<RepositoryProvider gateway={gateway}><RestoreDemoData /><AddSupplier /><SupplierNames /></RepositoryProvider>)
 
-    await screen.findByText('Suppliers: Demo Supplier A, Demo Supplier B')
-    fireEvent.click(screen.getByRole('button', { name: 'Add temporary supplier' }))
-    await screen.findByText('Suppliers: Demo Supplier A, Demo Supplier B, Temporary supplier')
-    fireEvent.click(screen.getByRole('button', { name: 'Restore demo data' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
+    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B')
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar proveedor temporal' }))
+    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
 
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(screen.getByText('Suppliers: Demo Supplier A, Demo Supplier B, Temporary supplier')).not.toBeNull()
+    expect(screen.getByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')).not.toBeNull()
   })
 
   it('shows retryable feedback when restoring data fails', async () => {
@@ -75,12 +75,12 @@ describe('RestoreDemoData', () => {
     }
     render(<RepositoryProvider gateway={new LocalStateGateway(storage)}><RestoreDemoData /></RepositoryProvider>)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Restore demo data' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Restore demo data' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Restaurar' }))
 
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not restore demo data.')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry restore demo data' }))
-    await screen.findByText('Demo data restored.')
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos restaurar los datos de ejemplo.')
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    await screen.findByText('Datos de ejemplo restaurados.')
     expect(failOnce).toBe(false)
   })
 })

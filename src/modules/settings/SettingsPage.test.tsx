@@ -19,18 +19,18 @@ describe('SettingsPage', () => {
   it('reads complete defaults, saves ARS with no financial records, and reloads the persisted values', async () => {
     const gateway = renderPage()
 
-    expect((await screen.findByLabelText('Currency') as HTMLSelectElement).value).toBe('USD')
-    expect((screen.getByLabelText('Due alert days') as HTMLInputElement).value).toBe('7')
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
-    fireEvent.change(screen.getByLabelText('Due alert days'), { target: { value: '10' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    expect((await screen.findByLabelText('Moneda') as HTMLSelectElement).value).toBe('USD')
+    expect((screen.getByLabelText('Días de aviso de vencimiento') as HTMLInputElement).value).toBe('7')
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'ARS' } })
+    fireEvent.change(screen.getByLabelText('Días de aviso de vencimiento'), { target: { value: '10' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Settings saved.'))
+    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Configuración guardada.'))
     expect(gateway.read().settings).toMatchObject({ currency: 'ARS', dueAlertDays: 10 })
     cleanup()
     renderPage(gateway)
-    expect((await screen.findByLabelText('Currency') as HTMLSelectElement).value).toBe('ARS')
-    expect((screen.getByLabelText('Due alert days') as HTMLInputElement).value).toBe('10')
+    expect((await screen.findByLabelText('Moneda') as HTMLSelectElement).value).toBe('ARS')
+    expect((screen.getByLabelText('Días de aviso de vencimiento') as HTMLInputElement).value).toBe('10')
   })
 
   it('rejects an invoice-locked currency change without mutating the current settings', async () => {
@@ -41,9 +41,9 @@ describe('SettingsPage', () => {
     await gateway.write(state)
     renderPage(gateway)
 
-    await screen.findByLabelText('Currency')
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    await screen.findByLabelText('Moneda')
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'ARS' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Cannot change currency: 3 invoice(s) exist with USD'))
     expect(gateway.read().settings?.currency).toBe('USD')
@@ -59,15 +59,15 @@ describe('SettingsPage', () => {
     await gateway.write(state)
     renderPage(gateway)
 
-    await screen.findByLabelText('Currency')
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'ARS' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
+    await screen.findByLabelText('Moneda')
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'ARS' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Cannot change currency: 2 daily income(s) exist with USD'))
 
-    fireEvent.change(screen.getByLabelText('Currency'), { target: { value: 'USD' } })
-    fireEvent.change(screen.getByLabelText('Due alert days'), { target: { value: '10' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }))
-    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Settings saved.'))
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'USD' } })
+    fireEvent.change(screen.getByLabelText('Días de aviso de vencimiento'), { target: { value: '10' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Configuración guardada.'))
     expect(gateway.read().settings).toMatchObject({ currency: 'USD', dueAlertDays: 10 })
   })
 
@@ -78,9 +78,9 @@ describe('SettingsPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={{ settings: { get } } as never}><SettingsPage /></RepositoryProvider></MemoryRouter>)
 
     await screen.findByText('Storage unavailable')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
 
-    await screen.findByLabelText('Currency')
+    await screen.findByLabelText('Moneda')
     expect(get).toHaveBeenCalledTimes(2)
   })
 })

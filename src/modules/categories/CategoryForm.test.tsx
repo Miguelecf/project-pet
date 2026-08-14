@@ -21,8 +21,8 @@ describe('CategoryForm', () => {
   it('creates a trimmed category and navigates back to the list', async () => {
     const create = vi.fn(async () => alpha)
     renderForm({ create })
-    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: '  Alpha  ' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+    fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: '  Alpha  ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(create).toHaveBeenCalledWith({ name: 'Alpha' }))
   })
@@ -30,19 +30,19 @@ describe('CategoryForm', () => {
   it('rejects empty names and surfaces duplicate repository errors', async () => {
     const create = vi.fn(async () => { throw new Error('duplicate category name') })
     renderForm({ create })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
-    expect(screen.getByRole('alert').textContent).toBe('Category name is required')
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    expect(screen.getByRole('alert').textContent).toBe('El nombre de la categoría es obligatorio')
 
-    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: 'Alpha' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+    fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate category name'))
   })
 
   it('updates a category with a unique trimmed value', async () => {
     const update = vi.fn(async () => ({ ...alpha, name: 'Gamma' }))
     renderForm({ update }, alpha)
-    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: '  Gamma  ' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+    fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: '  Gamma  ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(update).toHaveBeenCalledWith('alpha', { name: 'Gamma' }))
   })
@@ -53,8 +53,8 @@ describe('CategoryForm', () => {
     const [editable, existing] = gateway.read().categories
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryForm category={editable} /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+    fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate category name'))
     expect(gateway.read().categories.map((category) => ({ id: category.id, name: category.name, normalizedName: category.normalizedName }))).toEqual([
@@ -67,10 +67,10 @@ describe('CategoryForm', () => {
   it('uses the fallback save error and exposes cancellation navigation', async () => {
     const create = vi.fn(async () => { throw 'offline' })
     renderForm({ create })
-    fireEvent.change(screen.getByLabelText('Category name'), { target: { value: 'Alpha' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Save category' }))
+    fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: 'Alpha' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Could not save category'))
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('No pudimos guardar la categoría'))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
   })
 })

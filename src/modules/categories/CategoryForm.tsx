@@ -16,7 +16,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
   async function save() {
     const trimmedName = name.trim()
     if (!trimmedName) {
-      setError('Category name is required')
+      setError('El nombre de la categoría es obligatorio')
       return
     }
     setError(null)
@@ -25,20 +25,20 @@ export function CategoryForm({ category }: CategoryFormProps) {
       else await create({ name: trimmedName })
       navigate('/categories')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not save category')
+      setError(reason instanceof Error ? reason.message : 'No pudimos guardar la categoría')
     }
   }
 
   return (
     <section aria-labelledby="category-form-title" className="category-form">
-      <p className="eyebrow">Catalog</p>
-      <h1 id="category-form-title">{category ? 'Edit category' : 'Create category'}</h1>
+      <p className="eyebrow">Catálogo</p>
+      <h1 id="category-form-title">{category ? 'Editar categoría' : 'Crear categoría'}</h1>
       {error && <p role="alert">{error}</p>}
-      <label htmlFor="category-name">Category name</label>
+      <label htmlFor="category-name">Nombre de la categoría</label>
       <input id="category-name" name="category-name" onChange={(event) => setName(event.target.value)} value={name} />
       <div className="category-form__actions">
-        <button onClick={() => void save()} type="button">Save category</button>
-        <button onClick={() => navigate('/categories')} type="button">Cancel</button>
+        <button onClick={() => void save()} type="button">Guardar</button>
+        <button onClick={() => navigate('/categories')} type="button">Cancelar</button>
       </div>
     </section>
   )

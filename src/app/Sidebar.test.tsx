@@ -24,16 +24,16 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeDefined()
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeDefined()
     expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual([
-      'Dashboard',
-      'Suppliers',
-      'Categories',
-      'Invoices',
-      'Daily income',
-      'Settings',
+      'Resumen',
+      'Proveedores',
+      'Categorías',
+      'Facturas',
+      'Ingresos diarios',
+      'Configuración',
     ])
-    expect(screen.queryByRole('button', { name: 'Open navigation' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Abrir navegación' })).toBeNull()
   })
 
   it('marks the current route as the active navigation link', () => {
@@ -43,11 +43,11 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     )
 
-    const suppliersLink = screen.getByRole('link', { name: 'Suppliers' })
+    const suppliersLink = screen.getByRole('link', { name: 'Proveedores' })
 
     expect(suppliersLink.getAttribute('aria-current')).toBe('page')
     expect(suppliersLink.classList.contains('active')).toBe(true)
-    expect(screen.getByRole('link', { name: 'Dashboard' }).getAttribute('aria-current')).toBeNull()
+    expect(screen.getByRole('link', { name: 'Resumen' }).getAttribute('aria-current')).toBeNull()
   })
 
   it('collapses on mobile and toggles its navigation open', () => {
@@ -58,18 +58,18 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     )
 
-    const toggle = screen.getByRole('button', { name: 'Open navigation' })
-    expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
+    const toggle = screen.getByRole('button', { name: 'Abrir navegación' })
+    expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).toBeNull()
 
     fireEvent.click(toggle)
 
-    expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeDefined()
-    const closeButton = screen.getByRole('button', { name: 'Close navigation' })
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeDefined()
+    const closeButton = screen.getByRole('button', { name: 'Cerrar navegación' })
 
     fireEvent.click(closeButton)
 
-    expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
-    expect(screen.getByRole('button', { name: 'Open navigation' }).getAttribute('aria-expanded')).toBe('false')
+    expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Abrir navegación' }).getAttribute('aria-expanded')).toBe('false')
   })
 
   it('returns to desktop navigation when the viewport grows', () => {
@@ -80,10 +80,10 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
+    expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).toBeNull()
 
     setViewport(1024)
 
-    expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeDefined()
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeDefined()
   })
 })

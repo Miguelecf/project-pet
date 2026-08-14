@@ -18,13 +18,13 @@ describe('DailyIncomePage', () => {
     ]
     render(<MemoryRouter><RepositoryProvider repositories={{ dailyIncomes: { findAll: async () => incomes } } as never}><DailyIncomePage /></RepositoryProvider></MemoryRouter>)
 
-    const list = await screen.findByRole('list', { name: 'Daily incomes' })
-    expect(within(list).getAllByRole('listitem').map((item) => item.textContent)).toEqual(['2026-08-10 — 200 ARS — Counter saleEditDelete', '2026-08-09 — 100 USD — No noteEditDelete'])
+    const list = await screen.findByRole('list', { name: 'Ingresos diarios' })
+    expect(within(list).getAllByRole('listitem').map((item) => item.textContent)).toEqual(['2026-08-10 — 200 ARS — Counter saleEditarEliminar', '2026-08-09 — 100 USD — Sin notaEditarEliminar'])
   })
 
   it('shows an accessible empty action when no records exist', async () => {
     render(<MemoryRouter><RepositoryProvider repositories={{ dailyIncomes: { findAll: async () => [] } } as never}><DailyIncomePage /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByRole('button', { name: 'Create daily income' })).textContent).toBe('Create daily income')
+    expect((await screen.findByRole('button', { name: 'Crear ingreso diario' })).textContent).toBe('Crear ingreso diario')
   })
 
   it('only deletes after confirmation and preserves the record when cancelled', async () => {
@@ -33,11 +33,11 @@ describe('DailyIncomePage', () => {
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DailyIncomePage /></RepositoryProvider></MemoryRouter>)
     const income = gateway.read().dailyIncomes[0]
 
-    fireEvent.click(await screen.findByRole('button', { name: `Delete income ${income.saleDate}` }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(await screen.findByRole('button', { name: `Eliminar ingreso del ${income.saleDate}` }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
     expect(gateway.read().dailyIncomes.find((item) => item.id === income.id)).toEqual(income)
-    fireEvent.click(screen.getByRole('button', { name: `Delete income ${income.saleDate}` }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete' }))
+    fireEvent.click(screen.getByRole('button', { name: `Eliminar ingreso del ${income.saleDate}` }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
     await waitFor(() => expect(gateway.read().dailyIncomes.find((item) => item.id === income.id)).toBeUndefined())
   })
 })

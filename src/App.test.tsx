@@ -25,11 +25,11 @@ describe('App', () => {
     expect(screen.getByText('Project Pet')).toBeDefined()
     const demoStatus = screen.getByRole('status')
 
-    expect(demoStatus.textContent).toContain('Local MVP · Demo mode')
+    expect(demoStatus.textContent).toContain('MVP local · Modo demo')
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         level: 1,
-        name: 'Dashboard',
+        name: 'Así está tu negocio',
       }),
     ).toBeDefined()
     expect(screen.getByRole('banner')).toBeDefined()
@@ -40,22 +40,23 @@ describe('App', () => {
   it('renders the complete accessible zero-data dashboard', async () => {
     renderApp()
 
-    expect(await screen.findByText('Period income: 0')).not.toBeNull()
-    expect(screen.getByRole('group', { name: 'Dashboard period' })).not.toBeNull()
-    expect(screen.getByText('Estimated cash result — not net profit: 0')).not.toBeNull()
+    expect(await screen.findByText('Entró a caja: 0')).not.toBeNull()
+    expect(screen.getByRole('group', { name: 'Período a consultar' })).not.toBeNull()
+    expect(screen.getByText('Resultado de caja')).not.toBeNull()
+    expect(screen.getByText('Es una estimación, no una ganancia final.')).not.toBeNull()
   })
 
   it('retains shell navigation and its local-only disclosure', async () => {
     renderApp()
 
-    await screen.findByText('Period income: 0')
-    expect(screen.getByText('Local-only MVP. No account, cloud sync, or client data is connected.')).toBeDefined()
+    await screen.findByText('Entró a caja: 0')
+    expect(screen.getByText('MVP solo local. No hay cuenta, sincronización en la nube ni datos de clientes conectados.')).toBeDefined()
     const main = screen.getByRole('main')
-    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    const skipLink = screen.getByRole('link', { name: 'Ir al contenido principal' })
 
     expect(main.id).toBe('main-content')
     expect(skipLink.getAttribute('href')).toBe(`#${main.id}`)
     expect(screen.getAllByRole('link')).toHaveLength(7)
-    expect(screen.getByRole('button', { name: 'Refresh dashboard' })).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Actualizar datos' })).not.toBeNull()
   })
 })

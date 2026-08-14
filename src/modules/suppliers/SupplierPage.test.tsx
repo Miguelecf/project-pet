@@ -23,7 +23,7 @@ describe('SupplierPage', () => {
     const repositories = { suppliers: { findAll: async () => [active, deleted] } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    await waitFor(() => expect(screen.getByRole('link', { name: 'Edit Active supplier' }).getAttribute('href')).toBe('/suppliers/active/edit'))
+    await waitFor(() => expect(screen.getByRole('link', { name: 'Editar Active supplier' }).getAttribute('href')).toBe('/suppliers/active/edit'))
     expect(screen.queryByText(deleted.name)).toBeNull()
   })
 
@@ -31,8 +31,8 @@ describe('SupplierPage', () => {
     const repositories = { suppliers: { findAll: async () => [] } }
     render(<MemoryRouter><Location /><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Create Supplier' }).textContent).toBe('Create Supplier'))
-    fireEvent.click(screen.getByRole('button', { name: 'Create Supplier' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Crear proveedor' }).textContent).toBe('Crear proveedor'))
+    fireEvent.click(screen.getByRole('button', { name: 'Crear proveedor' }))
     expect(screen.getByRole('status', { name: 'location' }).textContent).toBe('/suppliers/new')
   })
 
@@ -41,9 +41,9 @@ describe('SupplierPage', () => {
     const repositories = { suppliers: { findAll: async () => [active], softDelete } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    await screen.findByRole('button', { name: 'Delete Active supplier' })
-    fireEvent.click(screen.getByRole('button', { name: 'Delete Active supplier' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await screen.findByRole('button', { name: 'Eliminar Active supplier' })
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar Active supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('Storage unavailable'))
     expect(softDelete).toHaveBeenCalledWith('active')
@@ -55,9 +55,9 @@ describe('SupplierPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
     await screen.findByText('Could not load suppliers')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
 
-    await screen.findByRole('button', { name: 'Delete Active supplier' })
+    await screen.findByRole('button', { name: 'Eliminar Active supplier' })
     expect(findAll).toHaveBeenCalledTimes(2)
   })
 
@@ -65,8 +65,8 @@ describe('SupplierPage', () => {
     const repositories = { suppliers: { findAll: async () => [active] } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Active supplier' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Active supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
 
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(screen.getByText('Active supplier').textContent).toBe('Active supplier')
@@ -76,10 +76,10 @@ describe('SupplierPage', () => {
     const repositories = { suppliers: { findAll: async () => [active], softDelete: async () => { throw 'offline' } } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Active supplier' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Active supplier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
-    await screen.findByText('Could not delete supplier')
+    await screen.findByText('No pudimos eliminar el proveedor')
   })
 
   it('removes a confirmed deletion from the active list after the provider publishes a revision', async () => {
@@ -87,9 +87,9 @@ describe('SupplierPage', () => {
     await gateway.loadSeed()
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    await screen.findByRole('button', { name: 'Delete Demo Supplier A' })
-    fireEvent.click(screen.getByRole('button', { name: 'Delete Demo Supplier A' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await screen.findByRole('button', { name: 'Eliminar Demo Supplier A' })
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar Demo Supplier A' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
     await waitFor(() => expect(screen.queryByText('Demo Supplier A')).toBeNull())
     expect(screen.getByText('Demo Supplier B').textContent).toBe('Demo Supplier B')

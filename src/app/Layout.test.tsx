@@ -19,10 +19,10 @@ describe('Layout', () => {
     )
 
     expect(screen.getByText('Project Pet')).toBeDefined()
-    expect(screen.getByRole('status').textContent).toContain('Local MVP · Demo mode')
-    expect(screen.getByRole('link', { name: 'Suppliers' }).getAttribute('href')).toBe('/suppliers')
+    expect(screen.getByRole('status').textContent).toContain('MVP local · Modo demo')
+    expect(screen.getByRole('link', { name: 'Proveedores' }).getAttribute('href')).toBe('/suppliers')
     expect(screen.getByRole('main').id).toBe('main-content')
-    expect(screen.getByRole('link', { name: 'Skip to main content' }).getAttribute('href')).toBe('#main-content')
+    expect(screen.getByRole('link', { name: 'Ir al contenido principal' }).getAttribute('href')).toBe('#main-content')
   })
 
   it('reaches the skip link first when Tab starts from the document', async () => {
@@ -32,7 +32,7 @@ describe('Layout', () => {
       </MemoryRouter>,
     )
 
-    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    const skipLink = screen.getByRole('link', { name: 'Ir al contenido principal' })
     const user = userEvent.setup()
 
     expect(document.activeElement).toBe(document.body)
@@ -47,15 +47,15 @@ describe('Layout', () => {
     render(
       <MemoryRouter initialEntries={['/suppliers']}>
         <Routes>
-          <Route element={<Layout><h1>Suppliers</h1></Layout>} path="/suppliers" />
-          <Route element={<Layout><h1>Categories</h1></Layout>} path="/categories" />
+          <Route element={<Layout><h1>Proveedores</h1></Layout>} path="/suppliers" />
+          <Route element={<Layout><h1>Categorías</h1></Layout>} path="/categories" />
         </Routes>
       </MemoryRouter>,
     )
 
-    fireEvent.click(screen.getByRole('link', { name: 'Categories' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Categorías' }))
 
-    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Categories' }))
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Categorías' }))
   })
 
   it('moves focus to main content when the skip link is activated with Enter', () => {
@@ -65,7 +65,7 @@ describe('Layout', () => {
       </MemoryRouter>,
     )
 
-    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    const skipLink = screen.getByRole('link', { name: 'Ir al contenido principal' })
     skipLink.focus()
     fireEvent.keyDown(skipLink, { key: 'Enter' })
 
@@ -79,7 +79,7 @@ describe('Layout', () => {
       </MemoryRouter>,
     )
 
-    const skipLink = screen.getByRole('link', { name: 'Skip to main content' })
+    const skipLink = screen.getByRole('link', { name: 'Ir al contenido principal' })
     skipLink.focus()
     fireEvent.keyDown(skipLink, { key: ' ' })
 

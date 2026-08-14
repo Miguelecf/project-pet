@@ -18,33 +18,33 @@ export function SupplierPage() {
       setDeleting(null)
     } catch (reason) {
       setDeleting(null)
-      setMutationError(reason instanceof Error ? reason.message : 'Could not delete supplier')
+      setMutationError(reason instanceof Error ? reason.message : 'No pudimos eliminar el proveedor')
     }
   }
 
-  if (loading) return <StateOverlay state="loading"><section aria-label="Supplier list" /></StateOverlay>
+  if (loading) return <StateOverlay state="loading"><section aria-label="Lista de proveedores" /></StateOverlay>
   const error = mutationError ?? loadError
-  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Supplier list" /></StateOverlay>
+  if (error) return <StateOverlay error={error} onRetry={() => { setMutationError(null); void refresh() }} state="error"><section aria-label="Lista de proveedores" /></StateOverlay>
   const activeSuppliers = suppliers.filter((supplier) => supplier.deletedAt === null)
-  if (activeSuppliers.length === 0) return <StateOverlay emptyActionLabel="Create Supplier" emptyMessage="No suppliers yet." onEmptyAction={() => navigate('/suppliers/new')} state="empty"><section aria-label="Supplier list" /></StateOverlay>
+  if (activeSuppliers.length === 0) return <StateOverlay emptyActionLabel="Crear proveedor" emptyMessage="Todavía no hay proveedores." onEmptyAction={() => navigate('/suppliers/new')} state="empty"><section aria-label="Lista de proveedores" /></StateOverlay>
 
   return (
     <section aria-labelledby="suppliers-title" className="supplier-page">
-      <p className="eyebrow">Catalog</p>
-      <h1 id="suppliers-title">Suppliers</h1>
-      <Link className="primary-action" to="/suppliers/new">Create Supplier</Link>
-      <ul aria-label="Suppliers" className="supplier-list">
+      <p className="eyebrow">Catálogo</p>
+      <h1 id="suppliers-title">Proveedores</h1>
+      <Link className="primary-action" to="/suppliers/new">Crear proveedor</Link>
+      <ul aria-label="Proveedores" className="supplier-list">
         {activeSuppliers.map((supplier) => (
           <li key={supplier.id}>
             <span>{supplier.name}</span>
             <div>
-              <Link aria-label={`Edit ${supplier.name}`} to={`/suppliers/${supplier.id}/edit`}>Edit</Link>
-              <button aria-label={`Delete ${supplier.name}`} onClick={() => setDeleting(supplier)} type="button">Delete</button>
+              <Link aria-label={`Editar ${supplier.name}`} to={`/suppliers/${supplier.id}/edit`}>Editar</Link>
+              <button aria-label={`Eliminar ${supplier.name}`} onClick={() => setDeleting(supplier)} type="button">Eliminar</button>
             </div>
           </li>
         ))}
       </ul>
-      <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete" message={`Delete ${deleting?.name ?? 'supplier'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Delete supplier" />
+      <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message={`¿Eliminar ${deleting?.name ?? 'este proveedor'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Eliminar proveedor" />
     </section>
   )
 }

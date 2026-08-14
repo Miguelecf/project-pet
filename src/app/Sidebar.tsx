@@ -4,12 +4,12 @@ import { NavLink } from 'react-router-dom'
 const MOBILE_BREAKPOINT = 768
 
 const navigationItems = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/suppliers', label: 'Suppliers' },
-  { to: '/categories', label: 'Categories' },
-  { to: '/invoices', label: 'Invoices' },
-  { to: '/daily-income', label: 'Daily income' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/', label: 'Resumen', end: true },
+  { to: '/suppliers', label: 'Proveedores' },
+  { to: '/categories', label: 'Categorías' },
+  { to: '/invoices', label: 'Facturas' },
+  { to: '/daily-income', label: 'Ingresos diarios' },
+  { to: '/settings', label: 'Configuración' },
 ]
 
 const isMobileViewport = () => window.innerWidth < MOBILE_BREAKPOINT
@@ -38,7 +38,7 @@ export function Sidebar() {
         onClick={() => setIsOpen(true)}
         type="button"
       >
-        Open navigation
+          Abrir navegación
       </button>
     )
   }
@@ -53,10 +53,10 @@ export function Sidebar() {
           onClick={() => setIsOpen(false)}
           type="button"
         >
-          Close navigation
+          Cerrar navegación
         </button>
       )}
-      <nav aria-label="Main navigation" id="main-navigation">
+      <nav aria-label="Navegación principal" id="main-navigation">
         <ul>
           {navigationItems.map(({ to, label, end }) => (
             <li key={to}>

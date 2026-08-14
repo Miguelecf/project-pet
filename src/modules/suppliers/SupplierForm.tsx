@@ -18,7 +18,7 @@ export function SupplierForm({ supplier }: SupplierFormProps) {
   async function save() {
     const trimmedName = name.trim()
     if (!trimmedName) {
-      setError('Supplier name is required')
+      setError('El nombre del proveedor es obligatorio')
       return
     }
     setError(null)
@@ -27,7 +27,7 @@ export function SupplierForm({ supplier }: SupplierFormProps) {
       else await create({ name: trimmedName, defaultDueDays: null })
       navigate('/suppliers')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Could not save supplier')
+      setError(reason instanceof Error ? reason.message : 'No pudimos guardar el proveedor')
     }
   }
 
@@ -38,23 +38,23 @@ export function SupplierForm({ supplier }: SupplierFormProps) {
       navigate('/suppliers')
     } catch (reason) {
       setDeleteOpen(false)
-      setError(reason instanceof Error ? reason.message : 'Could not delete supplier')
+      setError(reason instanceof Error ? reason.message : 'No pudimos eliminar el proveedor')
     }
   }
 
   return (
     <section aria-labelledby="supplier-form-title" className="supplier-form">
-      <p className="eyebrow">Catalog</p>
-      <h1 id="supplier-form-title">{supplier ? 'Edit supplier' : 'Create supplier'}</h1>
+      <p className="eyebrow">Catálogo</p>
+      <h1 id="supplier-form-title">{supplier ? 'Editar proveedor' : 'Crear proveedor'}</h1>
       {error && <p role="alert">{error}</p>}
-      <label htmlFor="supplier-name">Supplier name</label>
+      <label htmlFor="supplier-name">Nombre del proveedor</label>
       <input id="supplier-name" name="supplier-name" onChange={(event) => setName(event.target.value)} value={name} />
       <div className="supplier-form__actions">
-        <button onClick={() => void save()} type="button">Save supplier</button>
-        <button onClick={() => navigate('/suppliers')} type="button">Cancel</button>
-        {supplier && <button onClick={() => setDeleteOpen(true)} type="button">Delete supplier</button>}
+        <button onClick={() => void save()} type="button">Guardar</button>
+        <button onClick={() => navigate('/suppliers')} type="button">Cancelar</button>
+        {supplier && <button onClick={() => setDeleteOpen(true)} type="button">Eliminar proveedor</button>}
       </div>
-      <ConfirmDialog cancelLabel="Cancel" confirmLabel="Delete" message={`Delete ${supplier?.name ?? 'supplier'}?`} onCancel={() => setDeleteOpen(false)} onConfirm={() => void confirmDelete()} open={deleteOpen} title="Delete supplier" />
+      <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message={`¿Eliminar ${supplier?.name ?? 'este proveedor'}?`} onCancel={() => setDeleteOpen(false)} onConfirm={() => void confirmDelete()} open={deleteOpen} title="Eliminar proveedor" />
     </section>
   )
 }

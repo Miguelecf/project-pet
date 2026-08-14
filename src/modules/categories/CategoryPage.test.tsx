@@ -23,7 +23,7 @@ describe('CategoryPage', () => {
     const repositories = { categories: { findAll: async () => [alpha, beta] } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    await waitFor(() => expect(screen.getByRole('link', { name: 'Edit Alpha' }).getAttribute('href')).toBe('/categories/alpha/edit'))
+    await waitFor(() => expect(screen.getByRole('link', { name: 'Editar Alpha' }).getAttribute('href')).toBe('/categories/alpha/edit'))
     expect(screen.getByText('Beta').textContent).toBe('Beta')
   })
 
@@ -31,8 +31,8 @@ describe('CategoryPage', () => {
     const repositories = { categories: { findAll: async () => [] } }
     render(<MemoryRouter><Location /><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'New Category' }).textContent).toBe('New Category'))
-    fireEvent.click(screen.getByRole('button', { name: 'New Category' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Crear categoría' }).textContent).toBe('Crear categoría'))
+    fireEvent.click(screen.getByRole('button', { name: 'Crear categoría' }))
     expect(screen.getByRole('status', { name: 'location' }).textContent).toBe('/categories/new')
   })
 
@@ -45,9 +45,9 @@ describe('CategoryPage', () => {
     await gateway.write(state)
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: `Delete ${referenced.name}` }))
+    fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${referenced.name}` }))
 
-    await waitFor(() => expect(screen.getByText('Cannot delete: referenced by 2 invoice line(s)').textContent).toBe('Cannot delete: referenced by 2 invoice line(s)'))
+    await waitFor(() => expect(screen.getByText('No podés eliminarla porque está usada en 2 línea(s) de factura').textContent).toBe('No podés eliminarla porque está usada en 2 línea(s) de factura'))
     expect(gateway.read().categories.some((category) => category.id === referenced.id)).toBe(true)
   })
 
@@ -57,9 +57,9 @@ describe('CategoryPage', () => {
     const referenced = gateway.read().categories[0]
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: `Delete ${referenced.name}` }))
+    fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${referenced.name}` }))
 
-    await waitFor(() => expect(screen.getByText('Cannot delete: referenced by 1 invoice line(s)', { selector: 'p' }).textContent).toBe('Cannot delete: referenced by 1 invoice line(s)'))
+    await waitFor(() => expect(screen.getByText('No podés eliminarla porque está usada en 1 línea(s) de factura', { selector: 'p' }).textContent).toBe('No podés eliminarla porque está usada en 1 línea(s) de factura'))
     expect(gateway.read().invoiceLines.filter((line) => line.categoryId === referenced.id)).toHaveLength(1)
     expect(gateway.read().categories.some((category) => category.id === referenced.id)).toBe(true)
   })
@@ -70,8 +70,8 @@ describe('CategoryPage', () => {
     const unreferenced = gateway.read().categories.at(-1)!
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: `Delete ${unreferenced.name}` }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }))
+    fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${unreferenced.name}` }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar' }))
 
     await waitFor(() => expect(screen.queryByText(unreferenced.name)).toBeNull())
     expect(gateway.read().categories.some((category) => category.id === unreferenced.id)).toBe(false)
@@ -83,8 +83,8 @@ describe('CategoryPage', () => {
     const unreferenced = gateway.read().categories.at(-1)!
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: `Delete ${unreferenced.name}` }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }))
+    fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${unreferenced.name}` }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
 
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(gateway.read().categories.some((category) => category.id === unreferenced.id)).toBe(true)
@@ -96,7 +96,7 @@ describe('CategoryPage', () => {
     const repositories = { categories: { findAll: async () => [alpha], isReferenced } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Alpha' }))
 
     await waitFor(() => expect(screen.getByText('Reference check failed', { selector: 'p' }).textContent).toBe('Reference check failed'))
     expect(screen.queryByRole('dialog')).toBeNull()
@@ -109,26 +109,26 @@ describe('CategoryPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
     await screen.findByText('Could not load categories')
-    expect(screen.getByRole('button', { name: 'Retry' }).textContent).toBe('Retry')
+    expect(screen.getByRole('button', { name: 'Reintentar' }).textContent).toBe('Reintentar')
   })
 
   it('uses the fallback when category reference checking rejects with a non-Error value', async () => {
     const repositories = { categories: { findAll: async () => [alpha], isReferenced: async () => { throw 'offline' } } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Alpha' }))
 
-    await screen.findByText('Could not check category references')
+    await screen.findByText('No pudimos verificar las referencias de la categoría')
   })
 
   it('uses the fallback when confirmed category deletion rejects with a non-Error value', async () => {
     const repositories = { categories: { findAll: async () => [alpha], isReferenced: async () => 0, delete: async () => { throw 'offline' } } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Alpha' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar' }))
 
-    await screen.findByText('Could not delete category')
+    await screen.findByText('No pudimos eliminar la categoría')
   })
 
   it('shows a confirmed-delete failure without removing the category', async () => {
@@ -136,8 +136,8 @@ describe('CategoryPage', () => {
     const repositories = { categories: { findAll: async () => [alpha], isReferenced: async () => 0, delete: remove } }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete Alpha' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Alpha' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar' }))
 
     await waitFor(() => expect(screen.getByText('Delete failed', { selector: 'p' }).textContent).toBe('Delete failed'))
     expect(screen.queryByRole('dialog')).toBeNull()

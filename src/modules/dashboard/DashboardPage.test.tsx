@@ -10,6 +10,7 @@ import { MemoryStorage } from '../../infrastructure/local/LocalRepositoryTestFix
 import { DashboardPage } from './DashboardPage'
 
 const clock = { today: () => '2026-08-10' as never }
+const metricValue = (label: string) => screen.getByText(label).parentElement?.querySelector('dd')?.textContent
 function AddTodayIncome() {
   const { repositories } = useRepositories()
   return <button onClick={() => void repositories.dailyIncomes.create({ saleDate: '2026-08-10' as never, amountMinor: 70 as never, note: null })}>Add today income</button>
@@ -31,33 +32,38 @@ describe('DashboardPage', () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     await gateway.loadSeed()
     renderPage(gateway, true)
-    expect(await screen.findByText('Period income: 55000')).not.toBeNull()
-    expect(screen.getByText('Paid expenses: 15000')).not.toBeNull()
-    expect(screen.getByText('Estimated cash result — not net profit: 40000')).not.toBeNull()
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Entró a caja')).toBe('55000')
+    expect(metricValue('Pagaste')).toBe('15000')
+    expect(screen.getByText('Resultado de caja')).not.toBeNull()
+    expect(screen.getByText('Es una estimación, no una ganancia final.')).not.toBeNull()
     expect(screen.getByRole('link', { name: 'DEMO-300' }).getAttribute('href')).toBe('/invoices/demo-invoice-paid')
-    expect(screen.getByText('Demo Category C: 10000')).not.toBeNull()
-    expect(screen.getByRole('heading', { name: 'Due-date alerts' })).not.toBeNull()
+    expect(screen.getByText('Demo Category C').parentElement?.textContent).toBe('Demo Category C10000')
+    expect(screen.getByRole('heading', { name: 'Vencimientos cercanos' })).not.toBeNull()
   })
 
   it('changes only period metrics and refreshes after a provider-backed income mutation', async () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     await gateway.loadSeed()
     renderPage(gateway, true)
-    await screen.findByText('Period income: 55000')
-    fireEvent.click(screen.getByRole('button', { name: 'Day' }))
-    expect(await screen.findByText('Period income: 0')).not.toBeNull()
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Entró a caja')).toBe('55000')
+    fireEvent.click(screen.getByRole('button', { name: 'Día' }))
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Entró a caja')).toBe('0')
     fireEvent.click(screen.getByRole('button', { name: 'Add today income' }))
-    await waitFor(() => expect(screen.getByText('Period income: 70')).not.toBeNull())
+    await waitFor(() => expect(metricValue('Entró a caja')).toBe('70'))
   })
 
   it('renders accessible zero and empty states plus the documented inactivity alert', async () => {
     renderPage()
-    expect(await screen.findByText('Period income: 0')).not.toBeNull()
-    expect(screen.getByRole('alert').textContent).toContain('No daily income recorded in the last 7 days')
-    expect(screen.getByText('No invoices yet')).not.toBeNull()
-    expect(screen.getByText('No paid-expense categories for this period')).not.toBeNull()
-    expect(screen.getByText('Load seed data to explore the dashboard.')).not.toBeNull()
-    expect(screen.getByRole('group', { name: 'Dashboard period' })).not.toBeNull()
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Entró a caja')).toBe('0')
+    expect(screen.getByRole('alert').textContent).toContain('No registraste ingresos en los últimos 7 días')
+    expect(screen.getByText('Todavía no cargaste facturas.')).not.toBeNull()
+    expect(screen.getByText('Todavía no hay gastos pagados en este período.')).not.toBeNull()
+    expect(screen.getByText('Cuando cargues una factura, vas a verla acá junto con lo que falta pagar.')).not.toBeNull()
+    expect(screen.getByRole('group', { name: 'Período a consultar' })).not.toBeNull()
   })
 
   it('shows a retryable loading failure and reloads the dashboard', async () => {
@@ -70,9 +76,10 @@ describe('DashboardPage', () => {
       settings: { get: async () => ({ dueAlertDays: 7 }) },
     }
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><DashboardPage clock={clock} /></RepositoryProvider></MemoryRouter>)
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not load dashboard')
-    fireEvent.click(screen.getByRole('button', { name: 'Retry dashboard' }))
-    expect(await screen.findByText('Period income: 0')).not.toBeNull()
+    expect((await screen.findByRole('alert')).textContent).toContain('No pudimos cargar el resumen')
+    fireEvent.click(screen.getByRole('button', { name: 'Volver a intentar' }))
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Entró a caja')).toBe('0')
   })
 
   it('rerenders latest invoices after a real provider-backed invoice mutation', async () => {
@@ -88,10 +95,11 @@ describe('DashboardPage', () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     await gateway.loadSeed()
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><MutateInvoiceAndPayments /></RepositoryProvider></MemoryRouter>)
-    expect(await screen.findByText('Paid expenses: 15000')).not.toBeNull()
+    await screen.findByText('Lo importante ahora')
+    expect(metricValue('Pagaste')).toBe('15000')
     fireEvent.click(screen.getByRole('button', { name: 'Register real payment' }))
-    await waitFor(() => expect(screen.getByText('Paid expenses: 25000')).not.toBeNull())
+    await waitFor(() => expect(metricValue('Pagaste')).toBe('25000'))
     fireEvent.click(screen.getByRole('button', { name: 'Void real payment' }))
-    await waitFor(() => expect(screen.getByText('Paid expenses: 15000')).not.toBeNull())
+    await waitFor(() => expect(metricValue('Pagaste')).toBe('15000'))
   })
 })

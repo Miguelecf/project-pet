@@ -16,8 +16,8 @@ interface StateOverlayProps {
 export function StateOverlay({
   children,
   emptyActionLabel,
-  emptyMessage = 'There is nothing here yet.',
-  error = 'Something went wrong.',
+  emptyMessage = 'Todavía no hay nada acá.',
+  error = 'Algo salió mal.',
   onDismiss,
   onEmptyAction,
   onRetry,
@@ -33,17 +33,17 @@ export function StateOverlay({
     <div className="state-overlay-container">
       <div inert={state === 'loading' ? true : undefined}>{children}</div>
       {!dismissed && <div className="state-overlay" role={state === 'error' ? 'alert' : 'status'}>
-        {state === 'loading' && <p>Loading…</p>}
-        {state === 'loading' && <span aria-label="Loading" className="state-overlay__spinner" role="progressbar" />}
+        {state === 'loading' && <p>Cargando…</p>}
+        {state === 'loading' && <span aria-label="Cargando" className="state-overlay__spinner" role="progressbar" />}
         {state === 'error' && (
           <>
             <p>{error}</p>
             <div className="state-overlay__actions">
-              <button onClick={onRetry} type="button">Retry</button>
+              <button onClick={onRetry} type="button">Reintentar</button>
               <button onClick={() => {
                 setDismissed(true)
                 onDismiss?.()
-              }} type="button">Dismiss</button>
+              }} type="button">Cerrar</button>
             </div>
           </>
         )}
