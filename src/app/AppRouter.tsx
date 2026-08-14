@@ -10,7 +10,6 @@ import { InvoiceDetailPage } from '../modules/invoices/InvoiceDetailPage'
 import { InvoiceListPage } from '../modules/invoices/InvoiceListPage'
 import type { InvoiceWithLines } from '../modules/invoices/InvoiceRepository'
 import { useInvoices } from '../modules/invoices/useInvoices'
-import { SettingsPage } from '../modules/settings/SettingsPage'
 import { SupplierForm } from '../modules/suppliers/SupplierForm'
 import { SupplierPage } from '../modules/suppliers/SupplierPage'
 import { useSuppliers } from '../modules/suppliers/useSuppliers'
@@ -24,7 +23,6 @@ const placeholderPages = {
   suppliers: { title: 'Proveedores', description: 'La gestión de proveedores estará disponible en la próxima etapa del catálogo.' },
   categories: { title: 'Categorías', description: 'La gestión de categorías estará disponible en la próxima etapa del catálogo.' },
   invoices: { title: 'Facturas', description: 'La gestión de facturas estará disponible después de la etapa de reglas financieras.' },
-  settings: { title: 'Configuración', description: 'La gestión de la configuración estará disponible en la próxima etapa del catálogo.' },
 }
 
 function PlaceholderPage({ title, description }: { title: string; description: string }) {
@@ -61,7 +59,6 @@ export function AppRouter() {
         <Route element={<Layout><DailyIncomePage /></Layout>} path="/daily-income" />
         <Route element={<Layout><DailyIncomeForm /></Layout>} path="/daily-income/new" />
         <Route element={<Layout><DailyIncomeEditRoute /></Layout>} path="/daily-income/:id/edit" />
-        <Route element={<Layout><SettingsPage /></Layout>} path="/settings" />
         <Route element={<Navigate replace to="/" />} path="*" />
       </Routes>
       </BrowserRouter>

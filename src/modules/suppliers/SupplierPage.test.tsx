@@ -87,12 +87,12 @@ describe('SupplierPage', () => {
     await gateway.loadSeed()
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><SupplierPage /></RepositoryProvider></MemoryRouter>)
 
-    await screen.findByRole('button', { name: 'Eliminar Demo Supplier A' })
-    fireEvent.click(screen.getByRole('button', { name: 'Eliminar Demo Supplier A' }))
+    await screen.findByRole('button', { name: 'Eliminar Laboratorio VetSalud' })
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar Laboratorio VetSalud' }))
     fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
-    await waitFor(() => expect(screen.queryByText('Demo Supplier A')).toBeNull())
-    expect(screen.getByText('Demo Supplier B').textContent).toBe('Demo Supplier B')
+    await waitFor(() => expect(screen.queryByText('Laboratorio VetSalud')).toBeNull())
+    expect(screen.getByText('Distribuidora Huellitas').textContent).toBe('Distribuidora Huellitas')
     expect(gateway.read().suppliers.find((supplier) => supplier.id === 'demo-supplier-a')?.deletedAt).not.toBeNull()
   })
 })

@@ -18,8 +18,8 @@ describe('DailyIncomePage', () => {
     ]
     render(<MemoryRouter><RepositoryProvider repositories={{ dailyIncomes: { findAll: async () => incomes } } as never}><DailyIncomePage /></RepositoryProvider></MemoryRouter>)
 
-    const list = await screen.findByRole('list', { name: 'Ingresos diarios' })
-    expect(within(list).getAllByRole('listitem').map((item) => item.textContent)).toEqual(['2026-08-10 — 200 ARS — Counter saleEditarEliminar', '2026-08-09 — 100 USD — Sin notaEditarEliminar'])
+    const table = await screen.findByRole('table', { name: 'Ingresos diarios' })
+    expect(within(table).getAllByRole('row').slice(1).map((row) => row.textContent)).toEqual(['2026-08-10200ARSCounter saleEditarEliminar', '2026-08-09100USDSin notaEditarEliminar'])
   })
 
   it('shows an accessible empty action when no records exist', async () => {

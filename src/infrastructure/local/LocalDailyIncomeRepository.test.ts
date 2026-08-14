@@ -27,12 +27,12 @@ describeDailyIncomeRepositoryContract(() => {
 })
 
 describe('LocalDailyIncomeRepository edge cases', () => {
-  it('uses the USD fallback, sorts newest first, and rejects missing updates and deletes', async () => {
+  it('uses the ARS fallback, sorts newest first, and rejects missing updates and deletes', async () => {
     const repository = createRepository()
     const older = await repository.create({ saleDate: '2026-08-09' as never, amountMinor: 100 as never, note: null })
     const newer = await repository.create({ saleDate: '2026-08-10' as never, amountMinor: 200 as never, note: null })
 
-    expect(older.currency).toBe('USD')
+    expect(older.currency).toBe('ARS')
     expect((await repository.findAll()).map((income) => income.id)).toEqual([newer.id, older.id])
     await expect(repository.update('missing' as never, { saleDate: '2026-08-08' as never, amountMinor: 300 as never, note: null })).rejects.toThrow('daily income not found')
     await expect(repository.delete('missing' as never)).rejects.toThrow('daily income not found')

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
@@ -25,6 +25,8 @@ describe('InvoiceListPage', () => {
     renderList()
 
     expect((await screen.findByRole('link', { name: 'INV-100' })).getAttribute('href')).toBe('/invoices/pending')
+    expect(screen.getByRole('table', { name: 'Facturas' })).not.toBeNull()
+    expect(screen.getAllByRole('row')).toHaveLength(4)
     expect((await screen.findByLabelText('Estado: Pendiente')).textContent).toBe('Pendiente')
     expect((await screen.findByLabelText('Estado: Pago parcial')).textContent).toBe('Pago parcial')
     expect((await screen.findByLabelText('Estado: Pagada')).textContent).toBe('Pagada')
@@ -55,9 +57,9 @@ describe('InvoiceListPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
     expect(await screen.findByRole('link', { name: 'INV-DELETED' })).not.toBeNull()
     expect(screen.queryByRole('link', { name: 'INV-100' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Restaurar INV-DELETED' }))
+    fireEvent.click(within(screen.getByRole('row', { name: /INV-DELETED/ })).getByRole('button', { name: 'Restaurar' }))
     expect(screen.getByRole('dialog').textContent).toContain('¿Restaurar factura?')
-    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Restaurar' }))
     await waitFor(() => expect(restore).toHaveBeenCalledWith('deleted'))
     expect(await screen.findByRole('link', { name: 'INV-100' })).not.toBeNull()
   })
@@ -83,8 +85,8 @@ describe('InvoiceListPage', () => {
     } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar INV-DELETED' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
+    fireEvent.click(within(await screen.findByRole('row', { name: /INV-DELETED/ })).getByRole('button', { name: 'Restaurar' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Restaurar' }))
     expect((await screen.findByRole('alert')).textContent).toContain('Restore unavailable')
     expect(screen.queryByRole('link', { name: 'INV-100' })).toBeNull()
   })
@@ -101,7 +103,7 @@ describe('InvoiceListPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
     await screen.findByRole('link', { name: 'Factura anonymous' })
     fireEvent.click(screen.getByRole('button', { name: 'Ver facturas eliminadas' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar Factura deleted' }))
+    fireEvent.click(within(await screen.findByRole('row', { name: /Factura deleted/ })).getByRole('button', { name: 'Restaurar' }))
     fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
     expect(screen.queryByRole('dialog')).toBeNull()
   })
@@ -153,8 +155,8 @@ describe('InvoiceListPage', () => {
     const deleted = [{ id: 'deleted', docRef: 'INV-DELETED', totalMinor: 1000, status: 'pending', deletedAt: '2026-08-10T00:00:00.000Z' }] as never
     render(<MemoryRouter><RepositoryProvider repositories={{ invoices: { findAll: async () => invoices, findDeleted: async () => deleted, restore: async () => { throw 'offline' } }, payments: { findByInvoice: async () => [] } } as never}><InvoiceListPage /></RepositoryProvider></MemoryRouter>)
     fireEvent.click(await screen.findByRole('button', { name: 'Ver facturas eliminadas' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Restaurar INV-DELETED' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Restaurar' }))
+    fireEvent.click(within(await screen.findByRole('row', { name: /INV-DELETED/ })).getByRole('button', { name: 'Restaurar' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Restaurar' }))
     expect((await screen.findByRole('alert')).textContent).toContain('No pudimos restaurar la factura')
   })
 })

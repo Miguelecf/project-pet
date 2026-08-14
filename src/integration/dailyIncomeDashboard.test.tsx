@@ -9,14 +9,14 @@ import { LocalStateGateway } from '../infrastructure/local/LocalStateGateway'
 import { MemoryStorage } from '../infrastructure/local/LocalRepositoryTestFixtures'
 import { DashboardPage } from '../modules/dashboard/DashboardPage'
 
-const clock = { today: () => '2026-08-10' as never }
+const clock = { today: () => '2026-08-11' as never }
 const incomeValue = () => screen.getByText('Entró a caja').parentElement?.querySelector('dd')?.textContent
 
 function IncomeMutations() {
   const { repositories } = useRepositories()
-  const create = async () => { await repositories.dailyIncomes.create({ saleDate: '2026-08-10' as never, amountMinor: 25000 as never, note: 'Integration sale' }) }
-  const edit = async () => { const income = (await repositories.dailyIncomes.findAll()).find((item) => item.saleDate === '2026-08-10')!; await repositories.dailyIncomes.update(income.id, { saleDate: income.saleDate, amountMinor: 30000 as never, note: 'Edited sale' }) }
-  const remove = async () => { const income = (await repositories.dailyIncomes.findAll()).find((item) => item.saleDate === '2026-08-10')!; await repositories.dailyIncomes.delete(income.id) }
+    const create = async () => { await repositories.dailyIncomes.create({ saleDate: '2026-08-11' as never, amountMinor: 25000 as never, note: 'Integration sale' }) }
+    const edit = async () => { const income = (await repositories.dailyIncomes.findAll()).find((item) => item.saleDate === '2026-08-11')!; await repositories.dailyIncomes.update(income.id, { saleDate: income.saleDate, amountMinor: 30000 as never, note: 'Edited sale' }) }
+    const remove = async () => { const income = (await repositories.dailyIncomes.findAll()).find((item) => item.saleDate === '2026-08-11')!; await repositories.dailyIncomes.delete(income.id) }
   return <><button onClick={() => void create()}>Create dashboard income</button><button onClick={() => void edit()}>Edit dashboard income</button><button onClick={() => void remove()}>Delete dashboard income</button></>
 }
 
@@ -33,7 +33,7 @@ describe('daily income dashboard integration', () => {
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><IncomeMutations /></RepositoryProvider></MemoryRouter>)
 
     await screen.findByText('Lo importante ahora')
-    expect(incomeValue()).toBe('55000')
+    expect(incomeValue()).toBe('630000')
     screen.getByRole('button', { name: 'Día' }).click()
     await waitFor(() => expect(incomeValue()).toBe('0'))
     screen.getByRole('button', { name: 'Create dashboard income' }).click()

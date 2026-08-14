@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Category } from '../../types/domain'
 import { useCategories } from './useCategories'
+import { userFacingError } from '../../utils/userFacingErrors'
 
 interface CategoryFormProps {
   readonly category?: Category
@@ -16,7 +17,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
   async function save() {
     const trimmedName = name.trim()
     if (!trimmedName) {
-      setError('El nombre de la categoría es obligatorio')
+      setError('Completá el nombre de la categoría')
       return
     }
     setError(null)
@@ -25,7 +26,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
       else await create({ name: trimmedName })
       navigate('/categories')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'No pudimos guardar la categoría')
+      setError(userFacingError(reason, 'No pudimos guardar la categoría'))
     }
   }
 

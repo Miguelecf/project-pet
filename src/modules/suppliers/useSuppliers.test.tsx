@@ -57,6 +57,6 @@ describe('useSuppliers', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Restore suppliers' }))
 
-    await waitFor(() => expect(screen.getByText('Demo Supplier A,Demo Supplier B')).toBeDefined())
+    await waitFor(() => expect(screen.getByText('Laboratorio VetSalud,Distribuidora Huellitas,Alimentos Sanos,Equipamiento Animalia,PetClean Insumos,BioDiagnóstico,Frío Clínico,Mundo Canino')).toBeDefined())
   })
 })

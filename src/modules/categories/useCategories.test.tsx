@@ -57,6 +57,6 @@ describe('useCategories', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Restore categories' }))
 
-    await waitFor(() => expect(screen.getByText('Demo Category A,Demo Category B,Demo Category C,Demo Category D,Demo Category E,Demo Category F').textContent).toBe('Demo Category A,Demo Category B,Demo Category C,Demo Category D,Demo Category E,Demo Category F'))
+    await waitFor(() => expect(screen.getByText('Medicamentos,Vacunas,Alimentos,Material descartable,Higiene,Accesorios,Laboratorio,Cirugía,Internación,Mantenimiento').textContent).toBe('Medicamentos,Vacunas,Alimentos,Material descartable,Higiene,Accesorios,Laboratorio,Cirugía,Internación,Mantenimiento'))
   })
 })

@@ -24,7 +24,7 @@ export class LocalDailyIncomeRepository implements DailyIncomeRepository {
     const state = this.gateway.read()
     this.ensureUnique(state.dailyIncomes, input.saleDate)
     const timestamp = this.now()
-    const income: DailyIncome = { id: this.nextId(), ...input, currency: state.settings?.currency ?? 'USD', createdAt: timestamp, updatedAt: timestamp }
+    const income: DailyIncome = { id: this.nextId(), ...input, currency: state.settings?.currency ?? 'ARS', createdAt: timestamp, updatedAt: timestamp }
     state.dailyIncomes.push(income)
     await this.gateway.write(state)
     return income

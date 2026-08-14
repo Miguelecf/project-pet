@@ -31,11 +31,11 @@ describe('SupplierForm', () => {
     const create = vi.fn(async () => { throw new Error('duplicate supplier name') })
     renderForm({ create }, undefined)
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByRole('alert').textContent).toBe('El nombre del proveedor es obligatorio')
+    expect(screen.getByRole('alert').textContent).toBe('Completá el nombre del proveedor')
 
     fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: 'Alpha' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate supplier name'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Ya existe un proveedor con ese nombre'))
   })
 
   it('updates an existing supplier and only soft-deletes after confirmation', async () => {
@@ -61,12 +61,14 @@ describe('SupplierForm', () => {
     fireEvent.change(screen.getByLabelText('Nombre del proveedor'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate supplier name'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Ya existe un proveedor con ese nombre'))
     expect((screen.getByLabelText('Nombre del proveedor') as HTMLInputElement).value).toBe(`  ${existing.name.toLowerCase()}  `)
-    expect(gateway.read().suppliers.map((supplier) => ({ id: supplier.id, name: supplier.name, normalizedName: supplier.normalizedName, deletedAt: supplier.deletedAt }))).toEqual([
-      { id: editable.id, name: editable.name, normalizedName: editable.normalizedName, deletedAt: null },
-      { id: existing.id, name: existing.name, normalizedName: existing.normalizedName, deletedAt: null },
-    ])
+    expect(gateway.read().suppliers.map((supplier) => ({ id: supplier.id, name: supplier.name, normalizedName: supplier.normalizedName, deletedAt: supplier.deletedAt }))).toEqual(
+      expect.arrayContaining([
+        { id: editable.id, name: editable.name, normalizedName: editable.normalizedName, deletedAt: null },
+        { id: existing.id, name: existing.name, normalizedName: existing.normalizedName, deletedAt: null },
+      ]),
+    )
   })
 
   it('keeps a supplier active when deletion is cancelled', async () => {

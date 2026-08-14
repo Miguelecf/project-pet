@@ -41,16 +41,13 @@ export function DueAlerts({ clock }: { readonly clock: Clock }) {
   const [alerts, setAlerts] = useState<readonly DueAlert[]>([])
 
   const refresh = useCallback(async () => {
-    const [invoices, settings] = await Promise.all([
-      repositories.invoices.findAll(),
-      repositories.settings.get(),
-    ])
+    const invoices = await repositories.invoices.findAll()
     const paidByInvoice = new Map<string, number>()
     await Promise.all(invoices.map(async (invoice) => {
       const payments = await repositories.payments.findByInvoice(invoice.id)
       paidByInvoice.set(invoice.id, payments.reduce((total, payment) => payment.isVoid ? total : total + payment.amountMinor, 0))
     }))
-    setAlerts(dueAlertsFor(invoices, paidByInvoice, clock.today(), settings.dueAlertDays))
+    setAlerts(dueAlertsFor(invoices, paidByInvoice, clock.today(), 7))
   }, [clock, repositories])
 
   useEffect(() => { void refresh() }, [refresh, revision])

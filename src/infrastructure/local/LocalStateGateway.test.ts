@@ -138,9 +138,11 @@ describe('LocalStateGateway', () => {
     persisted.suppliers[0].name = 'Modified persisted supplier'
 
     expect(storage.setItemCalls).toBe(1)
-    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Demo Supplier A' })
-    expect(gateway.read().invoices.map((invoice) => invoice.status)).toEqual(['pending', 'partially_paid', 'paid'])
-    expect(SEED_DATA.suppliers[0].name).toBe('Demo Supplier A')
+    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Laboratorio VetSalud' })
+    expect(gateway.read().invoices.filter((invoice) => invoice.status === 'pending')).toHaveLength(10)
+    expect(gateway.read().invoices.filter((invoice) => invoice.status === 'partially_paid')).toHaveLength(10)
+    expect(gateway.read().invoices.filter((invoice) => invoice.status === 'paid')).toHaveLength(10)
+    expect(SEED_DATA.suppliers[0].name).toBe('Laboratorio VetSalud')
   })
 
   it('restores an independent, deterministic seed copy after mutations', async () => {
@@ -156,8 +158,8 @@ describe('LocalStateGateway', () => {
     firstRestore.categories[0].name = 'Changed returned copy'
     await gateway.restore()
 
-    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Demo Supplier A' })
-    expect(gateway.read().categories[0]).toMatchObject({ name: 'Demo Category A' })
+    expect(gateway.read().suppliers[0]).toMatchObject({ name: 'Laboratorio VetSalud' })
+    expect(gateway.read().categories[0]).toMatchObject({ name: 'Medicamentos' })
     expect(storage.setItemCalls).toBe(4)
   })
 })

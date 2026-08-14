@@ -4,6 +4,7 @@ import type { DailyIncome } from '../../types/domain'
 import { validateISODate, type Clock } from '../../utils/dates'
 import { useSettings } from '../settings/useSettings'
 import { useDailyIncomes } from './useDailyIncomes'
+import { userFacingError } from '../../utils/userFacingErrors'
 
 interface DailyIncomeFormProps {
   readonly clock?: Clock
@@ -31,6 +32,8 @@ export function DailyIncomeForm({ clock = systemClock(), income }: DailyIncomeFo
 
   async function save() {
     try {
+      if (!saleDate.trim()) throw new RangeError('Completá la fecha de venta')
+      if (!amount.trim()) throw new RangeError('Completá el monto')
       const input = {
         saleDate: validateISODate(saleDate, clock, { kind: 'sale' }),
         amountMinor: validatePositiveMoney(amount) as never,
@@ -40,11 +43,11 @@ export function DailyIncomeForm({ clock = systemClock(), income }: DailyIncomeFo
       else await create(input)
       navigate('/daily-income')
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'No pudimos guardar el ingreso diario')
+      setError(userFacingError(reason, 'No pudimos guardar el ingreso diario'))
     }
   }
 
-  return <section aria-labelledby="daily-income-form-title">
+  return <section aria-labelledby="daily-income-form-title" className="form-page">
     <p className="eyebrow">Operación</p>
     <h1 id="daily-income-form-title">{income ? 'Editar ingreso diario' : 'Crear ingreso diario'}</h1>
     {settings && <p>Moneda registrada: {income?.currency ?? settings.currency}</p>}

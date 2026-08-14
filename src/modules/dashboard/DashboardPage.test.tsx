@@ -13,7 +13,10 @@ const clock = { today: () => '2026-08-10' as never }
 const metricValue = (label: string) => screen.getByText(label).parentElement?.querySelector('dd')?.textContent
 function AddTodayIncome() {
   const { repositories } = useRepositories()
-  return <button onClick={() => void repositories.dailyIncomes.create({ saleDate: '2026-08-10' as never, amountMinor: 70 as never, note: null })}>Add today income</button>
+  return <button onClick={() => void repositories.dailyIncomes.findAll().then((incomes) => {
+    const today = incomes.find((income) => income.saleDate === '2026-08-10')
+    return today ? repositories.dailyIncomes.update(today.id, { saleDate: today.saleDate, amountMinor: ((today.amountMinor as number) + 70) as never, note: today.note }) : undefined
+  })}>Add today income</button>
 }
 function MutateInvoiceAndPayments() {
   const { repositories } = useRepositories()
@@ -33,12 +36,12 @@ describe('DashboardPage', () => {
     await gateway.loadSeed()
     renderPage(gateway, true)
     await screen.findByText('Lo importante ahora')
-    expect(metricValue('Entró a caja')).toBe('55000')
-    expect(metricValue('Pagaste')).toBe('15000')
+    expect(metricValue('Entró a caja')).toBe('630000')
+    expect(metricValue('Pagaste')).toBe('337500')
     expect(screen.getByText('Resultado de caja')).not.toBeNull()
     expect(screen.getByText('Es una estimación, no una ganancia final.')).not.toBeNull()
-    expect(screen.getByRole('link', { name: 'DEMO-300' }).getAttribute('href')).toBe('/invoices/demo-invoice-paid')
-    expect(screen.getByText('Demo Category C').parentElement?.textContent).toBe('Demo Category C10000')
+    expect(screen.getByRole('link', { name: 'VET-0030' }).getAttribute('href')).toBe('/invoices/vet-invoice-30')
+    expect(screen.getByText('Mantenimiento').parentElement?.textContent).toBe('Mantenimiento54500')
     expect(screen.getByRole('heading', { name: 'Vencimientos cercanos' })).not.toBeNull()
   })
 
@@ -47,12 +50,12 @@ describe('DashboardPage', () => {
     await gateway.loadSeed()
     renderPage(gateway, true)
     await screen.findByText('Lo importante ahora')
-    expect(metricValue('Entró a caja')).toBe('55000')
+    expect(metricValue('Entró a caja')).toBe('630000')
     fireEvent.click(screen.getByRole('button', { name: 'Día' }))
     await screen.findByText('Lo importante ahora')
-    expect(metricValue('Entró a caja')).toBe('0')
+    expect(metricValue('Entró a caja')).toBe('88000')
     fireEvent.click(screen.getByRole('button', { name: 'Add today income' }))
-    await waitFor(() => expect(metricValue('Entró a caja')).toBe('70'))
+    await waitFor(() => expect(metricValue('Entró a caja')).toBe('88070'))
   })
 
   it('renders accessible zero and empty states plus the documented inactivity alert', async () => {
@@ -96,10 +99,11 @@ describe('DashboardPage', () => {
     await gateway.loadSeed()
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><DashboardPage clock={clock} /><MutateInvoiceAndPayments /></RepositoryProvider></MemoryRouter>)
     await screen.findByText('Lo importante ahora')
-    expect(metricValue('Pagaste')).toBe('15000')
+    expect(metricValue('Pagaste')).toBe('337500')
     fireEvent.click(screen.getByRole('button', { name: 'Register real payment' }))
-    await waitFor(() => expect(metricValue('Pagaste')).toBe('25000'))
+    await waitFor(() => expect(metricValue('Pagaste')).toBe('347500'))
     fireEvent.click(screen.getByRole('button', { name: 'Void real payment' }))
-    await waitFor(() => expect(metricValue('Pagaste')).toBe('15000'))
+    await waitFor(() => expect(gateway.read().payments.find((payment) => payment.id === 'demo-payment-paid')?.isVoid).toBe(true))
+    expect(metricValue('Pagaste')).toBe('347500')
   })
 })

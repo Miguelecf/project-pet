@@ -34,9 +34,9 @@ describe('RestoreDemoData', () => {
     render(<RepositoryProvider gateway={gateway}><RestoreDemoData /><AddSupplier /><SupplierNames /></RepositoryProvider>)
 
     expect(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' })).not.toBeNull()
-    expect(await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B')).not.toBeNull()
+    expect(await screen.findByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino')).not.toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Agregar proveedor temporal' }))
-    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')
+    await screen.findByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino, Temporary supplier')
     fireEvent.click(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' }))
 
     const dialog = screen.getByRole('dialog', { name: '¿Restaurar datos de ejemplo?' })
@@ -44,7 +44,7 @@ describe('RestoreDemoData', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Restaurar' }))
 
     await screen.findByText('Datos de ejemplo restaurados.')
-    await waitFor(() => expect(screen.getByText('Proveedores: Demo Supplier A, Demo Supplier B')).not.toBeNull())
+    await waitFor(() => expect(screen.getByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino')).not.toBeNull())
   })
 
   it('keeps data unchanged when the confirmation dialog is cancelled', async () => {
@@ -52,14 +52,14 @@ describe('RestoreDemoData', () => {
     await gateway.loadSeed()
     render(<RepositoryProvider gateway={gateway}><RestoreDemoData /><AddSupplier /><SupplierNames /></RepositoryProvider>)
 
-    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B')
+    await screen.findByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino')
     fireEvent.click(screen.getByRole('button', { name: 'Agregar proveedor temporal' }))
-    await screen.findByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')
+    await screen.findByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino, Temporary supplier')
     fireEvent.click(screen.getByRole('button', { name: 'Restaurar datos de ejemplo' }))
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }))
 
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(screen.getByText('Proveedores: Demo Supplier A, Demo Supplier B, Temporary supplier')).not.toBeNull()
+    expect(screen.getByText('Proveedores: Laboratorio VetSalud, Distribuidora Huellitas, Alimentos Sanos, Equipamiento Animalia, PetClean Insumos, BioDiagnóstico, Frío Clínico, Mundo Canino, Temporary supplier')).not.toBeNull()
   })
 
   it('shows retryable feedback when restoring data fails', async () => {

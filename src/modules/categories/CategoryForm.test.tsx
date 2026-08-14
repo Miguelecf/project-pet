@@ -31,11 +31,11 @@ describe('CategoryForm', () => {
     const create = vi.fn(async () => { throw new Error('duplicate category name') })
     renderForm({ create })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByRole('alert').textContent).toBe('El nombre de la categoría es obligatorio')
+    expect(screen.getByRole('alert').textContent).toBe('Completá el nombre de la categoría')
 
     fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: 'Alpha' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate category name'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Ya existe una categoría con ese nombre'))
   })
 
   it('updates a category with a unique trimmed value', async () => {
@@ -56,7 +56,7 @@ describe('CategoryForm', () => {
     fireEvent.change(screen.getByLabelText('Nombre de la categoría'), { target: { value: `  ${existing.name.toLowerCase()}  ` } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate category name'))
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Ya existe una categoría con ese nombre'))
     expect(gateway.read().categories.map((category) => ({ id: category.id, name: category.name, normalizedName: category.normalizedName }))).toEqual([
       { id: editable.id, name: editable.name, normalizedName: editable.normalizedName },
       { id: existing.id, name: existing.name, normalizedName: existing.normalizedName },

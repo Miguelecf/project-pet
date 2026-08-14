@@ -56,7 +56,7 @@ describe('App', () => {
 
     expect(main.id).toBe('main-content')
     expect(skipLink.getAttribute('href')).toBe(`#${main.id}`)
-    expect(screen.getAllByRole('link')).toHaveLength(7)
+    expect(screen.getAllByRole('link')).toHaveLength(6)
     expect(screen.getByRole('button', { name: 'Actualizar datos' })).not.toBeNull()
   })
 })

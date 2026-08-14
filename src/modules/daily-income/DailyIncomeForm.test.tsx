@@ -38,7 +38,7 @@ describe('DailyIncomeForm', () => {
     fireEvent.change(screen.getByLabelText('Monto (unidades mínimas)'), { target: { value: '10' } })
     fireEvent.change(screen.getByLabelText('Fecha de venta'), { target: { value: '2026-08-11' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByRole('alert').textContent).toBe('Date must not be in the future')
+    expect(screen.getByRole('alert').textContent).toBe('La fecha no puede ser futura')
     fireEvent.change(screen.getByLabelText('Fecha de venta'), { target: { value: '2026-08-10' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('duplicate sale date'))

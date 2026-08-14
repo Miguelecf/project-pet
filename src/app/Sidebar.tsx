@@ -9,7 +9,6 @@ const navigationItems = [
   { to: '/categories', label: 'Categorías' },
   { to: '/invoices', label: 'Facturas' },
   { to: '/daily-income', label: 'Ingresos diarios' },
-  { to: '/settings', label: 'Configuración' },
 ]
 
 const isMobileViewport = () => window.innerWidth < MOBILE_BREAKPOINT

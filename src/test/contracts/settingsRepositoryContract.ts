@@ -14,7 +14,7 @@ export function describeSettingsRepositoryContract(createFixture: () => Settings
       const defaults = await repository.get()
 
       expect(defaults).toEqual({
-        currency: 'USD',
+        currency: 'ARS',
         dueAlertDays: 7,
         createdAt: '2026-08-10T00:00:00.000Z',
         updatedAt: '2026-08-10T00:00:00.000Z',
@@ -26,6 +26,7 @@ export function describeSettingsRepositoryContract(createFixture: () => Settings
 
     it('locks valid ARS and USD changes after financial activity', async () => {
       const usdFixture = createFixture()
+      await usdFixture.repository.save({ currency: 'USD', dueAlertDays: 0 as never })
       await usdFixture.recordInvoice()
       await expect(usdFixture.repository.save({ currency: 'ARS', dueAlertDays: 0 as never })).rejects.toThrow()
 

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { RepositoryProvider } from '../../app/RepositoryProvider'
@@ -24,6 +24,8 @@ describe('CategoryPage', () => {
     render(<MemoryRouter><RepositoryProvider repositories={repositories as never}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
     await waitFor(() => expect(screen.getByRole('link', { name: 'Editar Alpha' }).getAttribute('href')).toBe('/categories/alpha/edit'))
+    expect(screen.getByRole('table', { name: 'Categorías' })).not.toBeNull()
+    expect(screen.getAllByRole('row')).toHaveLength(3)
     expect(screen.getByText('Beta').textContent).toBe('Beta')
   })
 
@@ -47,7 +49,7 @@ describe('CategoryPage', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${referenced.name}` }))
 
-    await waitFor(() => expect(screen.getByText('No podés eliminarla porque está usada en 2 línea(s) de factura').textContent).toBe('No podés eliminarla porque está usada en 2 línea(s) de factura'))
+     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('No podés eliminarla porque está usada en 4 línea(s) de factura'))
     expect(gateway.read().categories.some((category) => category.id === referenced.id)).toBe(true)
   })
 
@@ -59,19 +61,22 @@ describe('CategoryPage', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${referenced.name}` }))
 
-    await waitFor(() => expect(screen.getByText('No podés eliminarla porque está usada en 1 línea(s) de factura', { selector: 'p' }).textContent).toBe('No podés eliminarla porque está usada en 1 línea(s) de factura'))
-    expect(gateway.read().invoiceLines.filter((line) => line.categoryId === referenced.id)).toHaveLength(1)
+     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('No podés eliminarla porque está usada en 3 línea(s) de factura'))
+    expect(gateway.read().invoiceLines.filter((line) => line.categoryId === referenced.id)).toHaveLength(3)
     expect(gateway.read().categories.some((category) => category.id === referenced.id)).toBe(true)
   })
 
   it('removes an unreferenced category only after confirmed deletion and provider revision', async () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     await gateway.loadSeed()
-    const unreferenced = gateway.read().categories.at(-1)!
+    const state = gateway.read()
+    const unreferenced = { ...state.categories.at(-1)!, id: 'unreferenced-category', name: 'Sin referencias', normalizedName: 'sin referencias' } as Category
+    state.categories.push(unreferenced)
+    await gateway.write(state)
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
     fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${unreferenced.name}` }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Eliminar' }))
+     fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: /^Eliminar$/ }))
 
     await waitFor(() => expect(screen.queryByText(unreferenced.name)).toBeNull())
     expect(gateway.read().categories.some((category) => category.id === unreferenced.id)).toBe(false)
@@ -80,11 +85,14 @@ describe('CategoryPage', () => {
   it('keeps a category active when deletion is cancelled', async () => {
     const gateway = new LocalStateGateway(new MemoryStorage())
     await gateway.loadSeed()
-    const unreferenced = gateway.read().categories.at(-1)!
+    const state = gateway.read()
+    const unreferenced = { ...state.categories.at(-1)!, id: 'unreferenced-category', name: 'Sin referencias', normalizedName: 'sin referencias' } as Category
+    state.categories.push(unreferenced)
+    await gateway.write(state)
     render(<MemoryRouter><RepositoryProvider gateway={gateway}><CategoryPage /></RepositoryProvider></MemoryRouter>)
 
     fireEvent.click(await screen.findByRole('button', { name: `Eliminar ${unreferenced.name}` }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
+    fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: /^Cancelar$/ }))
 
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(gateway.read().categories.some((category) => category.id === unreferenced.id)).toBe(true)

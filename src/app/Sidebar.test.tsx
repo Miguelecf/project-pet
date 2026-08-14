@@ -31,7 +31,6 @@ describe('Sidebar', () => {
       'Categorías',
       'Facturas',
       'Ingresos diarios',
-      'Configuración',
     ])
     expect(screen.queryByRole('button', { name: 'Abrir navegación' })).toBeNull()
   })

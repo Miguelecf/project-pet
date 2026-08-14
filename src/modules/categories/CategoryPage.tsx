@@ -45,17 +45,22 @@ export function CategoryPage() {
       <p className="eyebrow">Catálogo</p>
       <h1 id="categories-title">Categorías</h1>
       <Link className="primary-action" to="/categories/new">Crear categoría</Link>
-      <ul aria-label="Categorías" className="category-list">
+      <div className="data-table-wrap">
+      <table aria-label="Categorías" className="data-table">
+        <thead><tr><th scope="col">Categoría</th><th scope="col">Acciones</th></tr></thead>
+        <tbody>
         {categories.map((category) => (
-          <li key={category.id}>
-            <span>{category.name}</span>
-            <div>
+          <tr key={category.id}>
+            <th scope="row">{category.name}</th>
+            <td>
               <Link aria-label={`Editar ${category.name}`} to={`/categories/${category.id}/edit`}>Editar</Link>
               <button aria-label={`Eliminar ${category.name}`} onClick={() => void requestDelete(category)} type="button">Eliminar</button>
-            </div>
-          </li>
+            </td>
+          </tr>
         ))}
-      </ul>
+        </tbody>
+      </table>
+      </div>
       <ConfirmDialog cancelLabel="Cancelar" confirmLabel="Eliminar" message={`¿Eliminar ${deleting?.name ?? 'esta categoría'}?`} onCancel={() => setDeleting(null)} onConfirm={() => void confirmDelete()} open={deleting !== null} title="Eliminar categoría" />
     </section>
   )

@@ -4,6 +4,7 @@ import type { InvoiceId, PaymentId, PaymentMethod } from '../../types/domain'
 import { validateISODate, type Clock } from '../../utils/dates'
 import { validateNonEmpty } from '../../utils/validation'
 import { usePayments } from './usePayments'
+import { userFacingError } from '../../utils/userFacingErrors'
 
 interface PaymentFormProps {
   readonly clock?: Clock
@@ -17,7 +18,7 @@ function systemClock(): Clock {
 
 function validatePositiveMoney(value: string): number {
   const amount = Number(value)
-  if (!Number.isSafeInteger(amount) || amount <= 0) throw new RangeError('Payment amount must be a positive safe integer')
+  if (!Number.isSafeInteger(amount) || amount <= 0) throw new RangeError('El monto del pago debe ser un número entero mayor que cero')
   return amount
 }
 
@@ -32,6 +33,8 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
 
   async function submit() {
     try {
+      if (!amount.trim()) throw new RangeError('Completá el monto del pago')
+      if (!paymentDate.trim()) throw new RangeError('Completá la fecha de pago')
       const amountMinor = validatePositiveMoney(amount)
       const remainingMinor = balance?.remainingMinor
       if (remainingMinor === null || remainingMinor === undefined) throw new Error('El saldo para el pago no está disponible')
@@ -41,7 +44,7 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
       setError(null)
       onChanged?.()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'No pudimos registrar el pago')
+      setError(userFacingError(reason, 'No pudimos registrar el pago'))
     }
   }
 
@@ -51,7 +54,7 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
       setError(null)
       setVoiding({ id, reason })
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message.replace('Value must not be empty', 'El motivo de anulación es obligatorio') : 'El motivo de anulación es obligatorio')
+      setError(reason instanceof Error ? reason.message.replace('Value must not be empty', 'Completá el motivo de anulación') : 'Completá el motivo de anulación')
     }
   }
 
@@ -70,7 +73,7 @@ export function PaymentForm({ clock = systemClock(), invoiceId, onChanged }: Pay
 
   if (loading) return <p role="status">Cargando pagos.</p>
 
-  return <section aria-labelledby="payment-form-title">
+  return <section aria-labelledby="payment-form-title" className="form-page payment-form">
     <h2 id="payment-form-title">Registrar pago</h2>
     {(error ?? loadError) && <p role="alert">{error ?? loadError}</p>}
     {loadError && <button onClick={() => void refresh()} type="button">Reintentar</button>}

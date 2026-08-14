@@ -46,6 +46,6 @@ describe('RepositoryProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Restore' }))
 
     await waitFor(() => expect(screen.getByRole('status').textContent).toBe('2'))
-    await expect(gateway.read().suppliers.map((supplier) => supplier.name)).toEqual(['Demo Supplier A', 'Demo Supplier B'])
+    await expect(gateway.read().suppliers.slice(0, 2).map((supplier) => supplier.name)).toEqual(['Laboratorio VetSalud', 'Distribuidora Huellitas'])
   })
 })

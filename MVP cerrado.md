@@ -221,19 +221,148 @@ historia con esta ficha:
 > señalando. No se implementa una historia hasta que tenga criterios de
 > aceptación suficientes.
 
-### US-001: Pendiente de definición
+### US-001: Mejorar formularios y mensajes de validación
 
-**Estado:** Pendiente  
-**Prioridad:** Por definir  
-**Área:** Por definir
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Formularios y experiencia de demo
 
 #### Historia
 
-Pendiente de definición por la persona usuaria.
+Como persona que está probando la demo,
+quiero saber exactamente qué campo debo completar cuando falta información,
+para poder corregir el formulario sin adivinar.
+
+#### Entidades involucradas
+
+- Formularios de proveedores, categorías, facturas, líneas, pagos e ingresos.
+- Mensajes de validación.
 
 #### Criterios de aceptación
 
-- [ ] Pendiente de definición.
+- [ ] Cada campo obligatorio vacío muestra un mensaje asociado a ese campo.
+- [ ] El mensaje indica qué falta, por ejemplo: `Completá el nombre del proveedor`.
+- [ ] El formulario conserva los datos ya ingresados cuando existe un error.
+- [ ] Los campos se presentan en un orden natural para una demo.
+- [ ] La validación permite avanzar con datos mínimos de demostración sin exigir información innecesaria.
+- [ ] El error general sólo se usa cuando el problema no pertenece a un campo específico.
+
+### US-002: Definir el vencimiento habitual por proveedor
+
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Proveedores y facturas
+
+#### Historia
+
+Como persona que registra compras,
+quiero definir cuántos días de plazo suele dar cada proveedor,
+para que ese dato me ayude a completar nuevas facturas sin quitarme la posibilidad
+de corregir la fecha de vencimiento.
+
+#### Entidades involucradas
+
+- Proveedor.
+- Factura.
+- Fecha de vencimiento.
+- Plazo habitual de pago del proveedor.
+
+#### Criterios de aceptación
+
+- [ ] El proveedor puede tener un plazo habitual de pago expresado en días.
+- [ ] El plazo del proveedor es opcional.
+- [ ] Al crear una factura, si el proveedor tiene plazo habitual, se propone una fecha de vencimiento a partir de la fecha de emisión.
+- [ ] La persona puede modificar la fecha propuesta en la factura.
+- [ ] La fecha guardada en la factura es la que se usa para mostrar vencimientos.
+- [ ] Cambiar el plazo del proveedor no modifica facturas ya creadas.
+- [ ] Si el proveedor no tiene plazo configurado, la factura permite completar manualmente la fecha de vencimiento.
+
+#### Fuera de alcance
+
+- No modificar automáticamente facturas existentes.
+- No agregar una pantalla general de configuración de vencimientos.
+
+### US-003: Retirar la configuración general del MVP demo
+
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Navegación y resumen
+
+#### Historia
+
+Como persona que recorre la demo,
+quiero encontrar sólo las secciones necesarias para operar,
+para no distraerme con una pantalla de configuración que todavía no aporta valor.
+
+#### Criterios de aceptación
+
+- [ ] `Configuración` no aparece en la navegación principal.
+- [ ] La pantalla de configuración general deja de formar parte del flujo demo.
+- [ ] El resumen no muestra controles ni referencias a configuración general.
+- [ ] Los avisos de vencimiento se basan en las fechas de las facturas.
+- [ ] Las preferencias que ya no tienen una pantalla visible no bloquean la navegación principal.
+
+### US-004: Mejorar tablas de categorías y facturas
+
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Categorías y facturas
+
+#### Historia
+
+Como persona que recorre la demo,
+quiero leer categorías y facturas en tablas claras,
+para encontrar rápidamente la información y distinguir sus acciones.
+
+#### Criterios de aceptación
+
+- [ ] Categorías se muestran con encabezado, nombre y acciones.
+- [ ] Facturas se muestran con referencia, proveedor, fecha, vencimiento, estado, total y saldo.
+- [ ] Las acciones de cada fila son distinguibles y fáciles de encontrar.
+- [ ] Las tablas se adaptan a pantallas pequeñas sin perder información esencial.
+- [ ] Las tablas tienen nombres accesibles y estados vacíos claros.
+
+### US-005: Restaurar datos de ejemplo de una veterinaria
+
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Datos de ejemplo y demo
+
+#### Historia
+
+Como persona que quiere mostrar la demo,
+quiero restaurar datos realistas de una veterinaria,
+para recorrer el producto con un negocio reconocible y suficientemente completo.
+
+#### Criterios de aceptación
+
+- [ ] Restaurar datos reemplaza el estado actual por un conjunto coherente de una veterinaria.
+- [ ] El conjunto contiene aproximadamente 100 registros distribuidos entre proveedores, categorías, facturas, líneas, pagos e ingresos diarios.
+- [ ] Los nombres, referencias y notas corresponden a una veterinaria.
+- [ ] Existen facturas pendientes, con pago parcial y pagadas.
+- [ ] Existen vencimientos próximos y vencidos.
+- [ ] Los totales, saldos, estados y resumen se calculan sin contradicciones.
+- [ ] La restauración sigue siendo reversible mediante el mismo botón de datos de ejemplo.
+
+### US-006: Mejorar la tabla de ingresos diarios
+
+**Estado:** Implementada en demo
+**Prioridad:** Alta
+**Área:** Ingresos diarios
+
+#### Historia
+
+Como persona que revisa la operación de la veterinaria,
+quiero consultar los ingresos diarios en una tabla ordenada,
+para entender rápidamente cuándo ingresó el dinero, cuánto fue y de dónde vino.
+
+#### Criterios de aceptación
+
+- [ ] Los ingresos se muestran en una tabla con fecha, monto, moneda, nota y acciones.
+- [ ] La tabla mantiene el orden más reciente primero.
+- [ ] La moneda y la nota se distinguen visualmente del monto.
+- [ ] Las acciones de editar y eliminar siguen el patrón de las tablas de categorías y facturas.
+- [ ] La tabla se adapta a pantallas pequeñas sin perder la información principal.
 
 ## Decisiones excluidas
 

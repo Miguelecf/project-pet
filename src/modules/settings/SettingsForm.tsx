@@ -31,8 +31,8 @@ export function SettingsForm({ onSave, settings }: SettingsFormProps) {
       {error && <p role="alert">{error}</p>}
       <label htmlFor="settings-currency">Moneda</label>
       <select id="settings-currency" name="currency" onChange={(event) => setCurrency(event.target.value as Currency)} value={currency}>
-        <option value="USD">USD</option>
         <option value="ARS">ARS</option>
+        <option value="USD">USD</option>
       </select>
       <label htmlFor="settings-due-alert-days">Días de aviso de vencimiento</label>
       <input id="settings-due-alert-days" name="due-alert-days" onChange={(event) => setDueAlertDays(event.target.value)} type="number" value={dueAlertDays} />

@@ -50,28 +50,28 @@ describe('InvoiceForm', () => {
     renderForm({ suppliers: { findAll: async () => [supplier] }, categories: { findAll: async () => [category] }, settings: { get: async () => ({ currency: 'USD' }) }, invoices: { findAll: async () => [], create: vi.fn() }, payments: { findByInvoice: async () => [] } })
     await screen.findByLabelText('Proveedor')
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByRole('alert').textContent).toBe('Invoice requires at least one line')
+    expect(screen.getByRole('alert').textContent).toBe('Seleccioná un proveedor')
     await fillValidLine()
     fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '0' } })
     fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-11' } })
     fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '-100' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByText('Date must not be in the future').textContent).toBe('Date must not be in the future')
+    expect(screen.getByText('La fecha no puede ser futura').textContent).toBe('La fecha no puede ser futura')
     fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-10' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Quantity must be a positive finite number')
+    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('La cantidad debe ser mayor que cero')
     fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1.2345' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Quantity must have at most three decimal places')
+    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('La cantidad puede tener hasta tres decimales')
     fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Money minor amount must be a non-negative safe integer')
+    expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('El costo debe ser un número entero igual o mayor que cero')
   })
 
   it.each([
-    ['supplier', async () => fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: '' } }), 'Value must not be empty'],
-    ['category', async () => fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: '' } }), 'Value must not be empty'],
-    ['product reference', async () => fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: '' } }), 'Value must not be empty'],
+    ['supplier', async () => fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: '' } }), 'Seleccioná un proveedor'],
+    ['category', async () => fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: '' } }), 'Seleccioná una categoría en la línea 1'],
+    ['product reference', async () => fireEvent.change(screen.getByLabelText('Referencia del producto'), { target: { value: '' } }), 'Completá la referencia del producto en la línea 1'],
   ])('shows a visible error and does not create when the %s ID/value is missing', async (_field, clearField, message) => {
     const create = vi.fn()
     const update = vi.fn()
@@ -142,7 +142,7 @@ describe('InvoiceForm', () => {
       fireEvent.change(screen.getByLabelText('Costo unitario (unidades mínimas)'), { target: { value: '150' } })
       fireEvent.change(screen.getByLabelText('Fecha de emisión'), { target: { value: '2026-08-11' } })
       fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-      expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('Date must not be in the future')
+      expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toContain('La fecha no puede ser futura')
     } finally {
       vi.useRealTimers()
     }

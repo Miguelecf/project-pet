@@ -11,7 +11,7 @@ import type { PaymentContractFixture } from './paymentRepositoryContract'
 import type { SettingsContractFixture } from './settingsRepositoryContract'
 
 const now = '2026-08-10T00:00:00.000Z' as never
-const defaults = (): Settings => ({ currency: 'USD', dueAlertDays: 7 as never, createdAt: now, updatedAt: now })
+const defaults = (): Settings => ({ currency: 'ARS', dueAlertDays: 7 as never, createdAt: now, updatedAt: now })
 
 export type ContractMutant =
   | 'category-delete-retained'

@@ -43,6 +43,6 @@ export class LocalSettingsRepository implements SettingsRepository {
 
   private defaults(): Settings {
     const timestamp = this.now()
-    return { currency: 'USD', dueAlertDays: 7 as never, createdAt: timestamp, updatedAt: timestamp }
+    return { currency: 'ARS', dueAlertDays: 7 as never, createdAt: timestamp, updatedAt: timestamp }
   }
 }
